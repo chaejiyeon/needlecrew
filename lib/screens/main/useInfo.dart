@@ -105,6 +105,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
                       Container(
                         padding: EdgeInsets.only(left: 5, right: 5),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             iconStyle("bookIcon.svg", "useinfo"),
                             dotLine(),

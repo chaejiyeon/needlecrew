@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import NaverThirdPartyLogin
+import Firebase
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

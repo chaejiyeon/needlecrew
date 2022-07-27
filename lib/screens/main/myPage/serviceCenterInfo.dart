@@ -1,11 +1,11 @@
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/directQuestion.dart';
+import 'package:needlecrew/widgets/channeltalk.dart';
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:needlecrew/widgets/myPage/mypageAppbar.dart';
 import 'package:needlecrew/widgets/myPage/mypageMenu.dart';
 import 'package:needlecrew/widgets/myPage/userInfoMenu.dart';
-import 'package:channel_talk_flutter/channel_talk_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,22 +21,6 @@ class ServiceCenterInfo extends StatefulWidget {
 
 class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
 
-  void channelTalkOpen() async {
-    await ChannelTalk.boot(
-      pluginKey: 'pluginKey',
-      memberId: 'memberId',
-      email: 'delay@amuz.co.kr',
-      name: 'name',
-      memberHash: 'memberHash',
-      mobileNumber: 'mobileNumber',
-      trackDefaultEvent: false,
-      hidePopup: false,
-      language: 'english',
-    );
-
-    await ChannelTalk.showMessenger();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +34,7 @@ class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
                 padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
-                    listMenu("1:1 문의하기", true, DirectQuestion()),
+                    listMenu("1:1 문의하기", true, Channeltalk()),
                     listMenu("자주하는 질문", false, DirectQuestion()),
                   ],
                 ),
@@ -98,11 +82,7 @@ class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
   Widget listMenu(String listTitle, bool isLine, Widget widget){
     return GestureDetector(
       onTap: () {
-        if(listTitle == "1:1 문의하기"){
-          channelTalkOpen();
-        }else{
-          Get.to(widget);
-        }
+        Get.to(widget);
       },
       child: Container(
         padding: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),
@@ -135,3 +115,4 @@ class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
     );
   }
 }
+

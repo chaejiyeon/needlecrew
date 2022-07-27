@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -21,47 +23,57 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
-    	<array>
-    		<dict>
-    			<key>CFBundleTypeRole</key>
-    			<string>Editor</string>
-    			<key>CFBundleURLName</key>
-    			<string>kakaologin</string>
-    			<key>CFBundleURLSchemes</key>
-    			<array>
-    				<string>kakao4d9c4d62aa20a9e3dd6baffac8b0aa19</string>
-    			</array>
-    		</dict>
-    		<dict>
-    			<key>CFBundleTypeRole</key>
-    			<string>Editor</string>
-    			<key>CFBundleURLName</key>
-    			<string>naverlogin</string>
-    			<key>CFBundleURLSchemes</key>
-    			<array>
-    				<string>needlecrewnaverlogin</string>
-    			</array>
-    		</dict>
-    		<dict>
-    			<key>CFBundleTypeRole</key>
-    			<string>Editor</string>
-    			<key>CFBundleURLName</key>
-    			<string>googlelogin</string>
-    			<key>CFBundleURLSchemes</key>
-    			<array>
-    				<string>com.googleusercontent.apps.12727198298-ub4h105nf6ig28vl9ikrhvola64svdpt</string>
-    			</array>
-    		</dict>
-    	</array>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>kakaologin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao4d9c4d62aa20a9e3dd6baffac8b0aa19</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>naverlogin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>needlecrewnaverlogin</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>googlelogin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.12727198298-ub4h105nf6ig28vl9ikrhvola64svdpt</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Accessing to camera in order to provide better user experience</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Accessing to microphone to record voice for video</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Accessing to photo library in order to save photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Accessing to photo library in order to provide better user experience</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -76,30 +88,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-
-
-    <key>NSCameraUsageDescription</key>
-    <string>Accessing to camera in order to provide better user experience</string>
-
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Accessing to microphone to record voice for video</string>
-
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Accessing to photo library in order to save photos</string>
-
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Accessing to photo library in order to provide better user experience</string>
-
-
-    <key>naverConsumerKey</key>
-    <string>i3vDzPM68j3X76kEppEc</string>
-    <key>naverConsumerSecret</key>
-    <string>iITjtN2Sr_</string>
-    <key>naverServiceAppName</key>
-    <string>니들크루</string>
-    <key>naverServiceAppUrlScheme</key>
-    <string>needlecrewnaverlogin</string>
+	<key>flutter_apns.disable_firebase_core</key>
+	<false/>
+	<key>naverConsumerKey</key>
+	<string>i3vDzPM68j3X76kEppEc</string>
+	<key>naverConsumerSecret</key>
+	<string>iITjtN2Sr_</string>
+	<key>naverServiceAppName</key>
+	<string>니들크루</string>
+	<key>naverServiceAppUrlScheme</key>
+	<string>needlecrewnaverlogin</string>
 </dict>
 </plist>

@@ -83,6 +83,7 @@ class _PriceDropDownState extends State<PriceDropDown> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
         width: double.infinity,
         padding: widget.selectNum == 4 ? EdgeInsets.only(left: 10) : EdgeInsets
             .only(left: 20, right: 20, top: 5, bottom: 5),

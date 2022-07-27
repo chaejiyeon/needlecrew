@@ -24,8 +24,7 @@ class _PriceListSheetState extends State<PriceListSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ListView(
+    return ListView(
       padding: EdgeInsets.zero,
       controller: scrollController,
       shrinkWrap: true,
@@ -40,6 +39,6 @@ class _PriceListSheetState extends State<PriceListSheet> {
             TableListItem(type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
 
       ],
-    ));
+    );
   }
 }

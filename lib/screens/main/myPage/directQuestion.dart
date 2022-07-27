@@ -34,7 +34,7 @@ class _DirectQuestionState extends State<DirectQuestion> {
       appBar: MypageAppBar(
           title: "자주하는 질문", icon: "", widget: MainHome(), appbar: AppBar()),
       body: Container(
-              margin: EdgeInsets.only(left: 24, top: 40, bottom: 25),
+              margin: EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 25),
               child: Column(
                 children: [
                   Row(children: [

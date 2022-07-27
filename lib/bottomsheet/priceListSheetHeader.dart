@@ -14,8 +14,7 @@ class PriceListSheetHeader extends StatefulWidget {
 class _PriceListSheetHeaderState extends State<PriceListSheetHeader> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    return Column(
         children: [
           PriceDropdownHeader(),
           PriceDropDown(
@@ -36,7 +35,7 @@ class _PriceListSheetHeaderState extends State<PriceListSheetHeader> {
           // table header
           Container(
             color: Colors.white,
-            padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+            padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 0),
             child: Row(
               children: [
                 Align(
@@ -59,7 +58,6 @@ class _PriceListSheetHeaderState extends State<PriceListSheetHeader> {
             ),
           ),
         ],
-      ),
     );
   }
 }

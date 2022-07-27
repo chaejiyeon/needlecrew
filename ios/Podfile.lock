@@ -5,9 +5,6 @@ PODS:
   - AppAuth/Core (1.5.0)
   - AppAuth/ExternalUserAgent (1.5.0):
     - AppAuth/Core
-  - channel_talk_flutter (2.3.1):
-    - ChannelIOSDK
-    - Flutter
   - ChannelIOSDK (10.0.5)
   - Firebase (9.3.0):
     - Firebase/Core (= 9.3.0)
@@ -202,9 +199,10 @@ PODS:
     - Flutter
   - vertical_scrollable_tabview (0.0.1):
     - Flutter
+  - webview_flutter_wkwebview (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
-  - channel_talk_flutter (from `.symlinks/plugins/channel_talk_flutter/ios`)
   - ChannelIOSDK (from `https://mobile-static.channel.io/ios/latest/xcframework.podspec`)
   - Firebase
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -230,6 +228,7 @@ DEPENDENCIES:
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - vertical_scrollable_tabview (from `.symlinks/plugins/vertical_scrollable_tabview/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
   trunk:
@@ -257,8 +256,6 @@ SPEC REPOS:
     - SDWebImageWebPCoder
 
 EXTERNAL SOURCES:
-  channel_talk_flutter:
-    :path: ".symlinks/plugins/channel_talk_flutter/ios"
   ChannelIOSDK:
     :podspec: https://mobile-static.channel.io/ios/latest/xcframework.podspec
   firebase_auth:
@@ -301,10 +298,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   vertical_scrollable_tabview:
     :path: ".symlinks/plugins/vertical_scrollable_tabview/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
   AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
-  channel_talk_flutter: 630530fa3ebf97e89372e646b01648433a7bb433
   ChannelIOSDK: 1aab9077eb5e24499c0d5924033a680d39769224
   Firebase: ef75abb1cdbc746d5a38f4e26c422c807b189b8c
   firebase_auth: 90736e5b2600e9504c3409eea5ebcc84b9d0af7f
@@ -347,7 +345,8 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
   vertical_scrollable_tabview: 6e6f25411f226cc077ac4d915c8cd407a1317587
+  webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: 6c2c13092c5afe85d0ec780d9c37b093db0ad18e
+PODFILE CHECKSUM: 6e278dff52ad9378a228e7825381b2127321e3e1
 
 COCOAPODS: 1.11.3

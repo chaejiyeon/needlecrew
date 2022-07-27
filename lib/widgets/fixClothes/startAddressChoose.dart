@@ -93,10 +93,6 @@ class _StartAddressState extends State<StartAddressChoose> {
               ],
             ),
           ),
-
-          SizedBox(
-            height: 150,
-          ),
         ],
       ),
     );

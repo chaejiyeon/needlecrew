@@ -10,6 +10,8 @@ class FooterBtn extends StatelessWidget {
 
   // bottomsheet open
   void bottomsheetOpen(BuildContext context) {
+    RenderBox rb = context.findRenderObject() as RenderBox;
+
     showStickyFlexibleBottomSheet(
       minHeight: 0,
       initHeight: 0.8,
@@ -21,7 +23,7 @@ class FooterBtn extends StatelessWidget {
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       ),
-      headerHeight: MediaQuery.of(context).size.height - 440,
+      headerHeight: 311,
       headerBuilder: (context, offset) {
         return PriceListSheetHeader();
       },
@@ -35,6 +37,7 @@ class FooterBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(20),

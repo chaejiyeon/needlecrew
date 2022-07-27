@@ -13,18 +13,20 @@ import 'package:hexcolor/hexcolor.dart';
 
 import '../../getxController/fixClothes/cartController.dart';
 
-class CartInfo extends GetView<CartController> {
+class CartInfo extends GetView <CartController> {
   const CartInfo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final CartController controller = Get.put(CartController());
 
+    Future myFuture = controller.getCart();
+
     print("register orders id info " + controller.orders.length.toString());
 
     return Scaffold(
       body: FutureBuilder(
-        future: controller.getCart(),
+        future: myFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return controller.orders.length == 0
@@ -136,7 +138,7 @@ class CartInfo extends GetView<CartController> {
 
       // 고정 bottom navigation
       bottomNavigationBar: FutureBuilder(
-          future: controller.getCart(),
+          future: myFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return controller.orders.length == 0

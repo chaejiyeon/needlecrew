@@ -23,19 +23,6 @@ class CartListItem extends GetView<CartController> {
   Widget build(BuildContext context) {
     final CartController controller = Get.put(CartController());
 
-
-    // List<CartItem> items = [];
-    //
-    // for(int i=0; i<cartItem.length; i++){
-    //   if(cartItem[i].cartCategory == cartItem[index].cartCategory){
-    //     items.add(cartItem[i]);
-    //   }
-    // }
-
-    // print("upcategory this cartitem info " + items.toString());
-
-
-    // print("lineitem this" + lineItem.first.productId.toString());
     print("this status     ddd " + controller.orders[index].status.toString());
 
 
@@ -55,15 +42,6 @@ class CartListItem extends GetView<CartController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 checkBoxCustom(cartItem.first.cartCategory[cartItem.first.cartCategory.length-2] + cartItem.first.cartCategory[cartItem.first.cartCategory.length-1]),
-                // FutureBuilder(
-                //     future: controller
-                //         .getProductCategory(lineItem.first.productId!),
-                //     builder: (context, snapshot) {
-                //         return checkBoxCustom(controller.thisCategory);
-                //     }),
-                // Obx(() => checkBoxCustom(
-                //     controller.category[0] + controller.category[1])),
-                // checkBoxCustom("일반바지"),
                 GestureDetector(
                   child: Container(
                     height: 30,

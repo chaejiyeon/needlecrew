@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "12727198298",
+    "project_id": "needlecrew-577ef",
+    "storage_bucket": "needlecrew-577ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12727198298:android:40c5e76a54a3fe79982e63",
+        "android_client_info": {
+          "package_name": "com.amuz.needlecrew"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12727198298-7sa60ooeph1vgcj0u2tddsc65nmr879k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amuz.needlecrew",
+            "certificate_hash": "c38c610014cfbd63cfcbb233064a761a71ae20be"
+          }
+        },
+        {
+          "client_id": "12727198298-bo068kfaj3kbgnr19teureigh944sktq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyqXoHSRK-FwhodJ47L0W32cv9bmPtTd4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12727198298-bo068kfaj3kbgnr19teureigh944sktq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "12727198298-ub4h105nf6ig28vl9ikrhvola64svdpt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.amuz.needlecrew",
+                "app_store_id": "1630697978"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

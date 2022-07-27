@@ -103,7 +103,7 @@ class _FixTypeListItemState extends State<FixTypeListItem> {
                 detailInfo("의뢰 방법", widget.cartItem.cartWay),
                 detailInfo("치수", widget.cartItem.cartSize + "cm"),
                 detailInfo("추가 설명", widget.cartItem.cartContent),
-                detailInfo("물품 가액", setPrice(int.parse(widget.cartItem.guaranteePrice)) + "원"),
+                detailInfo("물품 가액", widget.cartItem.guaranteePrice != "" ? setPrice(int.parse(widget.cartItem.guaranteePrice)) : "0" + "원"),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
                   child: ListLine(
