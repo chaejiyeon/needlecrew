@@ -1,5 +1,5 @@
-import 'package:needlecrew/bottomsheet/fixAddressBottomSheetHeader.dart';
-import 'package:needlecrew/bottomsheet/fixMyAddressList.dart';
+import 'package:needlecrew/bottomsheet/fix_address_bottom_sheet_header.dart';
+import 'package:needlecrew/bottomsheet/fix_my_address_list.dart';
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:needlecrew/models/addressItem.dart';
 import 'package:needlecrew/screens/main/fixClothes/takeFixdate.dart';
@@ -40,11 +40,10 @@ class _AddressInsertState extends State<AddressInsert> {
   ];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     // controller.isSaved(false);
   }
-
 
   // 주소 관리 bottomsheet
   void bottomsheetOpen(BuildContext context) {
@@ -100,9 +99,11 @@ class _AddressInsertState extends State<AddressInsert> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProgressBar(progressImg: "fixProgressbar_3.svg"),
               Container(
-                padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.only(left: 24,right: 24),
+                  child: ProgressBar(progressImg: "fixProgressbar_3.svg")),
+              Container(
+                padding: EdgeInsets.only(left: 24, right: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -203,7 +204,7 @@ class _AddressInsertState extends State<AddressInsert> {
   Widget myaddressBtn() {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -242,15 +243,26 @@ class _AddressInsertState extends State<AddressInsert> {
           // 수거 희망일 페이지로이동
           GestureDetector(
             onTap: () {
-              if(textEditingController.text.length > 0) {
-                controller.isAddress(address + " " + textEditingController.text);
+              if (textEditingController.text.length > 0) {
+                controller
+                    .isAddress(address + " " + textEditingController.text);
                 // controller.registerAddress();
                 Get.to(TakeFixDate());
               }
             },
-            child: SvgPicture.asset(
-              "assets/icons/floatingNext.svg",
-              color: textEditingController.text.length > 0 ? HexColor("#fd9a03") : HexColor("#d5d5d5"),
+            child: Container(
+              height: 63,
+              alignment: Alignment.bottomCenter,
+              child: textEditingController.text.length > 0
+                  ? Image.asset(
+                      "assets/icons/selectFloatingIcon.png",
+                      width: 54,
+                      height: 54,
+                    )
+                  : SvgPicture.asset(
+                      "assets/icons/floatingNext.svg",
+                      color: HexColor("#d5d5d5"),
+                    ),
             ),
           ),
         ],

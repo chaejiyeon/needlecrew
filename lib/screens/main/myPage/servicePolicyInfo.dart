@@ -44,6 +44,7 @@ class _ServicePolicyInfoState extends State<ServicePolicyInfo> {
   // list menu
   Widget listMenu(String listTitle, bool isLine, Widget widget){
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         Get.to(widget);
       },

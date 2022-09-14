@@ -1,3 +1,7 @@
+import 'package:needlecrew/getxController/homeController.dart';
+import 'package:needlecrew/screens/main/cartInfo.dart';
+import 'package:needlecrew/screens/main/mainHome.dart';
+import 'package:needlecrew/screens/main/myPage/userUpdate.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,16 +10,21 @@ import 'package:hexcolor/hexcolor.dart';
 
 class AlertDialogYes extends StatelessWidget {
   final String titleText;
+  final String widgetname;
 
-  const AlertDialogYes({Key? key, required this.titleText}) : super(key: key);
+
+  const AlertDialogYes({Key? key, required this.titleText, this.widgetname = ""}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homecontroller = Get.put(HomeController());
+
     return Dialog(
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20))),
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
-        height: 200,
+        width: 297,
+        height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -48,7 +57,17 @@ class AlertDialogYes extends StatelessWidget {
                     style: TextStyle(color: Colors.black),
                   ),
                   onPressed: () {
-                    Get.back();
+
+                    if(widgetname == "updatePhoneNum"){
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => UserUpdate()), (route) => false);
+                    }else if(widgetname == "cart"){
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);
+                    }else{
+                      if(widgetname == "biilling"){
+                        homecontroller.cardInfo.clear();
+                      }
+                      Get.back();
+                    }
                   }),
             ),
           ],

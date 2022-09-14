@@ -190,9 +190,9 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
               }
 
             },
-            child: SvgPicture.asset(
+            child: authOk ? Image.asset("assets/icons/selectFloatingIcon.png", width: 54, height: 54,) : SvgPicture.asset(
               'assets/icons/floatingNext.svg',
-              color: authOk ? HexColor("fd9a03") : HexColor("#d5d5d5"),
+              color: HexColor("#d5d5d5"),
             ),
           ),
         ),

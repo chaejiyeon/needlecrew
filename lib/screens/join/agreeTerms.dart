@@ -1,4 +1,4 @@
-
+import 'package:needlecrew/getxController/loginController.dart';
 import 'package:needlecrew/main.dart';
 import 'package:needlecrew/screens/join/chooseGender.dart';
 import 'package:needlecrew/widgets/baseAppbar.dart';
@@ -19,10 +19,13 @@ class AgreeTerms extends StatefulWidget {
 }
 
 class _AgreeTermsState extends State<AgreeTerms> {
+  final LoginController controller = Get.put(LoginController());
   bool whole_checked = false;
 
   @override
   Widget build(BuildContext context) {
+    controller.setChecked();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: BaseAppBar(
@@ -73,12 +76,14 @@ class _AgreeTermsState extends State<AgreeTerms> {
               child: TextButton(
                 onPressed: () {
                   setState(() {
-                    if(whole_checked == false) {
+                    if (whole_checked == false) {
                       whole_checked = true;
-                    }else{
+                    } else {
                       whole_checked = false;
                     }
                   });
+
+                  controller.wholeChecked(whole_checked);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -104,21 +109,29 @@ class _AgreeTermsState extends State<AgreeTerms> {
                 child: Column(
                   children: [
                     CircleCheckBtn(
-                        list: "개인정보 처리방침 (필수)",
-                        listInfo: MyApp(),
-                        checked: whole_checked),
+                      list: "개인정보 처리방침 (필수)",
+                      listInfo: MyApp(),
+                      checked: whole_checked,
+                      index: 0,
+                    ),
                     CircleCheckBtn(
-                        list: "서비스 이용 약관 (필수)",
-                        listInfo: MyApp(),
-                        checked: whole_checked),
+                      list: "서비스 이용 약관 (필수)",
+                      listInfo: MyApp(),
+                      checked: whole_checked,
+                      index: 1,
+                    ),
                     CircleCheckBtn(
-                        list: "혜택 정보 앱 푸시 알림 수신 (선택)",
-                        listInfo: MyApp(),
-                        checked: whole_checked),
+                      list: "혜택 정보 앱 푸시 알림 수신 (선택)",
+                      listInfo: MyApp(),
+                      checked: whole_checked,
+                      index: 2,
+                    ),
                     CircleCheckBtn(
-                        list: "추가비용 결제 안내 (필수)",
-                        listInfo: MyApp(),
-                        checked: whole_checked),
+                      list: "추가비용 결제 안내 (필수)",
+                      listInfo: MyApp(),
+                      checked: whole_checked,
+                      index: 3,
+                    ),
                     SizedBox(
                       height: 80,
                     ),
@@ -129,8 +142,13 @@ class _AgreeTermsState extends State<AgreeTerms> {
           ],
         ),
       ),
-      floatingActionButton: whole_checked == true ? FloatingNextBtn(page: ChooseGender(),ischecked: true) : FloatingNextBtn(page: ChooseGender(),ischecked: false),
+      floatingActionButton: Obx(
+        () => controller.ischecked[0] == true &&
+                controller.ischecked[1] == true &&
+                controller.ischecked[3] == true
+            ? FloatingNextBtn(page: ChooseGender(), ischecked: true)
+            : FloatingNextBtn(page: ChooseGender(), ischecked: false),
+      ),
     );
   }
-
 }

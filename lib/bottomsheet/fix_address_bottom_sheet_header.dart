@@ -1,4 +1,4 @@
-import 'package:needlecrew/bottomsheet/fixAddressBottomPage.dart';
+import 'package:needlecrew/bottomsheet/address_insert.dart';
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
@@ -145,6 +145,14 @@ class _FixAddressBottomSheetHeaderState
     return Container(
       child: Column(
         children: [
+          Container(
+            margin: EdgeInsets.only(top: 10),
+            width: 60,
+            height: 5,
+            decoration: BoxDecoration(
+                color: HexColor("#707070"),
+                borderRadius: BorderRadius.circular(5)),
+          ),
           Container(
             padding: EdgeInsets.only(top: 20, bottom: 8, left: 10, right: 10),
             child: Row(

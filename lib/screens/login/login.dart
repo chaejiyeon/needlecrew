@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/widgets/baseAppbar.dart';
 import 'package:needlecrew/widgets/circleIconBtn.dart';
@@ -148,10 +150,14 @@ class _LoginPageState extends State<LoginPage> {
                       icon: "kakao.png",
                       loginwith: "kakao",
                     ),
-                    CircleIconBtn(
+                     CircleIconBtn(
                       icon: "apple.png",
                       loginwith: "apple",
                     ),
+                    // Platform.isIOS ? CircleIconBtn(
+                    //   icon: "apple.png",
+                    //   loginwith: "apple",
+                    // ) : SizedBox(),
                     CircleIconBtn(
                       icon: "googleIcon.png",
                       loginwith: "google",
@@ -280,14 +286,11 @@ class _LoginPageState extends State<LoginPage> {
           if (btnText == "로그인") {
             if (controller[0].text.length > 0 &&
                 controller[1].text.length > 0) {
-              // homeController.setUserInfo('email', controller[0].text);
-              // homeController.setUserInfo('password', controller[1].text);
-              wp_api.Login(controller[0].text, controller[1].text);
-              // homeController.LoginUs(homeController.userEmail.value,
-              //     homeController.userPassword.value);
+              homeController.setUserInfo('email', controller[0].text);
+              homeController.setUserInfo('password', controller[1].text);
+              // wp_api.Login(controller[0].text, controller[1].text);
+              homeController.LoginUs();
               print("logincheck this    " + homeController.loginCheck.value);
-            } else {
-              Get.snackbar('로그인', '이메일 주소와 비밀번호를 입력해주세요');
             }
           }
         },

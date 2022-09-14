@@ -1,5 +1,5 @@
-import 'package:needlecrew/bottomsheet/priceListSheet.dart';
-import 'package:needlecrew/bottomsheet/priceListSheetHeader.dart';
+import 'package:needlecrew/bottomsheet/price_list_sheet.dart';
+import 'package:needlecrew/bottomsheet/price_list_sheet_header.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

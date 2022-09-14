@@ -1,3 +1,5 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:intl/intl.dart';
 import 'package:needlecrew/screens/main/fixClothes/takeFixInfo.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
 import 'package:needlecrew/widgets/fixClothes/progressbar.dart';
@@ -27,10 +29,9 @@ class _TakeFixDateState extends State<TakeFixDate> {
   int nowYear = DateTime.now().year;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
-
 
   @override
   void didChangeDependencies() {
@@ -39,7 +40,7 @@ class _TakeFixDateState extends State<TakeFixDate> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
   }
 
@@ -52,9 +53,11 @@ class _TakeFixDateState extends State<TakeFixDate> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProgressBar(progressImg: "fixProgressbar_4.svg"),
             Container(
-              padding: EdgeInsets.all(20),
+                padding: EdgeInsets.only(left: 24, right: 24),
+                child: ProgressBar(progressImg: "fixProgressbar_4.svg")),
+            Container(
+              padding: EdgeInsets.only(left: 24, right: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -74,54 +77,114 @@ class _TakeFixDateState extends State<TakeFixDate> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+                child: SingleChildScrollView(
+                  child: TableCalendar(
+                    locale: 'ko-KR',
+                    daysOfWeekHeight: 30,
+                    focusedDay: _focusedDay,
+                    firstDay: DateTime.now(),
+                    lastDay: DateTime(nowYear, 12, 31),
+                    calendarBuilders: CalendarBuilders(
+                      todayBuilder: (context, month, day) {
+                        return Stack(
+                          children: [
+                            Positioned(
+                              top: 13,
+                              right: 13,
+                              child: Container(
+                                height: 6,
+                                width: 6,
+                                decoration: BoxDecoration(
+                                  color: HexColor("#fd9a03"),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(DateTime.now().day.toString()),
+                            ),
+                          ],
+                        );
+                      },
+                      dowBuilder: (context, day) {
+                        String dayOfWeeks =
+                            DateFormat('E', 'ko_KR').format(day);
 
-                child: TableCalendar(
-                  locale: 'ko-KR',
-                  daysOfWeekHeight: 30,
-                  focusedDay: _focusedDay,
-                  firstDay: DateTime.now(),
-                  lastDay: DateTime(nowYear, 12, 31),
-                  // currentDay: _focusedDay,
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  onDaySelected: ((selectedDay, focusedDay) {
-                    if (!isSameDay(_selectedDay, selectedDay)) {
-                      setState(() {
-                        _selectedDay = selectedDay;
-                        _focusedDay = focusedDay;
-                      });
-                    }
-                  }),
-                  onFormatChanged: (format) {
-                    if (_calendarFormat != format) {
-                      setState(() {
-                        _calendarFormat = format;
-                      });
-                    }
-                  },
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                  calendarStyle: CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: HexColor("#fd9a03"),
-                      shape: BoxShape.circle,
+                        if (day.weekday == DateTime.sunday) {
+                          return Container(
+                            child: Center(
+                              child: Text(dayOfWeeks,
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          );
+                        }
+
+                        return Container(
+                          child: Center(
+                              child: Text(dayOfWeeks,
+                                  style: TextStyle(color: Colors.black))),
+                        );
+                      },
                     ),
-                    todayDecoration: BoxDecoration(
-                      color: HexColor("#fd9a03"),
-                      shape: BoxShape.circle,
+                    // currentDay: _focusedDay,
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: ((selectedDay, focusedDay) {
+                      String dayOfWeeks =
+                          DateFormat('E', 'ko_KR').format(selectedDay);
+                      print("dayofweeks this    " + dayOfWeeks);
+
+                      if (!isSameDay(_selectedDay, selectedDay)) {
+                        if (dayOfWeeks == "일") {
+                          Get.snackbar('수거 불가',
+                              '일요일 및 공휴일은 수거가 불가하며, 토요일 선택시 월요일로 수거가 넘어갈 수 있습니다.');
+                        } else {
+                          setState(() {
+                            _selectedDay = selectedDay;
+                            _focusedDay = focusedDay;
+                          });
+                        }
+                      }
+                    }),
+                    onFormatChanged: (format) {
+                      if (_calendarFormat != format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      }
+                    },
+                    onPageChanged: (focusedDay) {
+                      _focusedDay = focusedDay;
+                    },
+                    calendarStyle: CalendarStyle(
+                      selectedDecoration: BoxDecoration(
+                        color: HexColor("#fd9a03"),
+                        shape: BoxShape.circle,
+                      ),
+                      markerDecoration: BoxDecoration(
+                          // borderRadius: BorderRadius.circular(50)
+                          ),
                     ),
-                  ),
-                  headerStyle: HeaderStyle(
+                    headerStyle: HeaderStyle(
+                      rightChevronIcon: SvgPicture.asset("assets/icons/nextIcon.svg"),
+                      leftChevronIcon: SvgPicture.asset("assets/icons/prevIcon.svg"),
+                      leftChevronPadding: EdgeInsets.zero,
+                      rightChevronPadding: EdgeInsets.zero,
+                      headerMargin: EdgeInsets.only(bottom: 20),
                       titleCentered: true,
                       formatButtonVisible: false,
                       decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                        color: HexColor("#d5d5d5"),
-                      )))),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: HexColor("#ededed"),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -138,44 +201,75 @@ class _TakeFixDateState extends State<TakeFixDate> {
     String selectDay = _focusedDay.day.toString();
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.only(left: 24, right: 24),
       height: 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  FontStyle(
-                      text: "수거 희망일 : ",
-                      fontsize: "",
-                      fontbold: "",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
-                  FontStyle(
-                      text: selectMonth + "월" + selectDay + "일",
-                      fontsize: "",
-                      fontbold: "bold",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
-                ],
-              ),
-              FontStyle(
-                  text: "* 주말 및 공휴일은 수거가 불가능 합니다.",
-                  fontsize: "",
-                  fontbold: "",
-                  fontcolor: HexColor("#d5d5d5"),
-                  textdirectionright: false)
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: EasyRichText(
+                    "수거 희망일 : " + selectMonth + "월 " + selectDay + "일",
+                    defaultStyle: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'NotoSansCJKkrRegular',
+                        color: Colors.black),
+                    patternList: [
+                      EasyRichTextPattern(
+                        targetString: selectMonth + "월 " + selectDay + "일",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "* ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: HexColor("#a5a5a5"),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            "일요일 및 공휴일은 수거가 불가하며, 토요일 선택시 월요일로 수거가 넘어갈 수 있습니다.",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: HexColor("#a5a5a5"),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
-          GestureDetector(
-            onTap: (){
-              Get.to(TakeFixInfo());
-              controller.fixDate(selectMonth, selectDay);
-            },
-            child: SvgPicture.asset("assets/icons/floatingNext.svg"),
+          Container(
+            alignment: Alignment.bottomCenter,
+            padding: EdgeInsets.only(bottom: 16),
+            child: GestureDetector(
+              onTap: () {
+                Get.to(TakeFixInfo());
+                controller.fixDate(selectMonth, selectDay);
+              },
+              child: Image.asset(
+                "assets/icons/selectFloatingIcon.png",
+                width: 54,
+                height: 54,
+              ),
+            ),
           ),
         ],
       ),

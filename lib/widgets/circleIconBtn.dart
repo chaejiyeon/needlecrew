@@ -1,4 +1,6 @@
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:flutter/rendering.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:uuid/uuid.dart';
 
 class CircleIconBtn extends StatefulWidget {
   final String icon;
@@ -28,25 +31,20 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
   // google 로그인
   void googleLogin() async {
-
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
-        // scopes: ['displayName', 'email', 'id'],
-      );
+          // scopes: ['displayName', 'email', 'id'],
+          );
 
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
-
 
       await _googleSignIn;
 
       joinUs('${googleUser.displayName}', '${googleUser.email}',
           '${googleUser.id}', '');
       Login(googleUser.email, googleUser.id);
-
-
-
     } catch (error) {
       print("isError $error");
     }
@@ -54,23 +52,81 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
   // apple 로그인
   void appleLogin() async {
-    final credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      webAuthenticationOptions: WebAuthenticationOptions(
-        clientId: 'needlecrew',
-        redirectUri: Uri.parse('https://needlecrew.com'),
-      ),
-    );
+    bool isAvailable = await SignInWithApple.isAvailable();
+
+    // iOS 13 이상일 경우
+    if (isAvailable) {
+      try {
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          webAuthenticationOptions: WebAuthenticationOptions(
+            clientId: "needlecrew.amuz.com",
+            redirectUri: Uri.parse(
+                "https://noiseless-butter-sight.glitch.me/callbacks/sign_in_with_apple"),
+          ),
+        );
+
+        final oauthCredential = firebase.OAuthProvider("apple.com").credential(
+          idToken: credential.identityToken,
+          accessToken: credential.authorizationCode,
+        );
+
+        firebase.UserCredential userCredential = await firebase
+            .FirebaseAuth.instance
+            .signInWithCredential(oauthCredential);
+
+        print("iOS 13 이상 this user info " + userCredential.user!.toString());
+        print("this user email " + userCredential.user!.email.toString());
 
 
-    onSignIn(credential);
-    joinUs('${credential.familyName}' + '${credential.givenName}',
-        '${credential.email}', '${credential.identityToken}', '');
-    Login('${credential.email}', '${credential.identityToken}');
+        final int index = userCredential.user!.email!.indexOf('@');
+        String userName = userCredential.user!.email!.substring(0, index);
 
+
+        joinUs(userName,
+            '${userCredential.user!.email}', userName, 'apple');
+        Login(userCredential.user!.email.toString(), userName);
+      } catch (e) {
+        print("appleLogin Error this " + e.toString());
+      }
+    } else { // iOS 13 미만일 경우
+      final clientState = Uuid().v4();
+      final url = Uri.https('appleid.apple.com', '/auth/authorize', {
+        'response_type': 'code id_token',
+        'client_id': "needlecrew.amuz.com",
+        'response_mode': 'form_post',
+        'redirect_uri':
+            'https://noiseless-butter-sight.glitch.me/callbacks/apple/sign_in',
+        'scope': 'email name',
+        'state': clientState,
+      });
+
+      final result = await FlutterWebAuth.authenticate(
+          url: url.toString(), callbackUrlScheme: "applink");
+
+      final body = Uri.parse(result).queryParameters;
+      final oauthCredential = firebase.OAuthProvider("apple.com").credential(
+        idToken: body['id_token'],
+        accessToken: body['code'],
+      );
+
+
+      firebase.UserCredential userCredential = await firebase.FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+
+      print("this user email " + userCredential.user!.email.toString());
+      print("this user email " + userCredential.user!.email.toString());
+
+      final int index = userCredential.user!.email!.indexOf('@');
+      String userName = userCredential.user!.email!.substring(0, index);
+
+      joinUs(userName,
+          '${userCredential.user!.email}', userName, 'apple');
+      Login(userCredential.user!.email.toString(), userName);
+    }
   }
 
   // naver 로그인
@@ -78,9 +134,10 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
     try {
       NaverLoginResult res = await FlutterNaverLogin.logIn();
 
-      NaverAccountResult accountResult = await FlutterNaverLogin.currentAccount();
+      NaverAccountResult accountResult =
+          await FlutterNaverLogin.currentAccount();
 
-      joinUs(res.account.name, res.account.email, res.account.id, accountResult.mobile);
+      joinUs(res.account.name, res.account.email, res.account.id, 'naver');
       Login(res.account.email, res.account.id);
 
       print(res.account.name + '네이버 로그인 성공');
@@ -88,8 +145,6 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
       print("네이버 로그인 실패 isError $error");
     }
   }
-
-
 
   // 카카오 로그인
   Future<void> kakaoLogin() async {
@@ -99,11 +154,10 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
         OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
         User user = await UserApi.instance.me();
 
-        joinUs('${user.kakaoAccount?.name}', '${user.kakaoAccount?.email}',
-            '${user.id}', '${user.kakaoAccount?.phoneNumber}');
+        joinUs('${user.kakaoAccount?.profile?.nickname}',
+            '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
 
-        Login('${user.kakaoAccount?.email}',
-            '${user.id}');
+        Login('${user.kakaoAccount?.email}', '${user.id}');
         print('카카오톡 로그인 성공 ${token.accessToken}');
       } catch (error) {
         print('카카오톡 로그인 실패 $error');
@@ -116,7 +170,15 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
         // 카카오톡에 연결된 카카오계정이 없는 경우 (카카오계정으로 로그인)
         try {
-          await UserApi.instance.loginWithKakaoAccount();
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          User user = await UserApi.instance.me();
+          print("kakaoUser this     " + user.toString());
+
+          joinUs('${user.kakaoAccount?.profile?.nickname}',
+              '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
+
+          Login('${user.kakaoAccount?.email}', '${user.id}');
+
           print('카카오계정으로 로그인 성공');
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
@@ -124,7 +186,16 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
       }
     } else {
       try {
-        await UserApi.instance.loginWithKakaoAccount();
+        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+
+        User user = await UserApi.instance.me();
+        // print("kakaoUser this     " + user.kakaoAccount!.email.toString());
+
+        joinUs('${user.kakaoAccount?.profile?.nickname}',
+            '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
+
+        Login('${user.kakaoAccount?.email}', '${user.id}');
+
         print('카카오계정으로 로그인 성공');
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
@@ -145,9 +216,9 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
             } else if (widget.loginwith == "naver") {
               naverLogin();
             } else if (widget.loginwith == "apple") {
-              // appleLogin();
+              appleLogin();
             } else if (widget.loginwith == "google") {
-              // googleLogin();
+              googleLogin();
             }
           } catch (error) {
             print("isError $error");

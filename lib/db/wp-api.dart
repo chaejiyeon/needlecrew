@@ -28,7 +28,13 @@ var storage = FlutterSecureStorage();
 
 // 회원가입
 Future<void> joinUs(
-    String name, String email, String password, String phoneNum) async {
+    String name, String email, String password, String loginApp) async {
+
+  print("wpapi joinUs email this        " + email);
+  print("wpapi joinUs username this        " + name);
+  print("wpapi joinUs password this        " + password);
+
+
   final int index = email.indexOf('@');
   final String userName = email.substring(0, index);
 
@@ -37,6 +43,8 @@ Future<void> joinUs(
   // 회원가입 후 로그인 (email이 없을 경우 - 비회원) / 바로 로그인 (email이 있을 경우 - 회원)
   try {
 
+
+    print("join user register init!!!!!!!");
     user = WooCustomer(
         username: userName,
         password: password,
@@ -45,26 +53,40 @@ Future<void> joinUs(
         firstName: name.substring(1, name.length),
         );
 
-    final result = wooCommerceApi.createCustomer(user);
+    // print("create result!!!!!!!!!!!!" +  user.toString() + user.firstName.toString());
 
-    await result;
+    // await wooCommerceApi.createCustomer(user);
+
+    await wooCommerceApi.createCustomer(WooCustomer.fromJson({
+      'username': userName,
+      'password' : password,
+      'email' : email,
+      'last_name' : name.substring(0, 1),
+      'first_name' : name.substring(1, name.length),
+    }));
+
+    print("create result!!!!!!!!!!!!" +  user.toString() + user.firstName.toString());
+    // await result;
+
+    // print("joinus this user " + result.toString());
 
 
-    final update = wooCommerceApi.updateCustomer(id: user.id!, data: {'phoneNum' : phoneNum});
 
-    await update;
+    // final update = wooCommerceApi.updateCustomer(id: user.id!, data: {'phoneNum' : phoneNum});
+
+    // await update;
 
 
-    if (user.username != null) {
-      print(user.username.toString() + "회원가입 성공");
-    } else {
-      print("error");
-    }
+    // if (user.username != null) {
+    //   print(user.username.toString() + "회원가입 성공");
+    // } else {
+    //   print("error");
+    // }
   } catch (error) {
     if (error.toString().indexOf('registration-error-email-exists') != -1) {
       print("로그인");
     } else {
-      print("isError $error");
+      print("wp_api joinUs : $error");
     }
   }
 }
@@ -96,7 +118,7 @@ Future<bool> Login(String email, String password) async {
     // print("storage token " + thistoken.toString());
   }catch(e){
 
-    print("login errer $e");
+    print("login error $e");
 
     return false;
   }
@@ -141,7 +163,12 @@ Future<WooCustomer> getUser() async {
     print("token " + token);
     return user;
   } catch (e) {
-    print("iserror" + e.toString());
+    if (e.toString().indexOf('jwt_auth_invalid_token') != -1) {
+      logOut();
+      print("Expired token - 재로그인");
+    }
+    print("is getUser info error" + e.toString());
+
     return user;
   }
 }

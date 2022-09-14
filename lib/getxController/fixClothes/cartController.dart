@@ -1,10 +1,13 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:flutter_woocommerce_api/models/order.dart';
 import 'package:get/get.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:intl/intl.dart';
-import 'package:needlecrew/models/cartItemModel.dart';
+import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/widgets/cartInfo/cartListItem.dart';
 
 class CartController extends GetxController {
@@ -47,20 +50,35 @@ class CartController extends GetxController {
   RxString fixdate = "".obs;
 
   // 전체 선택
-  RxBool isWholechecked = false.obs;
+  RxBool isWholechecked = true.obs;
 
   // 카테고리별 전체 선택
-  RxBool isCategorychecked = false.obs;
+  RxList isCategorychecked = [].obs;
 
   // 상위 카테고리 구별
   List category = [];
 
   // 상위 카테고리
-  String thisCategory = "";
+  RxString thisCategory = "".obs;
+  RxInt categoryCount = 0.obs;
 
   // 옷바구니 리스트
   List<CartItem> cartItem = [];
   List<List<CartItem>> cartListitem = [];
+
+  List<CartItem> orderItem = [];
+
+  // 체크된 상품 구별 리스트
+  RxList checkItem = []
+      .obs; // {"orderid": cartItem.cartId, "price": cartItem.productPrice, "ischecked": false}
+
+  // 옷바구니에서 삭제할 orderId
+  RxList deleteOrderIds = [].obs;
+
+  // bottom visibility check
+  RxBool visibility = false.obs;
+
+  List<WooProductVariation> variation = [];
 
   @override
   void onInit() {
@@ -78,15 +96,41 @@ class CartController extends GetxController {
   Future<void> initialize() async {
     // await getProductCategory();
     await getOrder();
-    await getCart();
+    // await getCart();
 
     isInitialized.value = true;
     return;
   }
 
+
+  // option name  변환
+  String name(String optionName) {
+    // 반환할 이름
+    String name = "";
+
+    // option name '-' 제거
+    List nameList = optionName.split('-');
+
+    // name 전체 표시
+    for (int i = 0; i < nameList.length; i++) {
+      name += nameList[i] + " ";
+    }
+    return name;
+  }
+
   // productId 값 설정
   void isProductId(int productId) {
     productid.value = productId;
+    update();
+  }
+
+  // 상위 카테고리 값 설정
+  void isCategory(String category, int count) {
+    if (thisCategory == "" || thisCategory != category) {
+      thisCategory.value = category;
+      categoryCount.value = count;
+    }
+
     update();
   }
 
@@ -105,36 +149,210 @@ class CartController extends GetxController {
   }
 
   // 주소 등록 후 주문 완료 할 orderId 값 설정 (선택한 주문서 list)
-  void isOrderId(bool ischecked, int orderId) {
+  void isOrderId(bool ischecked, int orderId, CartItem item) {
     if (ischecked == true) {
       registerid.value.add(orderId);
       orderid.value.add(orderId);
-      print("주문 등록할 orderid " + orderid.value.toString());
+
+      orderItem.add(item);
       orderCount.value++;
     } else {
       for (int i = 0; i < orderid.length; i++) {
         if (orderid[i] == orderId) {
           registerid.value.removeAt(i);
           orderid.value.removeAt(i);
+
+          orderItem.removeAt(i);
         }
       }
-      print("주문 등록할 orderid " + orderid.value.toString());
+
       orderCount.value--;
     }
 
     update();
   }
 
+  // 삭제할 옷바구니 orderid 설정
+  void isDeleteOrderId() {
+    for (int i = 0; i < orderid.length; i++) {
+      deleteOrderIds.add(orderid[i]);
+    }
+
+    print("cartcontroller - this delete orderids " + deleteOrderIds.toString());
+
+    update();
+  }
+
   // 총 비용 설정
   void iswholePrice(bool ischecked, int price) {
+    print("this price info !!!!!!" + price.toString());
     if (ischecked == true) {
-      wholePrice.value += price + 6000;
-    } else {
-      wholePrice.value -= price + 6000;
+      wholePrice.value += price;
+    } else if (ischecked == false) {
+      print("init ischecked false price!!!!!!!!!");
+      wholePrice.value -= price;
     }
 
     print("wholePrice " + wholePrice.value.toString());
     update();
+  }
+
+  // 상품 체크 했을 때 표시
+  void ischecked(int parentIndex, int index) {
+    if (checkItem[parentIndex][index]["ischecked"] == true) {
+      checkItem[parentIndex][index]["ischecked"] = false;
+
+      isWholechecked.value = false;
+
+      isCategorychecked[parentIndex] = false;
+
+      iswholePrice(checkItem[parentIndex][index]["ischecked"],
+          int.parse(cartItem[parentIndex].productPrice));
+      isOrderId(checkItem[parentIndex][index]["ischecked"],
+          cartItem[parentIndex].cartId, cartItem[parentIndex]);
+    } else if (checkItem[parentIndex][index]["ischecked"] == false) {
+      int count = 0;
+      checkItem[parentIndex][index]["ischecked"] = true;
+
+      iswholePrice(checkItem[parentIndex][index]["ischecked"],
+          int.parse(cartItem[parentIndex].productPrice));
+      isOrderId(checkItem[parentIndex][index]["ischecked"],
+          cartItem[parentIndex].cartId, cartItem[parentIndex]);
+
+      for (int i = 0; i < checkItem[parentIndex].length; i++) {
+        if (checkItem[parentIndex][i]["ischecked"] == true) {
+          count++;
+        }
+      }
+
+      if (count == checkItem[parentIndex].length) {
+        isCategorychecked[parentIndex] = true;
+      }
+    }
+
+    print("this checkitem info " +
+        parentIndex.toString() +
+        index.toString() +
+        checkItem[parentIndex][index]["ischecked"].toString());
+
+    update();
+    // UI에 반영
+    checkItem.refresh();
+  }
+
+  // 카테고리 선택 시
+  void iscategoryChecked(int parentIndex) {
+    print(
+        "this checkitem category update " + checkItem[parentIndex].toString());
+
+    int count = 0;
+
+    if (isCategorychecked[parentIndex] == false) {
+      isCategorychecked[parentIndex] = true;
+
+      // 카테고리 전체 체크시 전체 선택 활성화
+      for (int i = 0; i < isCategorychecked.length; i++) {
+        if (isCategorychecked[i] == true) {
+          count++;
+        }
+      }
+
+      if (count == isCategorychecked.length) {
+        isWholechecked.value = true;
+      }
+      // end- 카테고리 전체 체크시 전체 선택 활성화
+
+      print("this checkitem count " + checkItem[parentIndex].length.toString());
+      for (int i = 0; i < checkItem[parentIndex].length; i++) {
+        checkItem[parentIndex][i]["ischecked"] = true;
+
+        if (checkItem[parentIndex][i]["ischecked"] = true) {
+          wholePrice.value += int.parse(checkItem[parentIndex][i]["price"]);
+          registerid.value.add(checkItem[parentIndex][i]["orderid"]);
+          orderid.value.add(checkItem[parentIndex][i]["orderid"]);
+
+          orderItem.add(cartItem[parentIndex]);
+          orderCount++;
+        }
+      }
+    } else if (isCategorychecked[parentIndex] == true) {
+      isCategorychecked[parentIndex] = false;
+      isWholechecked.value = false;
+
+      for (int i = 0; i < checkItem[parentIndex].length; i++) {
+        checkItem[parentIndex][i]["ischecked"] = false;
+
+        wholePrice.value -= int.parse(checkItem[parentIndex][i]["price"]);
+        registerid.value.remove(checkItem[parentIndex][i]["orderid"]);
+        orderid.value.remove(checkItem[parentIndex][i]["orderid"]);
+
+        orderItem.remove(checkItem[parentIndex][i]["orderid"]);
+        orderCount--;
+      }
+    }
+
+    update();
+    isCategorychecked.refresh();
+    checkItem.refresh();
+  }
+
+  // 전체 선택 시
+  void iswholeChecked() {
+    if (isWholechecked.value == false) {
+      isWholechecked.value = true;
+
+      for (int i = 0; i < checkItem.length; i++) {
+        for (int j = 0; j < checkItem[i].length; j++) {
+          checkItem[i][j]["ischecked"] = true;
+        }
+      }
+
+      for (int j = 0; j < isCategorychecked.length; j++) {
+        isCategorychecked[j] = true;
+      }
+
+      if (wholePrice.value != 0) {
+        wholePrice.value = 0;
+        orderCount.value = 0;
+      }
+
+      // 전체 금액
+      for (int i = 0; i < cartItem.length; i++) {
+        wholePrice.value += int.parse(cartItem[i].productPrice);
+      }
+
+      // 주문할 Id
+      for (int i = 0; i < cartItem.length; i++) {
+        registerid.value.add(cartItem[i].cartId);
+        orderid.value.add(cartItem[i].cartId);
+
+        orderItem.add(cartItem[i]);
+
+        orderCount.value++;
+      }
+      print("주문 등록할 orderid " + orderid.value.toString());
+    } else {
+      isWholechecked.value = false;
+
+      for (int i = 0; i < checkItem.length; i++) {
+        for (int j = 0; j < checkItem[i].length; j++) {
+          checkItem[i][j]["ischecked"] = false;
+        }
+      }
+
+      for (int j = 0; j < isCategorychecked.length; j++) {
+        isCategorychecked[j] = false;
+      }
+
+      registerid.clear();
+      orderid.clear();
+      orderItem.clear();
+      orderCount.value = 0;
+      wholePrice.value = 0;
+    }
+
+    update();
+    checkItem.refresh();
   }
 
   // 수거 희망일
@@ -145,38 +363,11 @@ class CartController extends GetxController {
 
   // 단위 변환
   String setPrice() {
-    String setPrice = NumberFormat('###,###,###').format(wholePrice.value);
+    String setPrice = NumberFormat('###,###,###')
+        .format(wholePrice.value > 0 ? wholePrice.value + 6000 : 0);
     update();
     return setPrice;
   }
-
-  // // fixselect 상위 카테고리
-  // Future<bool> getProductCategory(int productId) async {
-  //   cartCount.value = 0;
-  //   category.clear();
-  //
-  //
-  //   try {
-  //     WooProduct product = await wp_api.wooCommerceApi.getProductById(id: productId);
-  //     String slug = Uri.decodeComponent(product.categories[0].slug.toString());
-  //
-  //
-  //     category = slug.split('-');
-  //
-  //
-  //     thisCategory = category[category.length-2] + category[category.length-1];
-  //
-  //     print("upcategory this info      " + thisCategory.toString());
-  //     print("category this info      " + category.toString());
-  //
-  //
-  //
-  //   } catch (e) {
-  //     print("is getProductCategory Error $e");
-  //     return false;
-  //   }
-  //   return true;
-  // }
 
   // 해당 유저에 대한 주문 정보 (옷바구니)
   Future<bool> getCart() async {
@@ -184,6 +375,9 @@ class CartController extends GetxController {
     try {
       cartItem.clear();
       cartListitem.clear();
+      orders.clear();
+      isCategorychecked.clear();
+      checkItem.clear();
 
       user = await wp_api.getUser();
 
@@ -191,8 +385,9 @@ class CartController extends GetxController {
           .getOrders(customer: user.id, status: ['pending']);
 
       Map orderMeta = {
-        '의뢰 방법': '',
+        '의뢰 방법': '기타',
         '치수': '',
+        // '수량': '',
         '추가 설명': '',
         '물품 가액': '',
         '추가 옵션': '',
@@ -200,38 +395,58 @@ class CartController extends GetxController {
       };
 
       WooProduct product;
+      List<WooProductCategory> lastCategrory = [];
       String slug = "";
 
       print("orders length this     " + orders.length.toString());
 
       // 첫 상위 카테고리에 넣어주고 카테고리별 리스트 넣어주고 cartInfo에서 CartListItem으로 뿌려줌
       for (int i = 0; i < orders.length; i++) {
+        String cartCategory = "";
+        List slugItem = [];
+
         product = await wp_api.wooCommerceApi
             .getProductById(id: orders[i].lineItems![0].productId!);
         slug = Uri.decodeComponent(product.categories[0].slug.toString());
 
-        // print("cart orders length this    " + orders.length.toString());
-        if (orders[i].metaData![i].key!.indexOf('물품 가액') != -1) {
-          orderMeta['물품 가액'] = orders[i].metaData![i].value;
-        } else if (orders[i].metaData![i].key!.indexOf('사진') != -1) {
-          orderMeta['사진'] = orders[i].metaData![i].value;
-        } else if (orders[i].metaData![i].key!.indexOf('의뢰 방법') != -1) {
-          orderMeta['의뢰 방법'] = orders[i].metaData![i].value;
-        } else if (orders[i].metaData![i].key!.indexOf('추가 설명') != -1) {
-          orderMeta['추가 설명'] = orders[i].metaData![i].value;
-        } else if (orders[i].metaData![i].key!.indexOf('추가 옵션') != -1) {
-          orderMeta['추가 옵션'] = orders[i].metaData![i].value;
-        } else if (orders[i].metaData![i].key!.indexOf('치수') != -1) {
-          orderMeta['치수'] = orders[i].metaData![i].value;
+        slugItem = slug.split('-');
+
+        // 옷바구니의 추가 수선하기 카테고리 id값 가져오기
+        lastCategrory = await wp_api.wooCommerceApi
+            .getProductCategories(product: orders[i].lineItems![0].productId);
+
+        for (int i = 0; i < slugItem.length; i++) {
+          if (slugItem[i] != "줄임" &&
+              slugItem[i] != "늘임" &&
+              slugItem[i] != "기타") {
+            cartCategory += slugItem[i];
+          }
         }
 
-        print("get cartInfo init!!!!!!!!!");
+        for (int j = 0; j < orders[i].metaData!.length; j++) {
+          if (orders[i].metaData![j].key!.indexOf('물품 가액') != -1) {
+            orderMeta['물품 가액'] = orders[i].metaData![j].value;
+          } else if (orders[i].metaData![j].key!.indexOf('사진') != -1) {
+            orderMeta['사진'] = orders[i].metaData![j].value;
+          } else if (orders[i].metaData![j].key!.indexOf('의뢰 방법') != -1) {
+            orderMeta['의뢰 방법'] = orders[i].metaData![j].value;
+          } else if (orders[i].metaData![j].key!.indexOf('추가 설명') != -1) {
+            orderMeta['추가 설명'] = orders[i].metaData![j].value;
+          } else if (orders[i].metaData![j].key!.indexOf('추가 옵션') != -1) {
+            orderMeta['추가 옵션'] = orders[i].metaData![j].value;
+          } else if (orders[i].metaData![j].key!.indexOf('치수') != -1) {
+            orderMeta['치수'] = orders[i].metaData![j].value;
+          }
+        }
 
         // 첫 상위 카테고리 삽입
         cartItem.add(CartItem(
+            lastCategrory[0].parent!,
+            orders[i].id!,
+            product.id!,
             orders[i].lineItems![0].name!,
             orders[i].lineItems![0].quantity!,
-            slug.split('-'),
+            cartCategory,
             ["cartImages"],
             orderMeta['의뢰 방법'],
             orderMeta['치수'],
@@ -239,14 +454,18 @@ class CartController extends GetxController {
             orderMeta['물품 가액'],
             orders[i].lineItems![0].price!));
 
-        print("get cartitem this      " + cartItem.toString());
-      }
-      // 1. 첫 카테고리를 cartItem 리스트에 넣어준다 (cartListitem이 비었을때)
-      if (cartListitem.length == 0) {
-        cartListitem.add([cartItem[0]]);
+        checkItem.add([]);
       }
 
-      cartSeperate();
+      // list 오름차순 정렬
+      cartItem.sort((a, b) => a.cartCategory.compareTo(b.cartCategory));
+      checkItem.toSet();
+
+      for (int i = 0; i < cartItem.length; i++) {
+        isCategorychecked.add(true);
+      }
+
+      iswholeChecked();
     } catch (e) {
       print("is getCart Error " + e.toString());
       return false;
@@ -254,76 +473,27 @@ class CartController extends GetxController {
     return true;
   }
 
-  void cartSeperate() {
-    for (int i = 0; i < cartItem.length; i++) {
-      print("cartitem productname this     " + cartItem[i].cartProductName);
-    }
-
-
-
-
-    for (int i = 0; i < cartListitem.length; i++) {
-      // if(cartListitem[0][0].cartCategory == cartItem[i].cartCategory && cartListitem[0][0].cartProductName != cartItem[i].cartProductName){
-      //   cartListitem[cartListitem.length].add(cartItem[i]);
-      // }else{
-      //   cartListitem[cartListitem.length + 1].add(cartItem[i]);
-      // }
-      // 3. cartListitem의 cartItem category와 같은 cartListitem[index]에 추가 해준다.
-      for (int j = 0; j < cartItem.length; j++) {
-        String listCategory = "";
-        String itemCategory = "";
-
-
-        // for(int k = 0; k < cartItem[j].cartCategory.length; k++){
-        //  listCategory += cartItem[j].cartCategory[k];
-        //  print("listCategory this   " + listCategory);
-        // }
-        //
-        // for(int l =0; l < cartListitem[i][0].cartCategory.length; l++){
-        //   itemCategory += cartListitem[i][0].cartCategory[l];
-        //   print("itemCategory this   " + itemCategory);
-        // }
-
-
-
-        if (listCategory == itemCategory &&
-            cartListitem[i][0].cartProductName != cartItem[j].cartProductName) {
-          cartListitem[i].add(cartItem[j]);
-
-          // print("this cartlistitem seperate           ");
-        } else {
-          // print("seperate else init !!!");
-          // 4. cartListitem의 cartItem category와 같은 값이 없을 경우 새로 추가
-          cartListitem.add([cartItem[j]]);
-        }
-      }
-    }
-
-    print("get cartListitem length this     " + cartListitem.length.toString());
-  }
-
   // 해당 유저에 대한 주문 정보 (옷바구니)
-  Future<bool> deleteCart() async {
+  Future<bool> deleteCart(String type, int orderId) async {
+    deleteOrderIds.clear();
     try {
-      for (int i = 0; i < orderid.length; i++) {
-        await wp_api.wooCommerceApi.deleteOrder(orderId: orderid[i]);
+      if (type == "choose") {
+        for (int i = 0; i < orderid.length; i++) {
+          await wp_api.wooCommerceApi.deleteOrder(orderId: orderid[i]);
+        }
+        print("this order choose deleted " + orderid.toString());
+      } else {
+        await wp_api.wooCommerceApi.deleteOrder(orderId: orderId);
+        print("this order deleted " + orderId.toString());
       }
 
+      Get.dialog(
+        AlertDialogYes(
+          titleText: "선택한 상품이 삭제되었습니다!",
+          widgetname: "cart",
+        ),
+      );
       print("this order deleted " + orders.toString());
-
-      // // 접수 완료 시 완료 된 주문건 제외 후 옷바구니에 표시
-      // if(setSave == true) {
-      //   orders = await wp_api.wooCommerceApi.getOrders(customer: user.id,);
-      //   for(int i=0; i< registerid.length; i++){
-      //     for (int j = 0; j < orders.length; j++) {
-      //       if (registerid[i] == orders[j].id) {
-      //         orders.removeAt(j);
-      //       }
-      //     }
-      //   }
-      // }else {
-      //   orders = await wp_api.wooCommerceApi.getOrders(customer: user.id,);
-      // }
     } catch (e) {
       print("isError " + e.toString());
       return false;
@@ -338,8 +508,10 @@ class CartController extends GetxController {
       for (int i = 0; i < orderid.length; i++) {
         registerOrders
             .add(await wp_api.wooCommerceApi.getOrderById(orderid[i]));
-        // print("getorder " + registerOrders.toString());
       }
+
+      print("cartcontroller - getOrder orderItem info    " +
+          orderItem.toString());
     } catch (e) {
       print("isError " + e.toString());
     }
@@ -375,5 +547,25 @@ class CartController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  // option 항목 가져오기
+  Future<bool> getVariation(int productId) async {
+    try {
+      variation = await wp_api.wooCommerceApi
+          .getProductVariations(productId: productId);
+
+      print("this variation info "  + variation.toString());
+    } catch (e) {
+      print("isError" + e.toString());
+      return false;
+    }
+
+    return true;
+  }
+
+  // 주문서 업데이트
+  Future updateOrder() async {
+    try {} catch (e) {}
   }
 }

@@ -1,4 +1,4 @@
-import 'package:needlecrew/widgets/circleBlackBtn.dart';
+import 'package:needlecrew/widgets/circleBlackBtn.dart' as fix_register_bottom_sheet;
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/cupertino.dart';
@@ -84,7 +84,7 @@ class FixRegisterBottomSheet extends StatelessWidget {
           ),
           Container(
               padding: EdgeInsets.only(left: 24, right: 24, top: 55),
-              child: CircleBlackBtn(btnText: "확인", pageName: "payTypeAdd"))
+              child: fix_register_bottom_sheet.CircleBlackBtn(btnText: "확인", pageName: "payTypeAdd"))
         ],
       ),
     );

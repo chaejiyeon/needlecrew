@@ -1,5 +1,6 @@
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/modal/mypage/userLogoutYesNo.dart';
+import 'package:needlecrew/screens/main/alramInfo.dart';
 import 'package:needlecrew/screens/main/myPage/alramSetting.dart';
 import 'package:needlecrew/screens/main/myPage/announcementInfo.dart';
 import 'package:needlecrew/screens/main/myPage/myPayInfo.dart';
@@ -137,11 +138,17 @@ class _MyPageState extends State<MyPage> {
 
   // appbar icon style 설정
   Widget iconStyle(String icon, String filename, Color iconColor) {
-    return SvgPicture.asset(
-      "assets/icons/" + filename + "/" + icon,
-      width: 25,
-      height: 25,
-      color: iconColor,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: (){
+        Get.to(AlramInfo());
+      },
+      child: SvgPicture.asset(
+        "assets/icons/" + filename + "/" + icon,
+        width: 25,
+        height: 25,
+        color: iconColor,
+      ),
     );
   }
 

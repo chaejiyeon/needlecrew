@@ -61,7 +61,7 @@ class _UpdateFormState extends State<UpdateForm> {
                   },
                   controller: controller.textController,
                   style: TextStyle(height: 1),
-                  keyboardType: widget.hintText == "전화번호" ? TextInputType.emailAddress : null,
+                  keyboardType: widget.updateType == "전화번호" ? TextInputType.number : null,
                   decoration: InputDecoration(
 
                       suffixIcon: controller.textController.text.isNotEmpty ? IconButton(

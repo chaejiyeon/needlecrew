@@ -4,7 +4,7 @@ import 'dart:ffi';
 
 import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:flutter_woocommerce_api/models/order_payload.dart';
-import 'package:needlecrew/models/fixReady.dart';
+import 'package:needlecrew/models/fix_ready.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:flutter_woocommerce_api/models/order.dart';
@@ -28,6 +28,7 @@ class UseInfoController extends GetxController {
 
   late WooOrder order;
   late WooOrder orderUpdate;
+
 
   // 이용내역 list ( 수선대기, 수선 진행중, 수선완료 )
   List<FixReady> readyLists = [];
@@ -77,6 +78,9 @@ class UseInfoController extends GetxController {
   //   update();
   // }
 
+
+
+
   // 초기화
   Future<void> initialize() async {
     await getCompleteOrder();
@@ -99,7 +103,8 @@ class UseInfoController extends GetxController {
           'fix-arrive',
           'fix-confirm',
           'fix-select',
-          'fix-cancle',
+          'fix-cancley',
+          'fix-canclen',
           'processing',
           'completed',
           'completed-shipp',
@@ -125,51 +130,55 @@ class UseInfoController extends GetxController {
         switch (orders[i].status) {
           case 'processing':
             progressLists.add(FixReady(orders[i].id!, "progress", orderDate,
-                orders[i].lineItems!.first.name.toString(), 0));
+                orders[i].lineItems!.first.name.toString(), 0, false));
             break;
           case 'completed':
             completeLists.add(FixReady(orders[i].id!, "complete", orderDate,
-                orders[i].lineItems!.first.name.toString(), 1));
+                orders[i].lineItems!.first.name.toString(), 1, false));
             break;
           case 'completed-shipp':
             completeLists.add(FixReady(orders[i].id!, "complete", orderDate,
-                orders[i].lineItems!.first.name.toString(), 2));
+                orders[i].lineItems!.first.name.toString(), 2, false));
             break;
           case 'completed-done':
             completeLists.add(FixReady(orders[i].id!, "complete", orderDate,
-                orders[i].lineItems!.first.name.toString(), 3));
+                orders[i].lineItems!.first.name.toString(), 3, false));
             break;
           case 'fix-register':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 1));
+                orders[i].lineItems!.first.name.toString(), 1, false));
             break;
           case 'fix-ready':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 2));
+                orders[i].lineItems!.first.name.toString(), 2, false));
             break;
           case 'fix-picked':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 3));
+                orders[i].lineItems!.first.name.toString(), 3, false));
             break;
           case 'fix-arrive':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 4));
+                orders[i].lineItems!.first.name.toString(), 4, false));
             break;
           case 'fix-confirm':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 5));
+                orders[i].lineItems!.first.name.toString(), 5, false));
             break;
           case 'fix-select':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 6));
+                orders[i].lineItems!.first.name.toString(), 6, false));
             break;
-          case 'fix-cancle':
+          case 'fix-cancley':
             readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
-                orders[i].lineItems!.first.name.toString(), 7));
+                orders[i].lineItems!.first.name.toString(), 7, true));
             break;
+          case 'fix-canclen':
+          readyLists.add(FixReady(orders[i].id!, "ready", orderDate,
+              orders[i].lineItems!.first.name.toString(), 7, false));
+          break;
           default:
             useLists.add(FixReady(orders[i].id!, "pending", orderDate,
-                orders[i].lineItems!.first.name.toString(), 0));
+                orders[i].lineItems!.first.name.toString(), 0, false));
         }
 
         print("list count " +

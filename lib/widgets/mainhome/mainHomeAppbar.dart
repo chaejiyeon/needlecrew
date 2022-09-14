@@ -12,35 +12,43 @@ class MainHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final AppBar appbar;
   final Color color;
 
-  const MainHomeAppBar({Key? key, required this.appbar, required this.color}) : super(key: key);
+  const MainHomeAppBar({Key? key, required this.appbar, required this.color})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: color,
       elevation: color == Colors.white ? 3 : 0,
-      leadingWidth: 120,
-      leading: GestureDetector(
-        onTap: (){Get.to(PriceInfo());},
-        child: Container(
-          padding: EdgeInsets.only(left: 24),
-          child: Row(
-            children: [
-               SvgPicture.asset("assets/icons/main/priceinfoIcon.svg",
-                      fit: BoxFit.cover, color : color == Colors.white ? Colors.black : Colors.white),
-              SizedBox(width: 10,),
-              FontStyle(
-                  text: "가격표",
-                  fontsize: "md",
-                  fontbold: "",
-                  fontcolor: color == Colors.white ? Colors.black : Colors.white,
-                  textdirectionright: false),
-            ],
+      leadingWidth: 69,
+      leading: Transform.translate(
+        offset: Offset(24, 0),
+        child: GestureDetector(
+          onTap: () {
+            Get.to(PriceInfo());
+          },
+          child: Container(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color:   color == Colors.white
+                    ? HexColor("#ededed").withOpacity(0.8) : HexColor("f7f7f7").withOpacity(0.25),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                    "가격표",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color:
+                          color == Colors.white ? Colors.black : Colors.white,
+                    ),
+                  ),
+
+            ),
           ),
         ),
       ),
-      // titleSpacing: 0,
-      // title:
       actions: [
         appbarItem("cartIcon.svg", CartInfo()),
         appbarItem("alramIcon.svg", AlramInfo()),

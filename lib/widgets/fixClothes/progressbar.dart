@@ -11,7 +11,7 @@ class ProgressBar extends StatelessWidget {
       padding: EdgeInsets.only(top: 20, bottom: 20),
       child: SvgPicture.asset(
         "assets/icons/fixClothes/" + progressImg,
-        width: 350,
+        width: MediaQuery.of(context).size.width,
       ),
     );
   }

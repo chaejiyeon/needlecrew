@@ -16,8 +16,6 @@ class CartInfoModal extends StatelessWidget {
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      // shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -95,7 +93,7 @@ class CartInfoModal extends StatelessWidget {
                                     style:
                                         TextStyle(color: HexColor("#fd9a03"))),
                                 onPressed: () {
-                                  Get.to(AddressInsert());
+                                  Get.off(() => AddressInsert());
                                 }),
                           ),
                         ),

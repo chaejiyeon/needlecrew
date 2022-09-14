@@ -1,4 +1,5 @@
-import 'package:needlecrew/models/cartItemModel.dart';
+import 'package:needlecrew/models/cart_item.dart';
+import 'package:needlecrew/screens/main/fixClothes/chooseClothes.dart';
 import 'package:needlecrew/widgets/cartInfo/fixtypeListItem.dart';
 import 'package:needlecrew/widgets/fixClothes/checkBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
@@ -13,89 +14,116 @@ import '../../getxController/fixClothes/cartController.dart';
 
 class CartListItem extends GetView<CartController> {
   final int index;
-  // final List<LineItems> lineItem;
 
   final List<CartItem> cartItem;
-  const CartListItem({Key? key, required this.cartItem, required this.index})
+
+  final String pageName; // register - 수선 접수 페이지
+
+  const CartListItem(
+      {Key? key,
+      required this.cartItem,
+      required this.index,
+      this.pageName = ""})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final CartController controller = Get.put(CartController());
+    // 상위카테고리 구별
+    controller.isCategory(cartItem[index].cartCategory, index);
 
-    print("this status     ddd " + controller.orders[index].status.toString());
+    // 해당하는 카테고리에 상품 배열
+    List<CartItem> listItem = [];
 
+    for (int i = 0; i < cartItem.length; i++) {
+      if (cartItem[index].cartCategory == cartItem[i].cartCategory) {
+        listItem.add(cartItem[i]);
+      }
+    }
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 18),
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                checkBoxCustom(cartItem.first.cartCategory[cartItem.first.cartCategory.length-2] + cartItem.first.cartCategory[cartItem.first.cartCategory.length-1]),
-                GestureDetector(
-                  child: Container(
-                    height: 30,
-                    padding: EdgeInsets.only(left: 13, right: 13),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: HexColor("#fd9a03"),
-                        )),
-                    child: Text(
-                      "추가 수선하기",
-                      style: TextStyle(color: HexColor("#fd9a03")),
-                    ),
-                  ),
-                ),
-              ],
+    if (controller.thisCategory == listItem.first.cartCategory &&
+        controller.categoryCount == index) {
+      return Container(
+        margin: EdgeInsets.only(bottom: 18),
+        padding: EdgeInsets.only(left: 20, right: 20, bottom: 25),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(14)),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  pageName == "register"
+                      ? Text(
+                          listItem.first.cartCategory,
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        )
+                      : checkBoxCustom(listItem.first.cartCategory),
+                  pageName == "register"
+                      ? Container()
+                      : GestureDetector(
+                          onTap: () {
+                            Get.to(() => ChooseClothes(
+                                  parentNum: cartItem[index].categoryId,
+                                ));
+                          },
+                          child: Container(
+                            height: 30,
+                            padding: EdgeInsets.only(left: 13, right: 13),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: HexColor("#fd9a03"),
+                                )),
+                            child: Text(
+                              "추가 수선하기",
+                              style: TextStyle(
+                                  color: HexColor("#fd9a03"), fontSize: 13),
+                            ),
+                          ),
+                        ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          ListLine(
-              height: 2,
-              width: double.infinity,
-              lineColor: HexColor("#909090"),
-              opacity: 0.2),
-
-          Column(
-            children: List.generate(cartItem.length, (index) => FixTypeListItem(cartItem: cartItem[index], index: index)),
-          ),
-          // 슬러그 별 구별 해야함 20220602(목)
-          // FixTypeListItem(cartItem: cartItem[index], index: index),
-        ],
-      ),
-    );
+            SizedBox(
+              height: 7,
+            ),
+            Column(
+              children: List.generate(
+                  listItem.length,
+                  (i) => FixTypeListItem(
+                        cartItem: listItem[i],
+                        index: i,
+                        listIndex: listItem.length,
+                        parentIndex: index,
+                    pageName: pageName != "" ? pageName : "",
+                      )),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   // checkbox custom
   Widget checkBoxCustom(String text) {
     return GestureDetector(
       onTap: () {
-        if (controller.isCategorychecked.value == false) {
-          controller.isCategorychecked.value = true;
-        } else {
-          controller.isCategorychecked.value = false;
-        }
+        controller.iscategoryChecked(index);
       },
       child: Obx(
         () => Container(
           child: Row(
             children: [
-              controller.isCategorychecked.value == false
+              controller.isCategorychecked[index] == false
                   ? Container(
                       width: 22,
                       height: 22,

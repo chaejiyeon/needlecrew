@@ -1,4 +1,4 @@
-import 'package:needlecrew/bottomsheet/takeFixInfoBottomSheet.dart';
+import 'package:needlecrew/bottomsheet/take_fix_info_bottom_sheet.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixRegister.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
 import 'package:needlecrew/widgets/fixClothes/progressbar.dart';
@@ -23,42 +23,42 @@ class _TakeFixInfoState extends State<TakeFixInfo> {
   final CartController controller = Get.put(CartController());
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
-
-
 
   // 수거 가이드 bottomsheet
   void bottomsheetOpen(BuildContext context) {
     showFlexibleBottomSheet(
-      minHeight: 0,
-      initHeight: 0.8,
-      maxHeight: 0.8,
+        minHeight: 0,
+        initHeight: 0.9,
+        maxHeight: 0.9,
         bottomSheetColor: Colors.transparent,
         decoration: BoxDecoration(
           color: HexColor("#f5f5f5"),
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20)),
         ),
-      context: context,
-      builder: (context, controller, offset) => TakeFixInfoBottomSheet(controller: controller),
-      isExpand: false
-    );
+        context: context,
+        builder: (context, controller, offset) =>
+            TakeFixInfoBottomSheet(controller: controller),
+        isExpand: false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: FixClothesAppBar(appbar: AppBar()),
       body: Container(
-        color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProgressBar(progressImg: "fixProgressbar_5.svg"),
             Container(
-              padding: EdgeInsets.all(20),
+                padding: EdgeInsets.only(left: 24, right: 24),
+                child: ProgressBar(progressImg: "fixProgressbar_5.svg")),
+            Container(
+              padding: EdgeInsets.only(left: 24, right: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -95,48 +95,23 @@ class _TakeFixInfoState extends State<TakeFixInfo> {
         ),
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
-        height: 100,
-        padding: EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 수거 가이드 btn
-            GestureDetector(
-              onTap: () {
-                bottomsheetOpen(context);
-              },
-              child: Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  border: Border.all(color: HexColor("#fd9a03")),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      CupertinoIcons.info,
-                      color: HexColor("#fd9a03"),
-                    ),
-                    FontStyle(
-                        text: "수거 가이드",
-                        fontsize: "",
-                        fontbold: "",
-                        fontcolor: HexColor("#fd9a03"),
-                        textdirectionright: false),
-                  ],
-                ),
-              ),
-            ),
+        alignment: Alignment.centerRight,
+        height: 63,
+        padding: EdgeInsets.only(left: 24, right: 24),
+        margin: EdgeInsets.only(
+          bottom: 16,
+        ),
+        child: GestureDetector(
+          // next btn
+          onTap: () {
+            bottomsheetOpen(context);
+          },
 
-            // next btn
-            GestureDetector(
-              onTap: (){
-                Get.to( FixRegister());
-              },
-              child: SvgPicture.asset("assets/icons/floatingNext.svg"),
-            )
-          ],
+          child: Image.asset(
+            "assets/icons/selectFloatingIcon.png",
+            width: 54,
+            height: 54,
+          ),
         ),
       ),
     );

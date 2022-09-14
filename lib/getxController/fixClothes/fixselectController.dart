@@ -36,7 +36,7 @@ class FixSelectController extends GetxController {
   // 총 비용
   RxInt wholePrice = 0.obs;
 
-  RxString radioGroup = "".obs;
+  RxMap radioGroup = {"추가 옵션" : "", "가격" : ""}.obs;
 
   RxInt radioId = 0.obs;
 
@@ -48,6 +48,11 @@ class FixSelectController extends GetxController {
 
   // 수선 선택 > 의뢰 방법
   RxString isSelected = "원하는 총 기장 길이 입력".obs;
+
+  // 선택한 카테고리 Id list
+  RxList crumbs = [].obs;
+  // back버튼 클릭 여부
+  RxBool backClick = false.obs;
 
 
 
@@ -95,9 +100,13 @@ class FixSelectController extends GetxController {
   }
 
   // radio button (추가 옵션)
-  void isRadioGroup(String groupValue) {
-    radioGroup.value = groupValue;
-    print("추가 옵션: " + radioGroup.value.toString());
+  void isRadioGroup(Map groupValue) {
+    if(radioGroup["추가 옵션"] == groupValue["추가 옵션"]){
+      radioGroup["가격"] = groupValue["가격"];
+    }else{
+      radioGroup["추가 옵션"] = groupValue["추가 옵션"];
+    }
+    print("추가 옵션: " + radioGroup.toString());
 
     update();
   }
@@ -130,6 +139,8 @@ class FixSelectController extends GetxController {
     update();
   }
 
+
+
   // 이미지 compress
   Future<void> compressFile(File file) async {
     final filePath = file.absolute.path;
@@ -147,6 +158,7 @@ class FixSelectController extends GetxController {
     //   minWidth: 1000,
     //   minHeight: 1000,
     //   quality: 94,
+    // );
     // );
 
     // print(file.lengthSync());

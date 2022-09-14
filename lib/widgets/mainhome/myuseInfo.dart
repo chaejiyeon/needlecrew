@@ -68,33 +68,6 @@ class _MyUseInfoState extends State<MyUseInfo> {
                   ],
                 );
 
-                //
-                // if (snapshot.connectionState == ConnectionState.done) {
-                //   return isLoading ? countSkeleton() :  Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //     children: [
-                //       iconInfo(
-                //           "assets/icons/main/writeIcon.svg",
-                //           useInfoController.readyLists.length,
-                //           "대기 중",
-                //           "/useInfoReady"),
-                //       iconInfo(
-                //           "assets/icons/main/chartIcon.svg",
-                //           useInfoController.progressLists.length,
-                //           "진행 중",
-                //           "/useInfoProgress"),
-                //       iconInfo(
-                //           "assets/icons/main/clothesIcon.svg",
-                //           useInfoController.completeLists.length,
-                //           "수선 완료",
-                //           "/useInfoComplete"),
-                //     ],
-                //   );
-                // } else {
-                //   return Center(
-                //     child: CircularProgressIndicator(),
-                //   );
-                // }
               })
         ],
       ),

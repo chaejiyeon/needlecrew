@@ -1,9 +1,8 @@
-import 'package:needlecrew/bottomsheet/fixRegisterBottomSheet.dart';
+import 'package:needlecrew/bottomsheet/fix_register_bottom_sheet.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/widgets/cartInfo/cartListItem.dart';
 import 'package:needlecrew/widgets/circleLineBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
-import 'package:needlecrew/widgets/fixClothes/fixRegisterListItem.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +75,6 @@ class FixRegisterInfo extends GetView<CartController> {
                           future: controller.getOrder(),
                           builder: (context, snapshot) {
                             if (controller.isInitialized.value) {
-                              // controller.registerOrders.clear();
                               print("registerOrders " +
                                   controller.registerOrders.length.toString());
                               return SingleChildScrollView(
@@ -86,11 +84,10 @@ class FixRegisterInfo extends GetView<CartController> {
                                   child: Column(
                                     children: List.generate(
                                         controller.registerOrders.length,
-                                        (index) => FixRegisterListItem(
-                                              lineItem: controller
-                                                  .registerOrders[index]
-                                                  .lineItems!,
-                                              index: index,
+                                        (index) => CartListItem(
+                                          cartItem: controller.orderItem,
+                                          index: index,
+                                          pageName: "register",
                                             )),
                                   ),
                                 ),

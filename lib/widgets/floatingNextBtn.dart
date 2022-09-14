@@ -21,10 +21,10 @@ class FloatingNextBtn extends StatelessWidget {
             Get.to(page);
           }
         },
-        child: SvgPicture.asset(
+        child: ischecked == true ? Image.asset("assets/icons/selectFloatingIcon.png", width: 54, height: 54,) : SvgPicture.asset(
           'assets/icons/floatingNext.svg',
-          color: ischecked == true ? HexColor("fd9a03") : HexColor("#d5d5d5"),
-        ),
+          color: HexColor("#d5d5d5"),
+        ) ,
       ),
     );
   }

@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:hexcolor/hexcolor.dart';
 import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,17 +58,25 @@ class _CircleLineBtnState extends State<CircleLineBtn> {
       ),
       child: TextButton(
         onPressed: () {
-          widget.iswidget == true && widget.btnText == "수선하기"
-              ? Get.to(widget.widgetName)
-              : widget.iswidget == true
-                  ? Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => widget.widgetName))
-                  : widget.iswidget == false
-                      ? Get.dialog(widget.widgetName)
-                      : controller.isshopping == false
-                          ? null
-                          : Get.dialog(widget.widgetName);
 
+          if(widget.btnColor == HexColor("#d5d5d5")) null;
+          else {
+            widget.iswidget == true && widget.btnText == "수선하기"
+                ? Get.to(widget.widgetName)
+                : widget.iswidget == true
+                    ? {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => widget.widgetName)),
+                        controller.backClick.value = false
+                      }
+                    : widget.iswidget == false
+                        ? Get.dialog(widget.widgetName)
+                        : controller.isshopping == false
+                            ? null
+                            : Get.dialog(widget.widgetName);
+          }
           // 쇼핑몰에서 보낼 경우 수선 선택의 잘 맞는 옷을 함께 보낼께요 /  표시 안함
           if (widget.btnText == "쇼핑몰에서 보낼래요")
             controller.isShopping(true);

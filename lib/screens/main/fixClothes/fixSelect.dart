@@ -1,5 +1,9 @@
+import 'dart:math';
+
+import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
 import 'package:needlecrew/modal/fixClothes/fixSelectModal.dart';
+import 'package:needlecrew/models/tooltip_text.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixQuestion.dart';
 import 'package:needlecrew/screens/main/fixClothes/imageUpload.dart';
@@ -21,6 +25,9 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as document;
+import 'package:needlecrew/widgets/tootipCustom.dart';
 
 class FixSelect extends StatefulWidget {
   final String lastCategory;
@@ -40,6 +47,7 @@ class FixSelect extends StatefulWidget {
 
 class _FixSelectState extends State<FixSelect> {
   final FixSelectController controller = Get.put(FixSelectController());
+
   List<FocusNode> focusNode = [];
 
   // 리로딩 방지
@@ -90,6 +98,9 @@ class _FixSelectState extends State<FixSelect> {
       print("isError" + e.toString());
       return false;
     }
+
+    print("product description this   " + product.description!);
+    print("product subdescription this   " + product.shortDescription!);
 
     return true;
   }
@@ -159,7 +170,10 @@ class _FixSelectState extends State<FixSelect> {
     setState(() {
       metadata = [
         WooOrderPayloadMetaData(
-            key: '의뢰 방법', value: controller.isSelected.value.toString()),
+            key: '의뢰 방법',
+            value: widget.lastCategory == "기타"
+                ? "기타"
+                : controller.isSelected.value.toString()),
         WooOrderPayloadMetaData(
             key: '치수', value: texteditingController[0].text),
         WooOrderPayloadMetaData(key: '사진', value: ''),
@@ -168,7 +182,7 @@ class _FixSelectState extends State<FixSelect> {
         WooOrderPayloadMetaData(
             key: '추가 설명', value: texteditingController[2].text),
         WooOrderPayloadMetaData(
-            key: '추가 옵션', value: controller.radioGroup.toString()),
+            key: '추가 옵션', value: controller.radioGroup["추가 옵션"]),
       ];
     });
   }
@@ -196,6 +210,24 @@ class _FixSelectState extends State<FixSelect> {
     }
     return name;
   }
+
+  // html tag remove
+  String parseHtmlTagRemove(String tooltipText) {
+    try {
+      var document = parse(tooltipText);
+      // html 태그 제거
+      String parsedText = parse(document.body!.text).documentElement!.text;
+
+      return parsedText;
+    } catch (e) {
+      print("Tooltip Error   " + e.toString());
+
+      return "";
+    }
+  }
+
+
+
 
   @override
   void initState() {
@@ -274,7 +306,7 @@ class _FixSelectState extends State<FixSelect> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               FutureBuilder(
-                                  future: getCategory(widget.crumbs.last),
+                                  future: getCategory(controller.crumbs.last),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {
@@ -409,6 +441,106 @@ class _FixSelectState extends State<FixSelect> {
                       )
                     : Container(),
 
+                // 참고사항 - 기타일 경우에만 표시
+                FutureBuilder(
+                    future: productFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return product.description.toString() != ""
+                            ? Container(
+                                padding: EdgeInsets.zero,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FontStyle(
+                                        text: "참고 사항",
+                                        fontsize: "md",
+                                        fontbold: "bold",
+                                        fontcolor: Colors.black,
+                                        textdirectionright: false),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                          top: 11,
+                                          right: 13,
+                                          left: 15),
+                                      margin: EdgeInsets.only(bottom: 40),
+                                      decoration: BoxDecoration(
+                                        color: HexColor("#f7f7f7"),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SvgPicture.asset(
+                                              "assets/icons/fixClothes/pointIcon.svg"),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              parseHtmlTagRemove(product.description.toString()),
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 13),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : parseHtmlTagRemove(product.description.toString()) != "0" ? Container(
+                                height: 100,
+                              ) : Container(height: 0,);
+                      }else{
+                        return CircularProgressIndicator();
+                      }
+                    },),
+
+                // 추가 옵션
+                FutureBuilder(
+                    future: variationFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return variation.length != 0
+                            ? Container(
+                                margin: EdgeInsets.only(bottom: 40),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.only(bottom: 15),
+                                        child: FontStyle(
+                                            text: "추가 옵션",
+                                            fontsize: "md",
+                                            fontbold: "bold",
+                                            fontcolor: Colors.black,
+                                            textdirectionright: false),
+                                      ),
+                                      Column(
+                                        children: List.generate(
+                                            variation.length,
+                                            (index) =>
+                                                optionItem(variation[index])),
+                                      ),
+                                    ]),
+                              )
+                            : Container();
+                      } else if (snapshot.hasData == false) {
+                        return Container();
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    }),
+
                 // 의뢰 방법
                 widget.lastCategory != "기타"
                     ? Container(
@@ -537,93 +669,6 @@ class _FixSelectState extends State<FixSelect> {
                     ],
                   ),
                 ),
-
-                // 참고사항 - 기타일 경우에만 표시
-                widget.lastCategory == "기타"
-                    ? Container(
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FontStyle(
-                                text: "참고 사항",
-                                fontsize: "md",
-                                fontbold: "bold",
-                                fontcolor: Colors.black,
-                                textdirectionright: false),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(
-                                  top: 11, right: 13, bottom: 17, left: 15),
-                              margin: EdgeInsets.only(bottom: 40),
-                              decoration: BoxDecoration(
-                                color: HexColor("#f7f7f7"),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "* ",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      "교체하고자 하는 수선의 여유분을 보내지 않을 경우 유사한 제품으로 교체됩니다.",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 13),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(
-                        height: 0,
-                      ),
-
-                // 추가 옵션
-                FutureBuilder(
-                    future: variationFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return variation.length != 0
-                            ? Container(
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.only(bottom: 15),
-                                        child: FontStyle(
-                                            text: "추가 옵션",
-                                            fontsize: "md",
-                                            fontbold: "bold",
-                                            fontcolor: Colors.black,
-                                            textdirectionright: false),
-                                      ),
-                                      Column(
-                                        children: List.generate(
-                                            variation.length,
-                                            (index) =>
-                                                optionItem(variation[index])),
-                                      ),
-                                    ]),
-                              )
-                            : Container();
-                      } else if (snapshot.hasData == false) {
-                        return Container();
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    }),
               ],
             ),
           ),
@@ -659,7 +704,7 @@ class _FixSelectState extends State<FixSelect> {
                         Row(
                           children: [
                             FontStyle(
-                                text: "예상비용 : ",
+                                text: "예상 비용 : ",
                                 fontsize: "md",
                                 fontbold: "bold",
                                 fontcolor: Colors.black,
@@ -680,28 +725,20 @@ class _FixSelectState extends State<FixSelect> {
                                 fontbold: "",
                                 fontcolor: Colors.black,
                                 textdirectionright: false),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            IconButton(
-                              alignment: Alignment(-1.0, 0),
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              onPressed: () {},
-                              icon: Icon(
-                                CupertinoIcons.question_circle,
-                                size: 15,
-                                color: HexColor("#707070"),
-                              ),
-                            ),
+                            TooltipCustom(
+                                tooltipText: cost.tooltipText,
+                                titleText: "",
+                                boldText: cost.boldText,
+                                tailPosition: "up",
+                                iconColor: HexColor("#707070")),
                           ],
                         ),
                         GestureDetector(
                           onTap: () {
                             if ((texteditingController[0].text.length > 0 &&
-                                texteditingController[1].text.length > 0) ||  (widget.lastCategory == "기타" &&
-                                texteditingController[1].text.length >
-                                    0)) {
+                                    texteditingController[1].text.length > 0) ||
+                                (widget.lastCategory == "기타" &&
+                                    texteditingController[1].text.length > 0)) {
                               controller.uploadImage();
                               cartDetailInfo();
                               registerCart(variationId, '옷바구니');
@@ -709,17 +746,20 @@ class _FixSelectState extends State<FixSelect> {
                               Get.to(() => CartInfo());
                             }
                           },
-                          child: SvgPicture.asset(
-                            "assets/icons/floatingNext.svg",
-                            color: (texteditingController[0].text.length > 0 &&
-                                        texteditingController[1].text.length >
-                                            0) ||
-                                    (widget.lastCategory == "기타" &&
-                                        texteditingController[1].text.length >
-                                            0)
-                                ? HexColor("#fd9a03")
-                                : HexColor("#d5d5d5"),
-                          ),
+                          child: (texteditingController[0].text.length > 0 &&
+                                      texteditingController[1].text.length >
+                                          0) ||
+                                  (widget.lastCategory == "기타" &&
+                                      texteditingController[1].text.length > 0)
+                              ? Image.asset(
+                                  "assets/icons/selectFloatingIcon.png",
+                                  height: 54,
+                                  width: 54,
+                                )
+                              : SvgPicture.asset(
+                                  "assets/icons/floatingNext.svg",
+                                  color: HexColor("#d5d5d5"),
+                                ),
                         ),
                       ],
                     ),
@@ -791,10 +831,18 @@ class _FixSelectState extends State<FixSelect> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CustomRadioWidget(
-              groupValue: controller.radioGroup.value,
-              value: name(optionName),
+              optionname: name(optionName),
+              groupValue:
+                  controller.radioGroup["추가 옵션"] != {"추가 옵션": name(optionName)}
+                      ? controller.radioGroup["추가 옵션"]
+                      : controller.radioGroup["가격"],
+              value:
+                  controller.radioGroup["추가 옵션"] != {"추가 옵션": name(optionName)}
+                      ? name(optionName)
+                      : finalPrice.toString(),
               onChanged: (value) {
-                controller.isRadioGroup(name(optionName));
+                controller.isRadioGroup(
+                    {"추가 옵션": name(optionName), "가격": finalPrice.toString()});
                 controller.radioId.value = variation.id!;
                 controller.iswholePrice(addPrice);
               },
@@ -884,11 +932,13 @@ class _FixSelectState extends State<FixSelect> {
 
 // radio cucstom
 class CustomRadioWidget<T> extends StatelessWidget {
+  final String optionname;
   final T value;
   final T groupValue;
   final ValueChanged<T> onChanged;
 
   CustomRadioWidget({
+    required this.optionname,
     required this.value,
     required this.groupValue,
     required this.onChanged,
@@ -913,7 +963,7 @@ class CustomRadioWidget<T> extends StatelessWidget {
             SizedBox(
               width: 10,
             ),
-            Text(value.toString()),
+            Text(optionname),
           ],
         ),
       ),

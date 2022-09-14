@@ -1,3 +1,8 @@
+import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/getxController/fixClothes/cartController.dart';
+import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
+import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/screens/main/fixClothes/imageUpload.dart';
 import 'package:needlecrew/widgets/fixClothes/checkBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/circleLineTextField.dart';
@@ -9,17 +14,28 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class FixUpdate extends StatefulWidget {
-  const FixUpdate({Key? key}) : super(key: key);
+  final CartItem cartItem;
+
+  const FixUpdate({Key? key, required this.cartItem}) : super(key: key);
 
   @override
   State<FixUpdate> createState() => _FixUpdateState();
 }
 
 class _FixUpdateState extends State<FixUpdate> {
+  final CartController cartController = Get.put(CartController());
+  final FixSelectController fixselectController =
+      Get.put(FixSelectController());
+
   TextEditingController controller = TextEditingController();
+
+  late Future variationFuture;
 
   @override
   void initState() {
+
+    print("widget cart prpoductId this" + widget.cartItem.productId.toString());
+    variationFuture = cartController.getVariation(widget.cartItem.productId);
     super.initState();
   }
 
@@ -31,6 +47,8 @@ class _FixUpdateState extends State<FixUpdate> {
 
   @override
   Widget build(BuildContext context) {
+    fixselectController.isSelected.value = widget.cartItem.cartWay;
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -93,10 +111,12 @@ class _FixUpdateState extends State<FixUpdate> {
                     ),
 
                     // 치수 입력
-                    textForm("치수 입력", "101.5cm", Colors.black, true),
+                    textForm(
+                        "치수 입력", widget.cartItem.cartSize, Colors.black, true),
 
                     // 물품 가액
-                    textForm("물품 가액", "20,000", Colors.black, false),
+                    textForm("물품 가액", widget.cartItem.guaranteePrice,
+                        Colors.black, false),
 
                     Container(
                       padding: EdgeInsets.only(top: 5),
@@ -135,7 +155,7 @@ class _FixUpdateState extends State<FixUpdate> {
                           CircleLineTextField(
                               controller: controller,
                               maxLines: 10,
-                              hintText: "시접 여유분 충분히 남겨주세요.",
+                              hintText: widget.cartItem.cartContent,
                               hintTextColor: Colors.black,
                               borderRadius: 10,
                               borderSideColor: HexColor("#d5d5d5"),
@@ -144,54 +164,52 @@ class _FixUpdateState extends State<FixUpdate> {
                       ),
                     ),
 
-                    // 추가 옵션
-                    Container(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FontStyle(
-                              text: "추가 옵션",
-                              fontsize: "md",
-                              fontbold: "bold",
-                              fontcolor: Colors.black,
-                              textdirectionright: false),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              RadioBtn(
-                                  list: "밑통 수선",
-                                  bottomPadding: 15,
-                                  textBold: ""),
-                              Row(
-                                children: [
-                                  FontStyle(
-                                      text: "+15,000",
-                                      fontsize: "md",
-                                      fontbold: "bold",
-                                      fontcolor: Colors.black,
-                                      textdirectionright: false),
-                                  FontStyle(
-                                      text: "원",
-                                      fontsize: "md",
-                                      fontbold: "",
-                                      fontcolor: Colors.black,
-                                      textdirectionright: false),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
                     // 수거 주소 - 이용내역 > 접수 완료 후 의뢰 수정 시 표시
                     textForm("수거 주소", "경기 수원시 팔달구 인계동 156 104동 1702호",
                         Colors.black, false),
                     textForm("수거 희망일", "2022년 2월 15일", Colors.black, false),
+
+                    // 추가 옵션
+                    FutureBuilder(
+                        future: variationFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return cartController.variation.length != 0
+                                ? Container(
+                                    margin: EdgeInsets.only(bottom: 40),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding:
+                                                EdgeInsets.only(bottom: 15),
+                                            child: FontStyle(
+                                                text: "추가 옵션",
+                                                fontsize: "md",
+                                                fontbold: "bold",
+                                                fontcolor: Colors.black,
+                                                textdirectionright: false),
+                                          ),
+                                          Column(
+                                            children: List.generate(
+                                                cartController.variation.length,
+                                                (index) => optionItem(
+                                                    cartController
+                                                        .variation[index])),
+                                          ),
+                                        ]),
+                                  )
+                                : Container();
+                          } else if (snapshot.hasData == false) {
+                            return Container();
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }),
                   ],
                 ),
               ),
@@ -207,7 +225,7 @@ class _FixUpdateState extends State<FixUpdate> {
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
-                  color: HexColor("#d5d5d5").withOpacity(0.1),
+                  color: HexColor("#d5d5d5").withOpacity(0.2),
                   spreadRadius: 10,
                   blurRadius: 5,
                 ),
@@ -353,8 +371,9 @@ class _FixUpdateState extends State<FixUpdate> {
                     ? IconButton(
                         onPressed: () {},
                         icon: SvgPicture.asset(
-                          "assets/icons/xmarkIcon_full.svg",
-                          color: HexColor("#a5a5a5"),
+                          "assets/icons/xmarkIcon_full_acolor.svg",
+                          height: 18,
+                          width: 18,
                         ),
                       )
                     : titleText == "물품 가액"
@@ -370,6 +389,118 @@ class _FixUpdateState extends State<FixUpdate> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // optionItem custom
+  Widget optionItem(WooProductVariation variation) {
+    print("variation " + variation.attributes[0].option.toString());
+
+    // 디코딩된 옵션이름 변환
+    String optionName = "";
+
+    if (variation.attributes[0].option.toString().indexOf('%') != -1) {
+      optionName =
+          Uri.decodeComponent(variation.attributes[0].option.toString());
+    } else {
+      optionName = variation.attributes[0].option.toString();
+    }
+
+    // 원 가격
+    int currentPrice = int.parse(widget.cartItem.productPrice);
+    print("currentPrice" + currentPrice.toString());
+
+    // optin 추가 된 가격
+    int addPrice = int.parse(variation.price!);
+    print("addPrice" + addPrice.toString());
+
+    // 추가 될 가격
+    int finalPrice = addPrice - currentPrice;
+
+    return Obx(
+      () => Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomRadioWidget(
+              optionname: cartController.name(optionName),
+              groupValue: fixselectController.radioGroup["추가 옵션"] !=
+                      {"추가 옵션": cartController.name(optionName)}
+                  ? fixselectController.radioGroup["추가 옵션"]
+                  : fixselectController.radioGroup["가격"],
+              value: fixselectController.radioGroup["추가 옵션"] !=
+                      {"추가 옵션": cartController.name(optionName)}
+                  ? cartController.name(optionName)
+                  : finalPrice.toString(),
+              onChanged: (value) {
+                fixselectController.isRadioGroup({
+                  "추가 옵션": cartController.name(optionName),
+                  "가격": finalPrice.toString()
+                });
+                fixselectController.radioId.value = variation.id!;
+                fixselectController.iswholePrice(addPrice);
+              },
+            ),
+            Row(
+              children: [
+                FontStyle(
+                    text: "+" + finalPrice.toString(),
+                    fontsize: "md",
+                    fontbold: "bold",
+                    fontcolor: Colors.black,
+                    textdirectionright: false),
+                FontStyle(
+                    text: "원",
+                    fontsize: "md",
+                    fontbold: "",
+                    fontcolor: Colors.black,
+                    textdirectionright: false),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// radio cucstom
+class CustomRadioWidget<T> extends StatelessWidget {
+  final String optionname;
+  final T value;
+  final T groupValue;
+  final ValueChanged<T> onChanged;
+
+  CustomRadioWidget({
+    required this.optionname,
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        onChanged(this.value);
+      },
+      child: Container(
+        padding: EdgeInsets.only(bottom: 10),
+        child: Row(
+          children: [
+            Container(
+                width: 22,
+                height: 22,
+                child: value == groupValue
+                    ? Image.asset("assets/icons/selectCheckIcon.png")
+                    : Image.asset("assets/icons/checkBtnIcon.png")),
+            SizedBox(
+              width: 10,
+            ),
+            Text(optionname),
+          ],
+        ),
       ),
     );
   }

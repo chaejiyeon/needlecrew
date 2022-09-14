@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 
 class TearIconModal extends StatelessWidget {
   final String title;
   final String btnText1;
   final String btnText2;
+  final int orderId;
 
   const TearIconModal(
       {Key? key,
       required this.title,
       required this.btnText1,
-      required this.btnText2})
+      required this.btnText2,
+      this.orderId = 0})
       : super(key: key);
 
   @override
@@ -24,7 +27,7 @@ class TearIconModal extends StatelessWidget {
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
-        width: 300,
+        width: 297,
         height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,8 +82,7 @@ class TearIconModal extends StatelessWidget {
                           child: Text(btnText2,
                               style: TextStyle(color: Colors.black)),
                           onPressed: () {
-                            controller.deleteCart();
-                            controller.getCart();
+                            controller.deleteCart("choose",orderId);
                             Get.back();
                           }),
                     ),

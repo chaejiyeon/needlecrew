@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/getxController/loginController.dart';
 
 class CircleCheckBtn extends StatefulWidget {
   final String list;
   final Widget listInfo;
   final bool checked;
+  final int index;
 
-
-  const CircleCheckBtn({Key? key, required this.list, required this.listInfo, required this.checked})
+  const CircleCheckBtn(
+      {Key? key,
+      required this.list,
+      required this.listInfo,
+      required this.checked,
+      required this.index})
       : super(key: key);
 
   @override
@@ -18,8 +24,18 @@ class CircleCheckBtn extends StatefulWidget {
 }
 
 class _RadioBtnState extends State<CircleCheckBtn> {
-  bool ischecked = false;
+  final LoginController controller = Get.put(LoginController());
 
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,37 +43,40 @@ class _RadioBtnState extends State<CircleCheckBtn> {
       padding: EdgeInsets.only(top: 24),
       child: Row(
         children: [
-          SizedBox(
-            width: 22,
-            height: 22,
-            child: Checkbox(
-                checkColor: Colors.white,
-                activeColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                side: BorderSide(
-                  color: HexColor("#d5d5d5"),
-                ),
-                value: widget.checked == true ? ischecked == false : ischecked == true,
-                onChanged: (value) {
-                  setState(() {
-                    ischecked = value!;
-                  });
-                }),
-          ),
-          SizedBox(width: 7,),
-          Expanded(
-            child: GestureDetector(
-              onTap: (){
-                // Get.to(widget.listInfo);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              controller.isChecked(widget.index);
+              print("this checked index" +
+                  controller.ischecked[widget.index].toString());
+            },
+            child: Obx(
+              () => Row(
                 children: [
+                  controller.ischecked[widget.index] == true
+                      ? SvgPicture.asset("assets/icons/checkedIcon.svg")
+                      : SvgPicture.asset("assets/icons/uncheckedIcon.svg"),
+                  SizedBox(
+                    width: 7,
+                  ),
                   Text(widget.list),
-                  SvgPicture.asset("assets/icons/nextIcon.svg", color: HexColor("#d5d5d5"),height: 13, width: 7,),
                 ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () {
+                  // Get.to(widget.listInfo);
+                },
+                child: SvgPicture.asset(
+                  "assets/icons/nextIcon.svg",
+                  color: HexColor("#d5d5d5"),
+                  height: 13,
+                  width: 7,
+                ),
               ),
             ),
           ),

@@ -55,7 +55,7 @@ class BannerItem extends StatelessWidget {
 
           // appbarItem, Image 위 텍스트 밑 버튼
           Positioned(
-            bottom: 132,
+            bottom: 100,
             child: Container(
               padding: EdgeInsets.only(left: 24),
               child: Column(

@@ -33,6 +33,7 @@ class _CircleLineTextFieldState extends State<CircleLineTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 245,
       child: TextField(
         onChanged: (value){
           setState((){});

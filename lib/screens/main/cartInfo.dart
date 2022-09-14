@@ -1,3 +1,11 @@
+import 'package:async/async.dart';
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
+import 'package:needlecrew/models/tooltip_text.dart';
+import 'package:needlecrew/widgets/visible_info.dart';
+import 'package:needlecrew/modal/alertDialogYes.dart';
 import 'package:needlecrew/modal/tearIconModal.dart';
 import 'package:needlecrew/modal/cartInfoModal.dart';
 import 'package:needlecrew/screens/main/nothingInfo.dart';
@@ -13,13 +21,34 @@ import 'package:hexcolor/hexcolor.dart';
 
 import '../../getxController/fixClothes/cartController.dart';
 
-class CartInfo extends GetView <CartController> {
+class CartInfo extends StatefulWidget {
   const CartInfo({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final CartController controller = Get.put(CartController());
+  State<CartInfo> createState() => _CartInfoState();
+}
 
+class _CartInfoState extends State<CartInfo> with TickerProviderStateMixin {
+  final CartController controller = Get.put(CartController());
+  late final AnimationController animationController;
+
+
+  // 비용 표시
+  String setprice(int price){
+    String formatPrice = NumberFormat('###,###,###').format(price >= 0 ? price : 0);
+    return formatPrice;
+  }
+
+  @override
+  void initState() {
+    animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 10));
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Future myFuture = controller.getCart();
 
     print("register orders id info " + controller.orders.length.toString());
@@ -36,7 +65,10 @@ class CartInfo extends GetView <CartController> {
                     child: Column(
                       children: [
                         // appbar
-                        FixClothesAppBar(appbar: AppBar()),
+                        FixClothesAppBar(
+                          appbar: AppBar(),
+                          prev: "옷바구니",
+                        ),
 
                         // 옷바구니
                         Container(
@@ -57,14 +89,20 @@ class CartInfo extends GetView <CartController> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  checkBoxCustom("전체 선택"),
+                                   checkBoxCustom("전체 선택"),
                                   GestureDetector(
                                     behavior: HitTestBehavior.opaque,
                                     onTap: () {
-                                      Get.dialog(TearIconModal(
-                                          title: "선택한 의뢰를 삭제할까요?",
-                                          btnText1: "취소",
-                                          btnText2: "삭제"));
+                                      controller.deleteOrderIds();
+                                      if (controller.orderid.length != 0) {
+                                        Get.dialog(TearIconModal(
+                                            title: "선택한 의뢰를 삭제할까요?",
+                                            btnText1: "취소",
+                                            btnText2: "삭제"));
+                                      } else {
+                                        Get.dialog(AlertDialogYes(
+                                            titleText: "삭제할 의뢰를 선택해 주세요."));
+                                      }
                                     },
                                     child: Row(
                                       children: [
@@ -109,9 +147,9 @@ class CartInfo extends GetView <CartController> {
                                             padding: EdgeInsets.only(top: 20),
                                             child: Column(
                                               children: List.generate(
-                                                controller.cartListitem.length,
+                                                controller.cartItem.length,
                                                 (index) => CartListItem(
-                                                  cartItem: controller.cartListitem[index],
+                                                  cartItem: controller.cartItem,
                                                   index: index,
                                                 ),
                                               ),
@@ -137,7 +175,8 @@ class CartInfo extends GetView <CartController> {
       ),
 
       // 고정 bottom navigation
-      bottomNavigationBar: FutureBuilder(
+      bottomNavigationBar:
+      FutureBuilder(
           future: myFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
@@ -145,9 +184,9 @@ class CartInfo extends GetView <CartController> {
                   ? Container(
                       height: 0,
                     )
-                  : GestureDetector(
-                      child: Container(
-                        height: 150,
+                  : Obx(
+                      () => Container(
+                        height: controller.visibility.value == true ? 248 : 140,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -166,39 +205,97 @@ class CartInfo extends GetView <CartController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
+                              child: Obx(() => VisibleInfo(
+                                      visible: controller.visibility.value,
+                                      formInfo: [
+                                        {
+                                          "titleText": "선택한 의뢰 예상 비용",
+                                          "tooltipText": cost.tooltipText,
+                                          "targetText" : cost.boldText,
+                                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? setprice(controller.wholePrice.value-6000) + " ~ " : controller.wholePrice.value-6000 <= 0 && controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? " - " : setprice(controller.wholePrice.value-6000),
+                                          "istooltip": true
+                                        },
+                                        {
+                                          "titleText": "총 배송 비용",
+                                          "tooltipText": ship.tooltipText,
+                                          "targetText" : ship.boldText,
+                                          "price": setprice(6000),
+                                          "istooltip": true
+                                        },
+                                        {
+                                          "titleText": "총 의뢰 예상 비용",
+                                          "tooltipText": "",
+                                          "targetText" : [""],
+                                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? controller.setPrice() + " ~ " : controller.setPrice(),
+
+                                          "istooltip": false
+                                        },
+                                      ])),
+                            ),
+                            Container(
+                              height: 20,
+                              margin: EdgeInsets.only(bottom: 16),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      FontStyle(
-                                          text: "총 의뢰 예상 비용 : ",
-                                          fontsize: "",
-                                          fontbold: "",
-                                          fontcolor: Colors.black,
-                                          textdirectionright: false),
-                                      Obx(() => FontStyle(
-                                          text: controller.setPrice(),
-                                          fontsize: "md",
-                                          fontbold: "bold",
-                                          fontcolor: HexColor("#fd9a03"),
-                                          textdirectionright: false)),
-                                      FontStyle(
-                                          text: "원",
-                                          fontsize: "",
-                                          fontbold: "",
-                                          fontcolor: Colors.black,
-                                          textdirectionright: false),
-                                    ],
+                                  Expanded(
+                                    child: Obx(
+                                      () => EasyRichText(
+                                        "총 의뢰 예상 비용 : ${controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? controller.setPrice() + " ~ " : controller.setPrice()}원",
+                                        defaultStyle: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: 'NotoSansCJKkrRegular',
+                                          color: Colors.black,
+                                        ),
+                                        patternList: [
+                                          EasyRichTextPattern(
+                                            targetString: controller.setPrice(),
+                                            style: TextStyle(
+                                                color: HexColor("#fd9a03"),
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        CupertinoIcons.chevron_up,
-                                        color: HexColor("#909090"),
-                                        size: 20,
-                                      )),
+                                  Obx(
+                                    () => IconButton(
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () {
+                                          if (controller.visibility.value ==
+                                              true) {
+                                            controller.visibility.value = false;
+                                          } else {
+                                            controller.visibility.value = true;
+                                          }
+                                        },
+                                        icon: AnimatedBuilder(
+                                          animation: animationController,
+                                          child: controller.visibility.value
+                                              ? SvgPicture.asset(
+                                                  "assets/icons/dropdownIcon.svg",
+                                                  color: HexColor("#909090"),
+                                                  width: 14,
+                                                  height: 8,
+                                                )
+                                              : SvgPicture.asset(
+                                                  "assets/icons/dropdownupIcon.svg",
+                                                  color: HexColor("#909090"),
+                                                  width: 14,
+                                                  height: 8,
+                                                ),
+                                          builder: (context, child) {
+                                            return Transform.rotate(
+                                              angle: animationController.value *
+                                                  2.0 *
+                                                  3.14,
+                                              child: child,
+                                            );
+                                          },
+                                        )),
+                                  ),
                                 ],
                               ),
                             ),
@@ -237,11 +334,7 @@ class CartInfo extends GetView <CartController> {
   Widget checkBoxCustom(String text) {
     return GestureDetector(
       onTap: () {
-        if (controller.isWholechecked.value == false) {
-          controller.isWholechecked.value = true;
-        } else {
-          controller.isWholechecked.value = false;
-        }
+        controller.iswholeChecked();
       },
       child: Obx(
         () => Container(

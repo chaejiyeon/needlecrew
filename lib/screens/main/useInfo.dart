@@ -36,7 +36,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
   @override
   void initState() {
     myFuture = controller.getCompleteOrder();
-    // controller.getCompleteOrder();
+
     super.initState();
     print("pageNum " + widget.pageNum.toString());
 

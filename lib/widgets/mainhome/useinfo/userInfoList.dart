@@ -1,5 +1,5 @@
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
-import 'package:needlecrew/models/fixReady.dart';
+import 'package:needlecrew/models/fix_ready.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,9 +31,6 @@ class _UseInfoListState extends State<UseInfoList> {
 
   @override
   void initState() {
-    // setState(() {
-    //   skeletonCount = widget.fixItems.length;
-    // });
     super.initState();
   }
 

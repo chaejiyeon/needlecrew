@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/modal/addressDelModal.dart';
 import 'package:needlecrew/models/addressItem.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
@@ -23,6 +24,8 @@ class AddressList extends StatefulWidget {
 }
 
 class _AddressListState extends State<AddressList> {
+  final HomeController controller = Get.put(HomeController());
+
   List<AddressItem> items = [
     AddressItem("mypageHome_1.svg", "우리집", "부산 강서구 명지국제3로 97 105동 221호"),
     AddressItem("mypageCompany_1.svg", "회사", "부산 사상구 모라동 22 1306호"),

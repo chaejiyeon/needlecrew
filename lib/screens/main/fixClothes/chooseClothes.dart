@@ -1,7 +1,10 @@
-
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
 import 'package:needlecrew/screens/main/fixClothes/directInsert.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixQuestion.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixSelect.dart';
+import 'package:needlecrew/widgets/channeltalk.dart';
 import 'package:needlecrew/widgets/circleLineBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
 import 'package:needlecrew/widgets/fixClothes/footerBtn.dart';
@@ -15,6 +18,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/tootipCustom.dart';
 
 class ChooseClothes extends StatefulWidget {
   final int parentNum;
@@ -25,13 +29,20 @@ class ChooseClothes extends StatefulWidget {
   State<ChooseClothes> createState() => _ChooseClothesState();
 }
 
-List<int> crumbs = [];
-
 class _ChooseClothesState extends State<ChooseClothes>
     with TickerProviderStateMixin {
+  final FixSelectController controller = Get.put(FixSelectController());
+
+  // 현재 페이지
   int currentPage = 0;
+
+  // 현재 카테고리 id
   int currentCategoryId = 0;
+
+  // tab controller
   late TabController _tabController;
+
+  // 마지막 카테고리
   String lastCategory = "";
 
   // get category list
@@ -42,10 +53,10 @@ class _ChooseClothesState extends State<ChooseClothes>
 
   // category 가져오기
   Future<List<WooProductCategory>> getCategories() async {
+    print("this parent id info  !!!!!!" + widget.parentNum.toString());
     categories = await wp_api.wooCommerceApi
-        .getProductCategories(parent: widget.parentNum);
+        .getProductCategories(parent: widget.parentNum, order: 'desc');
     _tabController = TabController(length: categories.length, vsync: this);
-
 
     return categories;
   }
@@ -53,12 +64,21 @@ class _ChooseClothesState extends State<ChooseClothes>
   // product 가져오기
   Future<bool> getProducts() async {
     products.clear();
-    print("currentcategory" + crumbs.toString());
+    print("currentcategory" + controller.crumbs.toString());
     try {
       products = await wp_api.wooCommerceApi.getProducts(
+          perPage: 100,
+          // orderBy: 'slug',
           category: currentCategoryId == 0
               ? categories.first.id.toString()
               : currentCategoryId.toString());
+
+      // 카탈로그 가시성 - 숨겨짐일 경우 제품 항목에서 제외
+      for (int i = 0; i < products.length; i++) {
+        if (products[i].catalogVisibility == 'hidden') {
+          products.removeAt(i);
+        }
+      }
     } catch (e) {
       print(e);
       return false;
@@ -68,11 +88,15 @@ class _ChooseClothesState extends State<ChooseClothes>
 
   @override
   void initState() {
-    if (widget.parentNum == 0) crumbs.clear();
-    crumbs.add(widget.parentNum);
+    if (widget.parentNum == 0) controller.crumbs.clear();
+
+    // back 버튼 클릭하지 않았을 때에만 crumbs에 add
+    if (controller.backClick == false) {
+      controller.crumbs.add(widget.parentNum);
+    }
+
     super.initState();
     getCategories();
-
   }
 
   @override
@@ -83,10 +107,10 @@ class _ChooseClothesState extends State<ChooseClothes>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: FixClothesAppBar(
         appbar: AppBar(),
+        prev: "의류 선택",
       ),
       body: Container(
         padding: EdgeInsets.only(left: 24, right: 24),
@@ -129,7 +153,6 @@ class _ChooseClothesState extends State<ChooseClothes>
                             bottomPadding: 50,
                           ),
 
-
                     // category 표시 > 카테고리에 '기타'가 포함되어 있을 경우 해당 상품 gridview로 표시
                     Expanded(
                       child: Container(
@@ -157,12 +180,13 @@ class _ChooseClothesState extends State<ChooseClothes>
                                                 currentPage = index;
                                                 currentCategoryId =
                                                     categories[index].id!;
-                                                lastCategory = categories[index].name.toString();
+                                                lastCategory = categories[index]
+                                                    .name
+                                                    .toString();
                                               });
-
                                             },
                                             controller: _tabController,
-                                            isScrollable: true,
+                                            // isScrollable: true,
                                             indicatorColor: Colors.transparent,
                                             unselectedLabelColor: Colors.black,
                                             labelColor: Colors.white,
@@ -201,9 +225,9 @@ class _ChooseClothesState extends State<ChooseClothes>
                                                 (index) => GridView(
                                                   gridDelegate:
                                                       SliverGridDelegateWithFixedCrossAxisCount(
-                                                    mainAxisExtent: 184,
+                                                    mainAxisExtent: 270,
                                                     crossAxisCount: 2,
-                                                    mainAxisSpacing: 10,
+                                                    mainAxisSpacing: 5,
                                                     crossAxisSpacing: 10,
                                                   ),
                                                   children: List.generate(
@@ -211,7 +235,11 @@ class _ChooseClothesState extends State<ChooseClothes>
                                                       (index) =>
                                                           chooseOptionItem(
                                                               products[index],
-                                                              index, products[index].id!, categories.first.id!)),
+                                                              index,
+                                                              products[index]
+                                                                  .id!,
+                                                              categories
+                                                                  .first.id!)),
                                                 ),
                                               ),
                                             );
@@ -262,27 +290,26 @@ class _ChooseClothesState extends State<ChooseClothes>
   // category 목록
   Widget CategoryItem(String category, int currentpage, int categoryId) {
     return Container(
-      padding: EdgeInsets.only(right: 9),
+      width: MediaQuery.of(context).size.width,
       child: Container(
+        padding: EdgeInsets.only(bottom: 6),
         alignment: Alignment.center,
         width: 75,
         decoration: BoxDecoration(
-          color:
-              currentPage == currentpage ? HexColor("#fd9a03") : Colors.white,
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(
-            width: 1,
-            color: currentPage == currentpage
-                ? HexColor("#fd9a03")
-                : HexColor("#d5d5d5"),
-          ),
-        ),
+            border: Border(
+                bottom: BorderSide(
+          width: currentPage == currentpage ? 2 : 1,
+          color: currentPage == currentpage
+              ? HexColor("#fd9a03")
+              : HexColor("#d5d5d5"),
+        ))),
         child: Text(
           category,
           style: TextStyle(
             fontSize: 16,
-            color:
-                currentPage == currentpage ? Colors.white : HexColor("#909090"),
+            color: currentPage == currentpage
+                ? HexColor("#fd9a03")
+                : HexColor("#707070"),
           ),
         ),
       ),
@@ -290,73 +317,114 @@ class _ChooseClothesState extends State<ChooseClothes>
   }
 
   // gridview 아이템
-  Widget chooseOptionItem(WooProduct product, int index, int productId, int categoryId) {
+  Widget chooseOptionItem(
+      WooProduct product, int index, int productId, int categoryId) {
     String imageSrc = "";
     if (product.images.isNotEmpty) imageSrc = product.images.first.src ?? "";
 
+    return Container(
+      height: 200,
+      width: double.infinity,
+      padding: EdgeInsets.only(bottom: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (product.name.toString() == "복원수선") {
+                Get.to(Channeltalk());
+              } else {
+                Get.to(() => FixSelect(
+                      productId: productId,
+                      crumbs: controller.crumbs,
+                      lastCategory: lastCategory == ""
+                          ? categories.first.name.toString()
+                          : lastCategory,
+                    ));
+              }
+            },
+            child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: HexColor("#d5d5d5"),
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                height: (MediaQuery.of(context).size.width - 58) * 0.5,
+                padding: EdgeInsets.all(30),
+                margin: EdgeInsets.only(bottom: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: (imageSrc != "")
+                      ? Image.network(imageSrc)
+                      : Image.asset(
+                          "assets/images/sample_2.jpeg",
+                          fit: BoxFit.cover,
+                        ),
+                )),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TooltipCustom(
+                    tooltipText: product.shortDescription.toString(),
+                    titleText: product.name.toString(),
+                    boldText: []),
+                Expanded(
+                  child: product.price.toString() == "0"
+                      ? ontapWidget(
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child: Text("직접문의")),
+                          product,
+                          productId)
+                      : ontapWidget(
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: EasyRichText(
+                              product.price.toString() + "원",
+                              textAlign: TextAlign.start,
+                              patternList: [
+                                EasyRichTextPattern(
+                                    targetString: product.price.toString(),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'NotoSansCJKkrMedium')),
+                                EasyRichTextPattern(
+                                    targetString: "원",
+                                    style: TextStyle(fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                          product,
+                          productId),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // widget에 ontap 기능 추가
+  Widget ontapWidget(Widget widget, WooProduct product, int productId) {
     return GestureDetector(
       onTap: () {
-        Get.off(() => FixSelect(productId: productId, crumbs: crumbs, lastCategory: lastCategory == "" ? categories.first.name.toString() : lastCategory,));
+        if (product.name.toString() == "복원수선") {
+          Get.to(Channeltalk());
+        } else {
+          Get.to(() => FixSelect(
+                productId: productId,
+                crumbs: controller.crumbs,
+                lastCategory: lastCategory == ""
+                    ? categories.first.name.toString()
+                    : lastCategory,
+              ));
+        }
       },
-      child: Container(
-        height: 184,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: HexColor("#909090").withOpacity(0.5),
-          ),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-                width: double.infinity,
-                height: 100,
-                child: (imageSrc != "")
-                    ? Image.network(imageSrc)
-                    : Image.asset(
-                        "assets/images/sample_2.jpeg",
-                        fit: BoxFit.cover,
-                      )),
-            Expanded(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FontStyle(
-                            text: product.name.toString(),
-                            fontsize: "",
-                            fontbold: "bold",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
-                      ),
-                      Icon(
-                        CupertinoIcons.question_circle,
-                        size: 15,
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.price.toString(),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        Text("원"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: widget,
     );
   }
 }

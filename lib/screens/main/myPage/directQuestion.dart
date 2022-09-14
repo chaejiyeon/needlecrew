@@ -34,10 +34,11 @@ class _DirectQuestionState extends State<DirectQuestion> {
       appBar: MypageAppBar(
           title: "자주하는 질문", icon: "", widget: MainHome(), appbar: AppBar()),
       body: Container(
-              margin: EdgeInsets.only(left: 24, right: 24, top: 40, bottom: 25),
+              margin: EdgeInsets.only(left: 24, top: 40, bottom: 25),
               child: Column(
                 children: [
-                  Row(children: [
+                  Row(
+                      children: [
                     for (int i = 0; i < 4; i++) CategoryItem(tabs[i], i)
                   ]),
                   SizedBox(
@@ -51,6 +52,7 @@ class _DirectQuestionState extends State<DirectQuestion> {
                   SizedBox(height: 43,),
                   Expanded(
                       child: Container(
+                        padding: EdgeInsets.only(right: 24),
                           child: SingleChildScrollView(
                     child: Column(
                       children: List.generate(
@@ -70,6 +72,7 @@ class _DirectQuestionState extends State<DirectQuestion> {
   // category 목록
   Widget CategoryItem(String category, int index) {
     return GestureDetector(
+
       onTap: () {
         setState(() {
           currentPage = index;

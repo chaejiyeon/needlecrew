@@ -23,7 +23,7 @@ class PhoneNumUpdate extends GetView<HomeController> {
         ),
         bottomNavigationBar: Container(
           padding: EdgeInsets.all(20),
-          child: CircleBlackBtn(btnText: "변경 완료", pageName: "back"),
+          child: CircleBlackBtn(btnText: "변경 완료", pageName: "back", updateName: "전화번호"),
         ),
       ),
     );

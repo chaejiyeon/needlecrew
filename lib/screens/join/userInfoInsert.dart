@@ -119,14 +119,12 @@ class _UserInfoInsertState extends State<UserInfoInsert> {
                 Get.snackbar("회원가입", "입력된 정보를 확인해주세요!");
               }
             },
-            child: SvgPicture.asset(
+            child:  editingcontroller[0].text.length > 0 &&
+                editingcontroller[1].text.length > 0 &&
+                editingcontroller[2].text.length > 0 &&
+                editingcontroller[3].text.length > 0 ? Image.asset("assets/icons/selectFloatingIcon.png", width: 54, height: 54,) : SvgPicture.asset(
               'assets/icons/floatingNext.svg',
-              color: editingcontroller[0].text.length > 0 &&
-                      editingcontroller[1].text.length > 0 &&
-                      editingcontroller[2].text.length > 0 &&
-                      editingcontroller[3].text.length > 0
-                  ? HexColor("fd9a03")
-                  : HexColor("#d5d5d5"),
+              color: HexColor("#d5d5d5"),
             ),
           ),
         ),

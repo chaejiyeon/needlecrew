@@ -135,7 +135,7 @@ class _InsertFormState extends State<InsertForm> {
                           Container(
                             padding: EdgeInsets.only(
                                 top: 11, right: 13, bottom: 17, left: 15),
-                            margin: EdgeInsets.only(bottom: 40),
+                            margin: EdgeInsets.only(top:10, bottom: 40),
                             decoration: BoxDecoration(
                               color: HexColor("#f7f7f7"),
                               borderRadius: BorderRadius.circular(6),

@@ -1,5 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/payTypeAddConfirm.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
@@ -18,9 +20,11 @@ class PayTypeAdd extends StatefulWidget {
 }
 
 class _PayTypeAddState extends State<PayTypeAdd> {
+  final HomeController controller = Get.put(HomeController());
   late ScrollController scrollController = ScrollController();
 
-  List<TextEditingController> editingcontroller = [];
+  List<TextEditingController> editingcontroller =
+      []; // 0 : 이름, 1 : 이메일, 2~5 : 카드번호, 6 : 유효기간, 7 : 비밀번호 앞2자리, 8 : 생년월일6자리
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -324,7 +328,8 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         if (title == "이름") {
           RegExp regExp = new RegExp(r'^([가-힣|a-zA-Z])+$');
 
-          if (value.toString().length <= 2 || !regExp.hasMatch(value.toString())) {
+          if (value.toString().length <= 2 ||
+              !regExp.hasMatch(value.toString())) {
             return "이름을 정확히 입력해주세요.";
           }
         } else if (title == "이메일") {
@@ -364,33 +369,37 @@ class _PayTypeAddState extends State<PayTypeAdd> {
       },
       textAlign: hinttxt == "MM/YY" ? TextAlign.center : TextAlign.left,
       decoration: InputDecoration(
-          labelText: title,
-          labelStyle: TextStyle(fontSize: 12),
-          hintText: hinttxt != "" && title != "" ? hinttxt : "",
-          hintStyle: TextStyle(color: HexColor("#909090"), fontSize: 12),
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(color: HexColor("#ededed")),
-          ),
-          suffixIcon: title == "이메일" && selectValue != "직접 입력"
-              ? Container(
+        labelText: title,
+        labelStyle: TextStyle(fontSize: 12),
+        hintText: hinttxt != "" && title == currentField ? hinttxt : null,
+        hintStyle: TextStyle(color: HexColor("#909090"), fontSize: 12),
+        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: BorderSide(color: HexColor("#ededed")),
+        ),
+        suffixIcon: title == "이메일" && selectValue != "직접 입력"
+            ? Container(
                 padding: EdgeInsets.only(right: 10),
                 child: Text(
-                    "@",
-                    style: TextStyle(color: HexColor("#909090")),
-                  ),
+                  "@",
+                  style: TextStyle(color: HexColor("#909090")),
+                ),
               )
-              : null,
-          suffixIconConstraints: BoxConstraints(),
+            : null,
+        suffixIconConstraints: BoxConstraints(),
       ),
     );
   }
 
   Widget formSubmitBtn(String btnText, Widget widgetName) {
+    String customer_uid = "";
+    String expiry = "";
+    String cardNum = "";
+
     return Container(
       height: 54,
       width: double.infinity,
@@ -402,7 +411,33 @@ class _PayTypeAddState extends State<PayTypeAdd> {
       child: TextButton(
         onPressed: () {
           if (this._formKey.currentState!.validate()) {
-            Get.put(widgetName);
+            setState(() {
+              customer_uid = editingcontroller[0].text +
+                  "_" +
+                  DateFormat('yymmdd').format(DateTime.now()) +
+                  "_" +
+                  editingcontroller[5].text;
+              expiry = "20" + editingcontroller[6].text.substring(2, 3) + "-" + editingcontroller[6].text.substring(0, 1);
+
+              cardNum = editingcontroller[2].text +
+                  "-" +
+                  editingcontroller[3].text +
+                  "-" +
+                  editingcontroller[4].text +
+                  "-" +
+                  editingcontroller[5].text;
+            });
+
+            Get.to(widgetName);
+            // 카드정보 설정
+            controller.setCardInfo({
+              "card_number": cardNum,
+              "expiry": expiry,
+              "birth": editingcontroller[8].text,
+              "pwd_2digit": editingcontroller[7].text,
+              "customer_uid": customer_uid
+            });
+            controller.getData();
             print("결제카드 등록 성공!!!!!!");
           } else {
             print("currentfield    " + currentField);

@@ -73,7 +73,9 @@ class AlramAppbar extends StatelessWidget implements PreferredSizeWidget {
           Get.back();
         },
         icon: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Get.back();
+          },
           child: Icon(
             CupertinoIcons.xmark,
             color: Colors.black,

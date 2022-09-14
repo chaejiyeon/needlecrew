@@ -1,4 +1,4 @@
-import 'package:needlecrew/bottomsheet/fixSizeGuideSheet.dart';
+import 'package:needlecrew/bottomsheet/fix_size_guide_sheet.dart';
 import 'package:needlecrew/widgets/fixClothes/subtitle.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
@@ -117,23 +117,19 @@ class Header extends StatelessWidget {
                             ? bottomsheetOpen(context)
                             : Get.to(widget);
                       },
-                      child: Row(
-                        children: [
-                          imgPath != ""
-                              ? SvgPicture.asset(
-                                  "assets/icons/" + imgPath + "/" + btnIcon,
-                                  color: Colors.black,
-                                )
-                              : SvgPicture.asset(
-                                  "assets/icons/" + btnIcon,
-                                  color: Colors.black,
-                                ),
-                          SizedBox(
-                            width: 10,
+                      child:
+                          Container(
+                            padding: EdgeInsets.only(left: 14, top: 7, right: 14, bottom: 7),
+                            decoration: BoxDecoration(
+                              color: HexColor("#f7f7f7"),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: HexColor("#f2f2f2"),
+                                width: 1
+                              )
+                            ),
+                            child: Text(btnText),
                           ),
-                          Text(btnText),
-                        ],
-                      ),
                     )
                   : Container(),
             ],

@@ -27,13 +27,14 @@ import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'screens/join/agreeTerms.dart';
 import 'screens/main/myPage/payType.dart';
 
-
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+
+  );
   SharedPreferences.setMockInitialValues({});
-  KakaoSdk.init(nativeAppKey: 'e30822d334ce26f168c65295d55a25b0', loggingEnabled: true);
+  KakaoSdk.init(
+      nativeAppKey: 'e30822d334ce26f168c65295d55a25b0', loggingEnabled: true);
 
   wp_api.wooCommerceApi = FlutterWooCommerceApi(
     baseUrl: 'https://needlecrew.com',
@@ -45,15 +46,13 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
     return GetMaterialApp(
       title: 'Nidlecrew',
@@ -71,18 +70,31 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/join', page: () => AgreeTerms()),
         GetPage(name: '/startPage', page: () => loadingPage()),
         GetPage(name: '/mainHome', page: () => MainPage(pageNum: 0)),
-        GetPage(name: '/useInfoReady', page: () => MainPage(pageNum: 1, selectTab: 0)),
-        GetPage(name: '/useInfoProgress', page: () => MainPage(pageNum: 1, selectTab: 1)),
-        GetPage(name: '/useInfoComplete', page: () => MainPage(pageNum: 1, selectTab: 2)),
+        GetPage(
+            name: '/useInfoReady',
+            page: () => MainPage(pageNum: 1, selectTab: 0)),
+        GetPage(
+            name: '/useInfoProgress',
+            page: () => MainPage(pageNum: 1, selectTab: 1)),
+        GetPage(
+            name: '/useInfoComplete',
+            page: () => MainPage(pageNum: 1, selectTab: 2)),
         GetPage(name: '/myPage', page: () => MainPage(pageNum: 2)),
         GetPage(name: '/fixClothes', page: () => FixClothes()),
         GetPage(name: '/fixRegisterInfo', page: () => FixRegisterInfo()),
-        GetPage(name: '/payTypeAddConfirmFirst', page: () => PayTypeAddConfirm(isFirst: true,)),
-        GetPage(name: '/payTypeAddConfirm', page: () => PayTypeAddConfirm(isFirst: false,)),
+        GetPage(
+            name: '/payTypeAddConfirmFirst',
+            page: () => PayTypeAddConfirm(
+                  isFirst: true,
+                )),
+        GetPage(
+            name: '/payTypeAddConfirm',
+            page: () => PayTypeAddConfirm(
+                  isFirst: false,
+                )),
         GetPage(name: '/payType', page: () => PayType()),
         GetPage(name: '/payTypeAdd', page: () => PayTypeAdd(isFirst: true)),
       ],
-
     );
   }
 }
@@ -92,11 +104,7 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-
 }
-
-
-
 
 class _MyHomePageState extends State<MyHomePage> {
   late bool check = false;
@@ -105,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     isLogged().then((value) {
-      setState((){
+      setState(() {
         check = value;
       });
     });
@@ -113,9 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
     print("ischeck" + check.toString());
 
     Timer(Duration(milliseconds: 2000), () {
-      if(check == false) {
+      if (check == false) {
         Get.to(loadingPage());
-      }else{
+      } else {
         Get.toNamed('/mainHome');
       }
     });
@@ -148,4 +156,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-

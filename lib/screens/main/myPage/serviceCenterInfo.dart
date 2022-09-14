@@ -81,6 +81,7 @@ class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
   // list menu
   Widget listMenu(String listTitle, bool isLine, Widget widget){
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         Get.to(widget);
       },

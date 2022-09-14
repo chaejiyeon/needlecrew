@@ -21,6 +21,7 @@ class MypageMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         if(listTitle == "로그아웃"){
           Get.dialog(widget);
@@ -29,6 +30,7 @@ class MypageMenu extends StatelessWidget {
         }
       },
       child: Container(
+        width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.only(top: 15),
         child: Column(
           children: [

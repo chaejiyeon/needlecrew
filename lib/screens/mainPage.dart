@@ -36,6 +36,8 @@ class _MainPageState extends State<MainPage> {
     // controller.getUser();
     super.initState();
 
+    print("mainhomemodalcheck this!!!!!!" + controller.mainModalcheck.toString());
+
     if(controller.mainModalcheck == false) {
       // controller.getUser();
       // 메인 홈 진입 시 dialog

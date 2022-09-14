@@ -28,16 +28,12 @@ class _RadioBtnState extends State<RadioBtn> {
   final FixSelectController controller = Get.put(FixSelectController());
   bool ischecked = false;
 
+
   @override
   Widget build(BuildContext context) {
+
     return Obx(
       () =>
-        //   ListTile(
-        // // listtile padding
-        // visualDensity: VisualDensity(vertical: -4),
-        // title: Align(alignment: Alignment(-1.5, 0), child: Text(widget.list)),
-        // contentPadding: EdgeInsets.zero,
-        // leading:
         CustomRadioWidget(
           text: widget.list,
           value: widget.list,
