@@ -404,6 +404,7 @@ class HomeController extends GetxController {
         "expiry": cardInfo["expiry"],
         "birth": cardInfo["birth"],
         "pwd_2digit": cardInfo["pwd_2digit"],
+        "pg_id" : "nice.nictest04m"
       }),
     );
 

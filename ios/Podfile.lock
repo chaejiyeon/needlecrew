@@ -5,7 +5,7 @@ PODS:
   - AppAuth/Core (1.5.0)
   - AppAuth/ExternalUserAgent (1.5.0):
     - AppAuth/Core
-  - ChannelIOSDK (10.0.5)
+  - ChannelIOSDK (10.0.6)
   - Firebase (9.3.0):
     - Firebase/Core (= 9.3.0)
   - Firebase/Auth (9.3.0):
@@ -80,6 +80,8 @@ PODS:
     - Flutter
     - naveridlogin-sdk-ios (~> 4.1.0)
   - flutter_secure_storage (3.3.1):
+    - Flutter
+  - flutter_web_auth (0.4.1):
     - Flutter
   - geocoding (1.0.5):
     - Flutter
@@ -213,6 +215,7 @@ DEPENDENCIES:
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_naver_login (from `.symlinks/plugins/flutter_naver_login/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
   - geocoding (from `.symlinks/plugins/geocoding/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - GoogleUtilities
@@ -272,6 +275,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_naver_login/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_web_auth:
+    :path: ".symlinks/plugins/flutter_web_auth/ios"
   geocoding:
     :path: ".symlinks/plugins/geocoding/ios"
   google_sign_in_ios:
@@ -303,7 +308,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
-  ChannelIOSDK: 1aab9077eb5e24499c0d5924033a680d39769224
+  ChannelIOSDK: d49af51379c05b5d96706a03c600f3ba4014e482
   Firebase: ef75abb1cdbc746d5a38f4e26c422c807b189b8c
   firebase_auth: 90736e5b2600e9504c3409eea5ebcc84b9d0af7f
   firebase_core: 96214f90497b808a2cf2a24517084c5f6de37b53
@@ -318,6 +323,7 @@ SPEC CHECKSUMS:
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_naver_login: 1dbf6d21aae5235cdf76a28ac79cf6871899282f
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  flutter_web_auth: 09a0abd245f1a07a3ff4dcf1247a048d89ee12a9
   geocoding: 32cfcdb16d38d907caaba65e2e42ad10d38bee58
   google_sign_in_ios: 4f85eb9f937450765c8573bb85fd8cd6a5af675c
   GoogleAppMeasurement: b907bdad775b6975a8108762345b2cfbf1a93c37
@@ -347,6 +353,6 @@ SPEC CHECKSUMS:
   vertical_scrollable_tabview: 6e6f25411f226cc077ac4d915c8cd407a1317587
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: 6e278dff52ad9378a228e7825381b2127321e3e1
+PODFILE CHECKSUM: 54304ab9e89dd31752b3877477bf2d86ce172631
 
 COCOAPODS: 1.11.3

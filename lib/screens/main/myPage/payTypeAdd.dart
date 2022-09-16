@@ -309,6 +309,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
       String title, String hinttxt, TextEditingController controller) {
     return TextFormField(
       controller: controller,
+
       onChanged: (value) {
         if (title == "카드 번호" || title == "유효기간") {
           if (value.length >= 4) {
@@ -368,10 +369,12 @@ class _PayTypeAddState extends State<PayTypeAdd> {
             duration: Duration(milliseconds: 500), curve: Curves.ease);
       },
       textAlign: hinttxt == "MM/YY" ? TextAlign.center : TextAlign.left,
+      textAlignVertical: TextAlignVertical.top,
       decoration: InputDecoration(
         labelText: title,
+        alignLabelWithHint: true,
         labelStyle: TextStyle(fontSize: 12),
-        hintText: hinttxt != "" && title == currentField ? hinttxt : null,
+        hintText: hinttxt != "" ? hinttxt : "",
         hintStyle: TextStyle(color: HexColor("#909090"), fontSize: 12),
         contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         border: OutlineInputBorder(
@@ -413,9 +416,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
           if (this._formKey.currentState!.validate()) {
             setState(() {
               customer_uid = editingcontroller[0].text +
-                  "_" +
                   DateFormat('yymmdd').format(DateTime.now()) +
-                  "_" +
                   editingcontroller[5].text;
               expiry = "20" + editingcontroller[6].text.substring(2, 3) + "-" + editingcontroller[6].text.substring(0, 1);
 

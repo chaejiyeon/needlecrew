@@ -154,10 +154,6 @@ class _LoginPageState extends State<LoginPage> {
                       icon: "apple.png",
                       loginwith: "apple",
                     ),
-                    // Platform.isIOS ? CircleIconBtn(
-                    //   icon: "apple.png",
-                    //   loginwith: "apple",
-                    // ) : SizedBox(),
                     CircleIconBtn(
                       icon: "googleIcon.png",
                       loginwith: "google",

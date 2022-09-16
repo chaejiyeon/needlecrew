@@ -58,12 +58,12 @@ class TakeFixInfoBottomSheet extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                guideList(1, "수거 예정 알림을 받으면 예정된 날짜에 옷을 포장해 문 앞에 내놓아 주세요."),
+                guideList(1, "옷을 두겹으로 비닐 포장하거나 박스를 이용해\n포장한 후 '수거 예약'이라 적어주시고 수거 예정일에 문앞에 놓아주세요!"),
                 SizedBox(
                   height: 20,
                 ),
                 guideList(
-                    2, "옷을 포장할 때는 옷이 상하지 않게 두겹으로 비닐 포장하거나 포장 박스를 이용해 주세요."),
+                    2, "대한통운에서 반품수거로 연락이 갈 수 있으니\n참고해주세요."),
                 SizedBox(
                   height: 20,
                 ),

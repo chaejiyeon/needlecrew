@@ -70,10 +70,14 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
 
   // 문자인증 요청
   void phoneAuth(PhoneAuthCredential phoneAuthCredential) async {
+
     try {
       final authCredential =
           await _auth.signInWithCredential(phoneAuthCredential);
-      if (authCredential.user != null) {
+      if (authCredential.user != null)
+
+
+      {
         timer.cancel();
 
         setState(() {
@@ -103,10 +107,6 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
     }
     super.initState();
 
-    // Firebase.initializeApp().whenComplete(() {
-    //   print("completed");
-    //   setState(() {});
-    // });
 
   }
 
@@ -122,6 +122,9 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
 
   @override
   Widget build(BuildContext context) {
+
+    // recaptcha 제거
+    _auth.setSettings(appVerificationDisabledForTesting: true);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();

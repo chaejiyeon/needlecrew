@@ -6,6 +6,7 @@ class FontStyle extends StatelessWidget {
   final String fontbold;
   final Color fontcolor;
   final bool textdirectionright;
+  final bool isEllipsis;
 
   const FontStyle(
       {Key? key,
@@ -14,6 +15,7 @@ class FontStyle extends StatelessWidget {
       required this.fontbold,
       required this.fontcolor,
         required this.textdirectionright,
+        this.isEllipsis = true,
       fontSize})
       : super(key: key);
 
@@ -21,7 +23,7 @@ class FontStyle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      overflow: TextOverflow.ellipsis,
+      overflow: isEllipsis == false ? null : TextOverflow.ellipsis,
       textDirection: textdirectionright == true ? TextDirection.rtl : TextDirection.ltr,
       style: TextStyle(
         fontSize: fontsize == "lg"

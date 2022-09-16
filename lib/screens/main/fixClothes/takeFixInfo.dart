@@ -63,20 +63,16 @@ class _TakeFixInfoState extends State<TakeFixInfo> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   FontStyle(
-                      text: "의류 수거는 접수일로부터\n1~2일 소요됩니다.",
-                      fontsize: "lg",
-                      fontbold: "bold",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
+                    text: "수거 후 니들크루 도착까지\n2~3일 정도 소요됩니다.",
+                    fontsize: "lg",
+                    fontbold: "bold",
+                    fontcolor: Colors.black,
+                    textdirectionright: false,
+                    isEllipsis: false,
+                  ),
                   SizedBox(
                     height: 5,
                   ),
-                  FontStyle(
-                      text: "수선 확정 후 2~3일 뒤 수선이 완료되며\n이후 수령지로 의류가 발송됩니다.",
-                      fontsize: "",
-                      fontbold: "",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
                 ],
               ),
             ),

@@ -43,8 +43,8 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
       await _googleSignIn;
 
       joinUs('${googleUser.displayName}', '${googleUser.email}',
-          '${googleUser.id}', '');
-      Login(googleUser.email, googleUser.id);
+          '${googleUser.id}', 'google');
+      // Login(googleUser.email, googleUser.id);
     } catch (error) {
       print("isError $error");
     }
@@ -88,7 +88,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
         joinUs(userName,
             '${userCredential.user!.email}', userName, 'apple');
-        Login(userCredential.user!.email.toString(), userName);
+        // Login(userCredential.user!.email.toString(), userName);
       } catch (e) {
         print("appleLogin Error this " + e.toString());
       }
@@ -125,7 +125,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
       joinUs(userName,
           '${userCredential.user!.email}', userName, 'apple');
-      Login(userCredential.user!.email.toString(), userName);
+      // Login(userCredential.user!.email.toString(), userName);
     }
   }
 
@@ -157,7 +157,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
         joinUs('${user.kakaoAccount?.profile?.nickname}',
             '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
 
-        Login('${user.kakaoAccount?.email}', '${user.id}');
+        // Login('${user.kakaoAccount?.email}', '${user.id}');
         print('카카오톡 로그인 성공 ${token.accessToken}');
       } catch (error) {
         print('카카오톡 로그인 실패 $error');
@@ -177,7 +177,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
           joinUs('${user.kakaoAccount?.profile?.nickname}',
               '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
 
-          Login('${user.kakaoAccount?.email}', '${user.id}');
+          // Login('${user.kakaoAccount?.email}', '${user.id}');
 
           print('카카오계정으로 로그인 성공');
         } catch (error) {
@@ -194,7 +194,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
         joinUs('${user.kakaoAccount?.profile?.nickname}',
             '${user.kakaoAccount?.email}', '${user.id}', 'kakao');
 
-        Login('${user.kakaoAccount?.email}', '${user.id}');
+        // Login('${user.kakaoAccount?.email}', '${user.id}');
 
         print('카카오계정으로 로그인 성공');
       } catch (error) {

@@ -446,6 +446,7 @@ class _FixSelectState extends State<FixSelect> {
                     future: productFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
+
                         return product.description.toString() != ""
                             ? Container(
                                 padding: EdgeInsets.zero,
@@ -482,7 +483,7 @@ class _FixSelectState extends State<FixSelect> {
                                           ),
                                           Expanded(
                                             child: Text(
-                                              parseHtmlTagRemove(product.description.toString()),
+                                                parseHtmlTagRemove(product.description.toString()) == "0" ? "" : parseHtmlTagRemove(product.description.toString()),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 13),
@@ -495,7 +496,7 @@ class _FixSelectState extends State<FixSelect> {
                                 ),
                               )
                             : parseHtmlTagRemove(product.description.toString()) != "0" ? Container(
-                                height: 100,
+                                height: 0,
                               ) : Container(height: 0,);
                       }else{
                         return CircularProgressIndicator();
@@ -562,12 +563,12 @@ class _FixSelectState extends State<FixSelect> {
                                 bottomPadding: 15,
                                 textBold: ""),
                             RadioBtn(
-                                list: "줄이고 싶은 만큼 치수 입력",
+                                list: "완성 치수를 입력할게요.",
                                 bottomPadding: 15,
                                 textBold: ""),
                             controller.isshopping != true
                                 ? RadioBtn(
-                                    list: "잘 맞는 옷을 함께 보낼게요.",
+                                    list: "줄이거나 늘일 치수를 입력할게요.",
                                     bottomPadding: 15,
                                     textBold: "")
                                 : Container(),
@@ -634,7 +635,7 @@ class _FixSelectState extends State<FixSelect> {
                       ),
                       Expanded(
                         child: Text(
-                          "물품가액은 배송 사고시 보장의 기준이 되며, 허위 기재 시 배송과정에서 불이익이 발생할 수 있으니 실제 물품의 가치를 정확히 기재해 주시기 바랍니다.",
+                          "물품가액은 배송 사고 및 수선 사고시 보장의 기준이 되며, 허위 기재 시 배송과정에서 불이익이 발생할 수 있으니 실제 물품의 가치를 정확히 기재해 주시기 바랍니다.",
                           style: TextStyle(color: Colors.black, fontSize: 13),
                         ),
                       ),

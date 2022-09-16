@@ -64,7 +64,7 @@ class FixRegisterBottomSheet extends StatelessWidget {
             child: Column(
               children: [
                 listItem(
-                    "수선사 검수 완료 후 최종 가격을 전달 드릴 예정이며 결제 진행 여부에 따라 결제금액이 상이할 수 있습니다.",
+                    "디자인 및 소재(또는 수선 난이도)에 따라 최종 금액이 변동될 수 있습니다.",
                     false,
                     true),
                 SizedBox(
