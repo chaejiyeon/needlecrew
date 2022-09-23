@@ -119,12 +119,7 @@ class FixSelectController extends GetxController {
     update();
   }
 
-  // 단위 변환
-  String setPrice() {
-    String setPrice = NumberFormat('###,###,###').format(wholePrice.value);
-    update();
-    return setPrice;
-  }
+
 
   // 수선접수 상품 이미지 삭제
   void deleteImage(File file) {

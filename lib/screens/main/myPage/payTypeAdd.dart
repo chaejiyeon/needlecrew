@@ -19,14 +19,17 @@ class PayTypeAdd extends StatefulWidget {
   State<PayTypeAdd> createState() => _PayTypeAddState();
 }
 
-class _PayTypeAddState extends State<PayTypeAdd> {
+class _PayTypeAddState extends State<PayTypeAdd>
+    with TickerProviderStateMixin {
   final HomeController controller = Get.put(HomeController());
   late ScrollController scrollController = ScrollController();
 
   List<TextEditingController> editingcontroller =
-      []; // 0 : 이름, 1 : 이메일, 2~5 : 카드번호, 6 : 유효기간, 7 : 비밀번호 앞2자리, 8 : 생년월일6자리
+  []; // 0 : 이름, 1 : 이메일, 2~5 : 카드번호, 6 : 유효기간, 7 : 비밀번호 앞2자리, 8 : 생년월일6자리
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  late List<AnimationController> animationController = [];
 
   List<String> emailList = [
     '직접 입력',
@@ -39,10 +42,25 @@ class _PayTypeAddState extends State<PayTypeAdd> {
   String selectValue = "직접 입력";
   String currentField = "";
 
+
+
+  void animationTextfield(String fieldName, int index) {
+
+    if (currentField == fieldName) {
+      animationController[index].addListener(() {
+        AnimationController(
+          vsync: this,
+          duration: Duration(seconds: 3),
+        );
+      });
+    }
+  }
+
   @override
   void initState() {
     for (int i = 0; i < 9; i++) {
       editingcontroller.add(TextEditingController());
+      animationController.add(AnimationController(vsync: this));
     }
     super.initState();
   }
@@ -51,8 +69,10 @@ class _PayTypeAddState extends State<PayTypeAdd> {
   void dispose() {
     for (int i = 0; i < 9; i++) {
       editingcontroller[i].dispose();
+      animationController[i].dispose();
     }
     scrollController.dispose();
+
     super.dispose();
   }
 
@@ -75,8 +95,14 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         body: SingleChildScrollView(
           controller: scrollController,
           child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
             padding: EdgeInsets.only(left: 24, right: 24, top: 40),
             child: Form(
               key: _formKey,
@@ -84,16 +110,24 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 이름 입력
-                  FontStyle(
-                      text: "이름",
-                      fontsize: "",
-                      fontbold: "",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
+                  AnimatedBuilder(
+                    animation: animationController[0],
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, -10 * animationController[0].value),
+                        child: FontStyle(
+                            text: "이름",
+                            fontsize: "",
+                            fontbold: "",
+                            fontcolor: Colors.black,
+                            textdirectionright: false),
+                      );
+                    },
+                  ),
                   SizedBox(
                     height: 10,
                   ),
-                  textForm("이름", "", editingcontroller[0]),
+                  textForm("이름", "", editingcontroller[0], 0),
                   SizedBox(
                     height: 10,
                   ),
@@ -112,7 +146,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Expanded(
-                        child: textForm("이메일", "", editingcontroller[1]),
+                        child: textForm("이메일", "", editingcontroller[1],1),
                       ),
                       SizedBox(
                         width: 10,
@@ -136,26 +170,27 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                                 style: TextStyle(fontSize: 14),
                               ),
                               items: emailList
-                                  .map((item) => DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Container(
-                                          child: Text(
-                                            item,
-                                            style: TextStyle(
-                                              color: HexColor("#909090"),
-                                              fontSize: 14,
-                                            ),
-                                          ),
+                                  .map((item) =>
+                                  DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Container(
+                                      child: Text(
+                                        item,
+                                        style: TextStyle(
+                                          color: HexColor("#909090"),
+                                          fontSize: 14,
                                         ),
-                                      ))
+                                      ),
+                                    ),
+                                  ))
                                   .toList(),
                               buttonWidth: 166,
                               buttonHeight: 36,
                               buttonPadding:
-                                  EdgeInsets.only(left: 10, right: 14),
+                              EdgeInsets.only(left: 10, right: 14),
                               buttonDecoration: BoxDecoration(
                                   border:
-                                      Border.all(color: HexColor("#ededed")),
+                                  Border.all(color: HexColor("#ededed")),
                                   borderRadius: BorderRadius.circular(5),
                                   color: Colors.white),
                               icon: SvgPicture.asset(
@@ -165,11 +200,11 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                             ),
                           ),
                         ),
-                        currentField == "이메일"
-                            ? Container(
-                                height: 30,
-                              )
-                            : Container()
+                        // currentField == "이메일"
+                        //     ? Container(
+                        //   height: 30,
+                        // )
+                        //     : Container()
                       ]),
                     ],
                   ),
@@ -192,16 +227,16 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                     children: [
                       Container(
                           width: 74,
-                          child: textForm("카드 번호", "", editingcontroller[2])),
+                          child: textForm("카드 번호", "", editingcontroller[2],2)),
                       Container(
                           width: 74,
-                          child: textForm("카드 번호", "", editingcontroller[3])),
+                          child: textForm("카드 번호", "", editingcontroller[3],3)),
                       Container(
                           width: 74,
-                          child: textForm("카드 번호", "", editingcontroller[4])),
+                          child: textForm("카드 번호", "", editingcontroller[4],4)),
                       Container(
                           width: 74,
-                          child: textForm("카드 번호", "", editingcontroller[5])),
+                          child: textForm("카드 번호", "", editingcontroller[5],5)),
                     ],
                   ),
                   SizedBox(
@@ -224,7 +259,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                             SizedBox(
                               height: 10,
                             ),
-                            textForm("유효기간", "MM/YY", editingcontroller[6]),
+                            textForm("유효기간", "MM/YY", editingcontroller[6],6),
                           ],
                         ),
                       ),
@@ -250,7 +285,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                                 Container(
                                     width: 80,
                                     child: textForm("비밀번호 앞 두자리", "",
-                                        editingcontroller[7])),
+                                        editingcontroller[7],7)),
                                 SizedBox(
                                   width: 10,
                                 ),
@@ -281,7 +316,7 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                   SizedBox(
                     height: 10,
                   ),
-                  textForm("생년월일", "-빼고 입력해주세요.", editingcontroller[8]),
+                  textForm("생년월일", "-빼고 입력해주세요.", editingcontroller[8],8),
                 ],
               ),
             ),
@@ -291,25 +326,24 @@ class _PayTypeAddState extends State<PayTypeAdd> {
             padding: EdgeInsets.all(20),
             child: widget.isFirst == true
                 ? formSubmitBtn(
-                    "완료",
-                    PayTypeAddConfirm(
-                      isFirst: true,
-                    ))
+                "완료",
+                PayTypeAddConfirm(
+                  isFirst: true,
+                ))
                 : formSubmitBtn(
-                    "등록하기",
-                    PayTypeAddConfirm(
-                      isFirst: false,
-                    ))),
+                "등록하기",
+                PayTypeAddConfirm(
+                  isFirst: false,
+                ))),
       ),
     );
   }
 
   // textfield form
-  Widget textForm(
-      String title, String hinttxt, TextEditingController controller) {
+  Widget textForm(String title, String hinttxt,
+      TextEditingController controller, int index) {
     return TextFormField(
       controller: controller,
-
       onChanged: (value) {
         if (title == "카드 번호" || title == "유효기간") {
           if (value.length >= 4) {
@@ -329,7 +363,9 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         if (title == "이름") {
           RegExp regExp = new RegExp(r'^([가-힣|a-zA-Z])+$');
 
-          if (value.toString().length <= 2 ||
+          if (value
+              .toString()
+              .length <= 2 ||
               !regExp.hasMatch(value.toString())) {
             return "이름을 정확히 입력해주세요.";
           }
@@ -358,21 +394,24 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         }
       },
       keyboardType: title == "카드 번호" ||
-              title == "유효기간" ||
-              title == "비밀번호 앞 두자리" ||
-              title == "생년월일"
+          title == "유효기간" ||
+          title == "비밀번호 앞 두자리" ||
+          title == "생년월일"
           ? TextInputType.number
           : null,
       obscureText: title == "비밀번호 앞 두자리" ? true : false,
       onTap: () {
+        setState(() {
+          currentField = title;
+        });
+        animationTextfield(title, index);
         scrollController.animateTo(scrollController.position.maxScrollExtent,
             duration: Duration(milliseconds: 500), curve: Curves.ease);
       },
       textAlign: hinttxt == "MM/YY" ? TextAlign.center : TextAlign.left,
-      textAlignVertical: TextAlignVertical.top,
       decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
         labelText: title,
-        alignLabelWithHint: true,
         labelStyle: TextStyle(fontSize: 12),
         hintText: hinttxt != "" ? hinttxt : "",
         hintStyle: TextStyle(color: HexColor("#909090"), fontSize: 12),
@@ -386,12 +425,12 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         ),
         suffixIcon: title == "이메일" && selectValue != "직접 입력"
             ? Container(
-                padding: EdgeInsets.only(right: 10),
-                child: Text(
-                  "@",
-                  style: TextStyle(color: HexColor("#909090")),
-                ),
-              )
+          padding: EdgeInsets.only(right: 10),
+          child: Text(
+            "@",
+            style: TextStyle(color: HexColor("#909090")),
+          ),
+        )
             : null,
         suffixIconConstraints: BoxConstraints(),
       ),
@@ -402,6 +441,8 @@ class _PayTypeAddState extends State<PayTypeAdd> {
     String customer_uid = "";
     String expiry = "";
     String cardNum = "";
+    String currentYear = DateTime.now().year.toString().substring(0,2);
+
 
     return Container(
       height: 54,
@@ -412,13 +453,19 @@ class _PayTypeAddState extends State<PayTypeAdd> {
         color: Colors.black,
       ),
       child: TextButton(
-        onPressed: () {
+        onPressed: () async {
           if (this._formKey.currentState!.validate()) {
+            bool isCompleted = false;
             setState(() {
-              customer_uid = editingcontroller[0].text +
+              print("expiry this " + editingcontroller[6].text);
+              customer_uid =
+                  editingcontroller[0].text +
                   DateFormat('yymmdd').format(DateTime.now()) +
                   editingcontroller[5].text;
-              expiry = "20" + editingcontroller[6].text.substring(2, 3) + "-" + editingcontroller[6].text.substring(0, 1);
+              expiry = currentYear +
+                  editingcontroller[6].text.substring(2, 4) +
+                  "-" +
+                  editingcontroller[6].text.substring(0, 2);
 
               cardNum = editingcontroller[2].text +
                   "-" +
@@ -429,16 +476,24 @@ class _PayTypeAddState extends State<PayTypeAdd> {
                   editingcontroller[5].text;
             });
 
-            Get.to(widgetName);
+            print("this expiry num " + editingcontroller[6].text);
+
+
             // 카드정보 설정
             controller.setCardInfo({
+              "name" : editingcontroller[0].text,
+              "email" : editingcontroller[1].text,
               "card_number": cardNum,
               "expiry": expiry,
               "birth": editingcontroller[8].text,
               "pwd_2digit": editingcontroller[7].text,
               "customer_uid": customer_uid
             });
-            controller.getData();
+            isCompleted = await controller.getData();
+
+            if(isCompleted == true){
+              Get.to(widgetName);
+            }
             print("결제카드 등록 성공!!!!!!");
           } else {
             print("currentfield    " + currentField);

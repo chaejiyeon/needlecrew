@@ -31,8 +31,8 @@ class _TakeFixInfoState extends State<TakeFixInfo> {
   void bottomsheetOpen(BuildContext context) {
     showFlexibleBottomSheet(
         minHeight: 0,
-        initHeight: 0.9,
-        maxHeight: 0.9,
+        initHeight: 0.93,
+        maxHeight: 0.93,
         bottomSheetColor: Colors.transparent,
         decoration: BoxDecoration(
           color: HexColor("#f5f5f5"),

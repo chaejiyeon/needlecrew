@@ -1,4 +1,8 @@
-import 'package:needlecrew/models/userInfo.dart';
+import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
+import 'package:needlecrew/getxController/fixClothes/cartController.dart';
+import 'package:needlecrew/getxController/homeController.dart';
+import 'package:needlecrew/models/billing_info.dart';
+import 'package:needlecrew/models/user_card_info.dart';
 import 'package:needlecrew/screens/main/alramInfo.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/widgets/circleBlackBtn.dart';
@@ -13,26 +17,40 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class PayMent extends StatefulWidget {
-  const PayMent({Key? key}) : super(key: key);
+  final int orderid;
+
+  const PayMent({Key? key, required this.orderid}) : super(key: key);
 
   @override
   State<PayMent> createState() => _PayMentState();
 }
 
 class _PayMentState extends State<PayMent> {
-  List<UserInfo> userinfos = [
-    UserInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-    UserInfo("dddd", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-    UserInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-  ];
+  final HomeController controller = Get.put(HomeController());
+
   final _carouselcontroller = CarouselController();
   late int currentPage = 0;
 
+
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    print("payMent card Info" + controller.cardsInfo.toString());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -41,15 +59,16 @@ class _PayMentState extends State<PayMent> {
           onPressed: () {
             Get.back();
           },
-          icon: SvgPicture.asset("assets/icons/prevIcon.svg", width: 11, height: 19),
+          icon: SvgPicture.asset("assets/icons/prevIcon.svg",
+              width: 11, height: 19),
         ),
         actions: [
           IconButton(
             onPressed: () {
               Get.to(CartInfo());
             },
-            icon: SvgPicture.asset("assets/icons/main/cartIcon.svg", width: 23, height: 23,
-                color: Colors.black),
+            icon: SvgPicture.asset("assets/icons/main/cartIcon.svg",
+                width: 23, height: 23, color: Colors.black),
           ),
           IconButton(
             onPressed: () {
@@ -60,110 +79,148 @@ class _PayMentState extends State<PayMent> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(top: 20, left: 24),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: FontStyle(
-                      text: "결제하기",
-                      fontsize: "lg",
-                      fontbold: "bold",
-                      fontcolor: Colors.black,
-                      textdirectionright: false)),
-            ),
-            Container(
-              height: 230,
-              child: CarouselSlider(
-                carouselController: _carouselcontroller,
-                items: List.generate(
-                    userinfos.length, (index) => cardCutom(userinfos[index])),
-                options: CarouselOptions(
-                    aspectRatio: 2.0,
-                    enableInfiniteScroll: false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        currentPage = index;
-                      });
-                    }),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.zero,
-              width: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder(
+        future: controller.getCardAll(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            return Container(
+              color: Colors.white,
+              child: Column(
                 children: [
-                  Icon(CupertinoIcons.back, size: 20),
                   Container(
+                    padding: EdgeInsets.only(top: 20, left: 24),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FontStyle(
+                            text: "결제하기",
+                            fontsize: "lg",
+                            fontbold: "bold",
+                            fontcolor: Colors.black,
+                            textdirectionright: false)),
+                  ),
+                  Container(
+                    height: 230,
+                    child: CarouselSlider(
+                      carouselController: _carouselcontroller,
+                      items: List.generate(controller.cardsInfo.length,
+                              (index) => cardCutom(controller.cardsInfo![index])),
+                      options: CarouselOptions(
+                          aspectRatio: 2.0,
+                          enableInfiniteScroll: false,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              currentPage = index;
+                            });
+                          }),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.zero,
+                    width: 100,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        FontStyle(
-                            text: (currentPage + 1).toString(),
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
-                        FontStyle(
-                            text: "/",
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
-                        FontStyle(
-                            text: userinfos.length.toString(),
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
+                        Icon(CupertinoIcons.back, size: 20),
+                        Container(
+                          child: Row(
+                            children: [
+                              FontStyle(
+                                  text: (currentPage + 1).toString(),
+                                  fontsize: "",
+                                  fontbold: "",
+                                  fontcolor: Colors.black,
+                                  textdirectionright: false),
+                              FontStyle(
+                                  text: "/",
+                                  fontsize: "",
+                                  fontbold: "",
+                                  fontcolor: Colors.black,
+                                  textdirectionright: false),
+                              FontStyle(
+                                  text: controller.cardsInfo.length.toString(),
+                                  fontsize: "",
+                                  fontbold: "",
+                                  fontcolor: Colors.black,
+                                  textdirectionright: false),
+                            ],
+                          ),
+                        ),
+                        Icon(CupertinoIcons.forward, size: 20),
                       ],
                     ),
                   ),
-                  Icon(CupertinoIcons.forward, size: 20),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        top: 39,
+                      ),
+                      child: FutureBuilder(
+                        future: controller.orderInfo(widget.orderid),
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            controller.payment['customer_uid'] = controller.cardsInfo[currentPage].customer_uid;
+                            controller.payment['merchant_uid'] = "order_no" + controller.orderMap['order_no'];
+                            controller.payment['amount'] = controller.orderMap['total_price'];
+                            controller.payment['name'] = controller.orderMap['order_item'];
+
+                            return Column(
+                              children: [
+                                infoList("결제 수단",
+                                    controller.cardsInfo[currentPage].card_name, false),
+                                infoList("의뢰 내역", controller.orderMap['order_item'], false),
+                                infoList(
+                                    "의뢰 비용",
+                                    controller.setPrice(int.parse(controller.orderMap['order_price'])),
+                                    true),
+                                infoList(
+                                    "택배 비용",
+                                    controller.setPrice(int.parse(controller.orderMap['shipp_cost'])),
+                                    true),
+                                Container(
+                                    padding: EdgeInsets.only(left: 24, right: 24),
+                                    child: ListLine(
+                                        height: 1,
+                                        width: double.infinity,
+                                        lineColor: HexColor("#ededed"),
+                                        opacity: 1)),
+                                SizedBox(
+                                  height: 14,
+                                ),
+                                infoList("최종 결제 금액",
+                                    controller.setPrice(controller.orderMap['total_price']), true),
+                              ],
+                            );
+                          }else{
+                            return Center(child: CircularProgressIndicator(),);
+                          }
+                        },
+
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  top: 39,
-                ),
-                child: Column(
-                  children: [
-                    infoList("결제 수단", userinfos[currentPage].cardName, false),
-                    infoList("의뢰 내역", userinfos[currentPage].cardName, false),
-                    infoList("편도 택배 비용", userinfos[currentPage].cardName, true),
-                    infoList("왕복 택배 비용", userinfos[currentPage].cardName, true),
-                    Container(
-                        padding: EdgeInsets.only(left: 24, right: 24),
-                        child: ListLine(
-                            height: 1,
-                            width: double.infinity,
-                            lineColor: HexColor("#ededed"),
-                            opacity: 1)),
-                    SizedBox(
-                      height: 14,
-                    ),
-                    infoList("최종 결제 금액", userinfos[currentPage].cardName, true),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+            );
+          }else{
+            return Center(child: CircularProgressIndicator(),);
+          }
+        },
+
       ),
       bottomNavigationBar: Container(
-          color: Colors.white,
-          padding: EdgeInsets.all(20),
-          child: CircleBlackBtn(btnText: "결제하기", pageName: "mainHome")),
+        color: Colors.white,
+        padding: EdgeInsets.all(20),
+        child: CircleBlackBtn(
+          btnText: "결제하기",
+          pageName: "mainHome",
+          argument: currentPage,
+        ),
+      ),
     );
   }
 
   // card custom 위젯
-  Widget cardCutom(UserInfo userinfos) {
+  Widget cardCutom(CardInfo cardInfo) {
     return Stack(
       children: [
         Container(
@@ -180,7 +237,7 @@ class _PayMentState extends State<PayMent> {
           child: Container(
             padding: EdgeInsets.only(left: 20),
             child: FontStyle(
-                text: userinfos.cardName,
+                text: cardInfo.card_name,
                 fontcolor: Colors.white,
                 fontsize: "md",
                 fontbold: "",
@@ -193,7 +250,7 @@ class _PayMentState extends State<PayMent> {
           alignment: Alignment.bottomRight,
           child: Container(
             child: FontStyle(
-                text: userinfos.cardNum.substring(15, 19),
+                text: cardInfo.card_number.substring(12, 16),
                 fontcolor: Colors.white,
                 fontbold: "",
                 fontsize: "md",

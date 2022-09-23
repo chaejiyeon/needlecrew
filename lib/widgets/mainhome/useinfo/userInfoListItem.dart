@@ -129,8 +129,7 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
         },
         bodyBuilder: (context, offset) {
           return SliverChildListDelegate([
-            // Container()
-            UseInfoProcessSheet(progressNum: progressNum),
+            UseInfoProcessSheet(progressNum: progressNum, date: widget.fixReady.readyDate),
           ]);
         },
       );
@@ -337,7 +336,7 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
   }
 
   // bottomsheet 연결 버튼
-  Widget useinfoBtn(String text, String bottomsheet) {
+  Widget  useinfoBtn(String text, String bottomsheet) {
     return Container(
       margin: EdgeInsets.only(right: 10),
       width: 87,

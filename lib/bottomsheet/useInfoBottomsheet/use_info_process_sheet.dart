@@ -9,8 +9,9 @@ import 'package:intl/intl.dart';
 
 class UseInfoProcessSheet extends StatelessWidget {
   final int progressNum;
+  final String date;
 
-  const UseInfoProcessSheet({Key? key, required this.progressNum})
+  const UseInfoProcessSheet({Key? key, required this.progressNum, required this.date})
       : super(key: key);
 
   @override
@@ -69,7 +70,7 @@ class UseInfoProcessSheet extends StatelessWidget {
                           children: List.generate(
                               process.length,
                               (index) =>
-                                  processItem(process[index], "01/08 15:32")),
+                                  processItem(process[index], date)),
                         ),
                       )
                     ],

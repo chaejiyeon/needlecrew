@@ -135,7 +135,7 @@ class _FixSelectState extends State<FixSelect> {
   }
 
   // 장바구니 담기
-  Future<bool> registerCart(int variationId, String currentState) async {
+  Future<bool> registerCart(int variationId) async {
     WooCustomer customer = await wp_api.getUser();
 
     try {
@@ -150,7 +150,7 @@ class _FixSelectState extends State<FixSelect> {
       WooOrderPayload wooOrderPayload = WooOrderPayload(
         customerId: customer.id,
         status: 'pending',
-        customerNote: currentState,
+        customerNote: texteditingController[2].text,
         lineItems: lineItems,
         metaData: metadata,
       );
@@ -179,8 +179,8 @@ class _FixSelectState extends State<FixSelect> {
         WooOrderPayloadMetaData(key: '사진', value: ''),
         WooOrderPayloadMetaData(
             key: '물품 가액', value: texteditingController[1].text),
-        WooOrderPayloadMetaData(
-            key: '추가 설명', value: texteditingController[2].text),
+        // WooOrderPayloadMetaData(
+        //     key: '추가 설명', value: texteditingController[2].text),
         WooOrderPayloadMetaData(
             key: '추가 옵션', value: controller.radioGroup["추가 옵션"]),
       ];
@@ -742,7 +742,7 @@ class _FixSelectState extends State<FixSelect> {
                                     texteditingController[1].text.length > 0)) {
                               controller.uploadImage();
                               cartDetailInfo();
-                              registerCart(variationId, '옷바구니');
+                              registerCart(variationId);
                               // controller.getCart();
                               Get.to(() => CartInfo());
                             }

@@ -17,7 +17,7 @@ class FixClothes extends StatelessWidget {
         statusBarIconBrightness: Brightness.dark));
 
     return Scaffold(
-      appBar: FixClothesAppBar(appbar: AppBar(),),
+      appBar: FixClothesAppBar(appbar: AppBar(),prev: "출발지"),
       body: PageView(
         children: [
           StartAddressChoose(),

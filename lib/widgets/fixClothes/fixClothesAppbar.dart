@@ -3,6 +3,7 @@ import 'package:needlecrew/screens/main/alramInfo.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/fixClothes.dart';
 import 'package:needlecrew/screens/main/fixClothes/chooseClothes.dart';
+import 'package:needlecrew/screens/main/fixClothes/takeFixInfo.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/mainPage.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,8 +56,10 @@ class FixClothesAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 : 0,
                           )));
             }
-          } else if (prev == "옷바구니") {
+          } else if (prev == "옷바구니" || prev == "출발지") {
             Get.toNamed("/mainHome");
+          } else if(prev == "수거 알림"){
+            Get.off(() => TakeFixInfo());
           }
         },
       ),

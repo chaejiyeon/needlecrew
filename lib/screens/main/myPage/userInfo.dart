@@ -57,7 +57,7 @@ class _UserInfoState extends State<UserInfo> {
                   UserInfoMenu(
                       appTitle: "회원 정보",
                       title: "결제 수단",
-                      info: controller.userInfo("결제 수") != null
+                      info: controller.userInfo("결제 수단") != null
                           ? controller.usersetPay.value : "",
                       line: false),
                 ],

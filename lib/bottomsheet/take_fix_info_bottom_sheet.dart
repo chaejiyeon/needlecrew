@@ -75,7 +75,7 @@ class TakeFixInfoBottomSheet extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: GestureDetector(
               onTap: () {
-                Get.to(FixRegister());
+                Get.off(() =>       FixRegister());
               },
               child: Container(
                 alignment: Alignment.center,

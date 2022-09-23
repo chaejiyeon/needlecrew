@@ -1,4 +1,4 @@
-class UserInfo{
+class UserCardInfo{
   final String userName;
   final String userEmail;
   final String cardName;
@@ -7,6 +7,6 @@ class UserInfo{
   final String password;
   final String birthday;
 
-  UserInfo(this.userName, this.userEmail, this.cardName, this.cardNum, this.date, this.password, this.birthday);
+  UserCardInfo(this.userName, this.userEmail, this.cardName, this.cardNum, this.date, this.password, this.birthday);
 }
 

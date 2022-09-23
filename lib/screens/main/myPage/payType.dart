@@ -1,5 +1,5 @@
 import 'package:needlecrew/modal/alertDialogYesNo.dart';
-import 'package:needlecrew/models/userInfo.dart';
+import 'package:needlecrew/models/user_card_info.dart';
 import 'package:needlecrew/screens/main/myPage/payTypeAdd.dart';
 import 'package:needlecrew/widgets/circleBlackBtn.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
@@ -18,12 +18,12 @@ class PayType extends StatefulWidget {
 }
 
 class _PayTypeState extends State<PayType> {
-  List<UserInfo> userinfos = [
-    UserInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
+  List<UserCardInfo> userinfos = [
+    UserCardInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
         "1234", "1993/05/23"),
-    UserInfo("dddd", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
+    UserCardInfo("dddd", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
         "1234", "1993/05/23"),
-    UserInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
+    UserCardInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
         "1234", "1993/05/23"),
   ];
   final _carouselcontroller = CarouselController();
@@ -180,7 +180,7 @@ class _PayTypeState extends State<PayType> {
   }
 
   // card custom 위젯
-  Widget cardCutom(UserInfo userinfos) {
+  Widget cardCutom(UserCardInfo userinfos) {
     return Stack(
       children: [
         Container(

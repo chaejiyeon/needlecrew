@@ -1,4 +1,7 @@
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
+import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/modal/alertDialogYesNo.dart';
 import 'package:needlecrew/screens/main/myPage/payMent.dart';
 import 'package:needlecrew/screens/main/myPage/payType.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +17,14 @@ class FixCompleteModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.put(HomeController());
+
+    homeController.getCardAll();
     return  Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
-        width: 300,
-        height: 200,
+        width: 297,
+        height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -65,8 +71,7 @@ class FixCompleteModal extends StatelessWidget {
                           )),
                       child: TextButton(child: Text("확정",style: TextStyle(color: Colors.black)), onPressed: () {
                         controller.updateOrderId.value = orderid;
-                        controller.updateState();
-                        // Get.to(PayMent());
+                        homeController.cardsInfo.length == 0 ? Get.dialog(AlertDialogYes(titleText: "결제할 카드를 등록해주세요.",widgetname: "alert",)) : Get.off(() => PayMent(orderid: orderid,));
                       }),
                     ),
                   ),

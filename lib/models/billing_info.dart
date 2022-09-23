@@ -1,4 +1,3 @@
-
 // billing 정보 가져오기
 class BillingInfo {
   final dynamic code;
@@ -16,25 +15,28 @@ class BillingInfo {
   }
 }
 
-
 // billing에서 response 분리
 class CardInfo {
+  final dynamic customer_uid;
+  final dynamic customer_name;
+  final dynamic customer_email;
+  final dynamic card_name;
   final dynamic card_number;
-  final dynamic expiry;
-  final dynamic birth;
-  final dynamic pwd_2digit;
 
-  CardInfo(
-      {required this.card_number,
-      required this.expiry,
-      required this.birth,
-      required this.pwd_2digit});
+  CardInfo({
+    required this.customer_uid,
+    required this.customer_name,
+    required this.customer_email,
+    required this.card_name,
+    required this.card_number,
+  });
 
   factory CardInfo.fromJson(Map json) {
     return CardInfo(
-        card_number: json["card_number"],
-        expiry: json["expiry"],
-        birth: json["birth"],
-        pwd_2digit: json["pwd_2digit"]);
+        customer_uid: json['customer_uid'],
+        customer_name: json["customer_name"],
+        customer_email: json["customer_email"],
+        card_name: json["card_name"],
+        card_number: json["card_number"],);
   }
 }

@@ -1,4 +1,7 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:needlecrew/bottomsheet/fix_register_bottom_sheet.dart';
+import 'package:needlecrew/getxController/homeController.dart';
+import 'package:needlecrew/models/tooltip_text.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/widgets/cartInfo/cartListItem.dart';
 import 'package:needlecrew/widgets/circleLineBtn.dart';
@@ -11,19 +14,35 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
+import 'package:needlecrew/widgets/visible_info.dart';
 
 import 'dart:ui' as ui;
 
 import '../../../getxController/fixClothes/cartController.dart';
 
-class FixRegisterInfo extends GetView<CartController> {
+class FixRegisterInfo extends StatefulWidget {
   const FixRegisterInfo({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    controller.isSaved(true);
-    print("FixRegisterInfo setsave " + controller.setSave.toString());
+  State<FixRegisterInfo> createState() => _FixRegisterInfoState();
+}
 
+class _FixRegisterInfoState extends State<FixRegisterInfo>
+    with TickerProviderStateMixin {
+  final CartController controller = Get.put(CartController());
+  final HomeController homeController = Get.put(HomeController());
+  late final AnimationController animationController;
+
+  @override
+  void initState() {
+    animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 10));
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     int price = 0;
     List priceinfo = [
       11000,
@@ -85,9 +104,9 @@ class FixRegisterInfo extends GetView<CartController> {
                                     children: List.generate(
                                         controller.registerOrders.length,
                                         (index) => CartListItem(
-                                          cartItem: controller.orderItem,
-                                          index: index,
-                                          pageName: "register",
+                                              cartItem: controller.orderItem,
+                                              index: index,
+                                              pageName: "register",
                                             )),
                                   ),
                                 ),
@@ -111,80 +130,145 @@ class FixRegisterInfo extends GetView<CartController> {
 
       // 고정 bottom navigation
       bottomNavigationBar: GestureDetector(
-        child: Container(
-          height: 150,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: HexColor("#d5d5d5").withOpacity(0.1),
-                spreadRadius: 10,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        FontStyle(
-                            text: "총 의뢰 예상 금액 : ",
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
-                        FontStyle(
-                            text: controller.setPrice(),
-                            fontsize: "md",
-                            fontbold: "bold",
-                            fontcolor: HexColor("#fd9a03"),
-                            textdirectionright: false),
-                        FontStyle(
-                            text: "원",
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,
-                            textdirectionright: false),
-                      ],
-                    ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          CupertinoIcons.chevron_up,
-                          color: HexColor("#909090"),
-                          size: 20,
-                        )),
-                  ],
+        child: Obx(
+          () => Container(
+            height: controller.visibility.value == true ? 248 : 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: HexColor("#d5d5d5").withOpacity(0.1),
+                  spreadRadius: 10,
+                  blurRadius: 5,
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: 10),
-                width: double.infinity,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: HexColor("#fd9a03"),
-                  borderRadius: BorderRadius.circular(25),
+              ],
+            ),
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
+                Expanded(
+                  child: Obx(() => VisibleInfo(
+                      visible: controller.visibility.value,
+                      formInfo: [
+                        {
+                          "titleText": "선택한 의뢰 예상 비용",
+                          "tooltipText": cost.tooltipText,
+                          "targetText" : cost.boldText,
+                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? homeController.setPrice(controller.wholePrice.value) + " ~ " : controller.wholePrice.value <= 0 && controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? " - " : homeController.setPrice(controller.wholePrice.value),
+                          "istooltip": true
+                        },
+                        {
+                          "titleText": "총 배송 비용",
+                          "tooltipText": ship.tooltipText,
+                          "targetText" : ship.boldText,
+                          "price": homeController.setPrice(6000),
+                          "istooltip": true
+                        },
+                        {
+                          "titleText": "총 의뢰 예상 비용",
+                          "tooltipText": "",
+                          "targetText" : [""],
+                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? controller.setPrice() + " ~ " : controller.setPrice(),
+
+                          "istooltip": false
+                        },
+                      ])),
                 ),
-                child: TextButton(
-                  onPressed: () {
-                    Get.toNamed('mainHome');
-                    controller.registerAddress();
-                  },
-                  child: Text(
-                    "홈으로",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+
+
+                Container(
+                  height: 20,
+                  margin: EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Obx(
+                              () => EasyRichText(
+                            "총 의뢰 예상 금액 : ${controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? controller.setPrice() + " ~ " : controller.setPrice()}원",
+                            defaultStyle: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'NotoSansCJKkrRegular',
+                              color: Colors.black,
+                            ),
+                            patternList: [
+                              EasyRichTextPattern(
+                                targetString: controller.setPrice(),
+                                style: TextStyle(
+                                    color: HexColor("#fd9a03"),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Obx(
+                            () => IconButton(
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              if (controller.visibility.value ==
+                                  true) {
+                                controller.visibility.value = false;
+                              } else {
+                                controller.visibility.value = true;
+                              }
+                            },
+                            icon: AnimatedBuilder(
+                              animation: animationController,
+                              child: controller.visibility.value
+                                  ? SvgPicture.asset(
+                                "assets/icons/dropdownIcon.svg",
+                                color: HexColor("#909090"),
+                                width: 14,
+                                height: 8,
+                              )
+                                  : SvgPicture.asset(
+                                "assets/icons/dropdownupIcon.svg",
+                                color: HexColor("#909090"),
+                                width: 14,
+                                height: 8,
+                              ),
+                              builder: (context, child) {
+                                return Transform.rotate(
+                                  angle: animationController.value *
+                                      2.0 *
+                                      3.14,
+                                  child: child,
+                                );
+                              },
+                            )),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+
+                Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  width: double.infinity,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: HexColor("#fd9a03"),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                      Get.toNamed('mainHome');
+                      controller.registerAddress();
+                    },
+                    child: Text(
+                      "홈으로",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -307,4 +391,3 @@ class FixRegisterInfo extends GetView<CartController> {
     );
   }
 }
-

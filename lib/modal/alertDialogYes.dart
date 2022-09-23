@@ -2,6 +2,7 @@ import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/userUpdate.dart';
+import 'package:needlecrew/screens/mainPage.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,11 +63,14 @@ class AlertDialogYes extends StatelessWidget {
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => UserUpdate()), (route) => false);
                     }else if(widgetname == "cart"){
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);
+                    }else if(widgetname == "alert"){
+                      Get.close(2);
                     }else{
                       if(widgetname == "biilling"){
                         homecontroller.cardInfo.clear();
                       }
                       Get.back();
+
                     }
                   }),
             ),

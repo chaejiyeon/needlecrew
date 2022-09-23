@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:needlecrew/modal/alertDialogYes.dart';
 
@@ -63,12 +65,36 @@ class HomeController extends GetxController {
 
   // 카드 정보 등록
   Map cardInfo = {
+    'name': '',
+    'email': '',
+    'card_name': '',
     'card_number': '',
     'expiry': '',
     'birth': '',
     'pwd_2digit': '',
     'customer_uid': '',
   };
+
+  // billing key 발급 된 사용가능 카드 목록
+  RxList cardsBillkey = [].obs;
+  List<CardInfo> cardsInfo = [];
+
+  // getOrder
+  Map orderMap = {
+    'order_no': '',
+    'order_item': '',
+    'order_price': '',
+    'shipp_cost': '6000',
+    'total_price': 0,
+  };
+
+  // 결제 요청 정보
+  RxMap payment = {
+    'customer_uid': '',
+    'merchant_uid': '',
+    'amount': 0,
+    'name': '',
+  }.obs;
 
   @override
   void onInit() {
@@ -129,8 +155,9 @@ class HomeController extends GetxController {
         }
       } else if (userinfo == "결제 수단") {
         if (metaData[i].key == "default_card") {
-          usersetPay.value = metaData[i].value;
-          return usersetPay.value;
+          print("default_card billing this " + metaData[i].value);
+          // getCardInfo(metaData[i].value);
+          getCardAll();
         }
       }
     }
@@ -142,6 +169,13 @@ class HomeController extends GetxController {
     await getUser();
     isInitialized.value = true;
     return;
+  }
+
+  // 단위 변환
+  String setPrice(int price) {
+    String setPrice = NumberFormat('###,###,###').format(price);
+    update();
+    return setPrice;
   }
 
   // 해당 유저에 정보
@@ -156,6 +190,23 @@ class HomeController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  // getOrder
+  Future orderInfo(int orderid) async {
+    WooOrder order = await wp_api.wooCommerceApi.getOrderById(orderid);
+    try {
+      orderMap['order_no'] = order.number;
+      orderMap['order_item'] = order.lineItems!.first.name;
+      orderMap['order_price'] = order.lineItems!.first.price;
+      orderMap['total_price'] =
+          int.parse(order.lineItems!.first.price.toString()) +
+              int.parse(orderMap['shipp_cost']);
+
+      print(orderMap);
+    } catch (e) {
+      print("HomeController - orderInfo Error" + e.toString());
+    }
   }
 
   // user login
@@ -250,7 +301,7 @@ class HomeController extends GetxController {
     return true;
   }
 
-  // mypage controller
+  // ***mypage controller***
 
   // 유저 정보 업데이트
   Future<bool> updateUser(String updatename) async {
@@ -349,6 +400,8 @@ class HomeController extends GetxController {
 
   // 주소
   void setCardInfo(Map registerCard) {
+    cardInfo['name'] = registerCard['name'];
+    cardInfo['email'] = registerCard['email'];
     cardInfo['card_number'] = registerCard['card_number'];
     cardInfo['expiry'] = registerCard['expiry'];
     cardInfo['birth'] = registerCard['birth'];
@@ -358,12 +411,10 @@ class HomeController extends GetxController {
     update();
   }
 
+  // *** useinfo controller ***
 
-
-  // 비인증 결제 카드빌키 요청
-  Future getData() async {
-
-
+  //  api 요청에 필요한 token 발급
+  Future<GetToken> getToken() async {
     // iamport 인증 토큰 발급
     http.Response getToken = await http.post(
       Uri.http('api.iamport.kr', 'users/getToken'),
@@ -382,30 +433,31 @@ class HomeController extends GetxController {
     // 토큰 분리
     var access_token = GetToken.fromJson(token.response);
 
-    // token 생성
-    var postToken = "Bearer " + access_token.access_token;
+    return access_token;
+  }
 
-    print(
-        "iamport access_token this   " + access_token.access_token.toString());
-    print("iamport access_token this   " + getToken.body.toString());
-    print("customer_uid this   " + cardInfo['customer_uid'].toString());
-    print("access_token this   " + postToken.toString());
+  // 비인증 결제 카드빌키 요청
+  Future<bool> getData() async {
+    GetToken tokenInfo = await getToken();
+
+    print("getData   " + cardInfo.toString());
 
     // 빌링키 발급 요청
     http.Response billingKey = await http.post(
-      Uri.http(
+      Uri.https(
           "api.iamport.kr", "subscribe/customers/${cardInfo["customer_uid"]}"),
       headers: {
-        "Authorization": "Bearer ${access_token.access_token}"
+        "Authorization": "${tokenInfo.access_token}",
       },
-      body: jsonEncode({
-        // "customer_uid" : cardInfo["customer_uid"],
+      body: {
+        "customer_name": cardInfo["name"],
+        "customer_email": cardInfo["email"],
         "card_number": cardInfo["card_number"],
         "expiry": cardInfo["expiry"],
         "birth": cardInfo["birth"],
         "pwd_2digit": cardInfo["pwd_2digit"],
-        "pg_id" : "nice.nictest04m"
-      }),
+        "pg": "nice.nictest04m" // 나이스페이먼츠
+      },
     );
 
     print("iamport billingKey this   " + billingKey.body.toString());
@@ -413,24 +465,158 @@ class HomeController extends GetxController {
     // billing 정보 가져오기
     var getBilling = BillingInfo.fromJson(json.decode(billingKey.body));
 
-    // billing에서 response 분리
-    var billingInfo = CardInfo.fromJson(json.decode(getBilling.response));
-
     if (getBilling.code == 0) {
-      // await wp_api.wooCommerceApi.updateCustomer(id: user.id!, data: {
-      //   'meta_data': [
-      //     WooCustomerMetaData(null, 'default_card', )
-      //   ]
-      // });
-      print("Homecontroller - billingKey 발급 성공!!!" +
-          json.decode(billingKey.body).toString());
+      await wp_api.wooCommerceApi.updateCustomer(id: user.id!, data: {
+        'meta_data': [
+          WooCustomerMetaData(null, 'default_card', cardInfo['customer_uid'])
+        ]
+      });
+      print("Homecontroller - billingKey 발급 성공!!!");
+      return true;
     } else {
-      if (getBilling.code == -1) {
-        Get.dialog(AlertDialogYes(
-            titleText: "입력된 정보를 확인해 주세요!", widgetname: "billing"));
-      }
-      return Exception("Homecontroller - billinKey 발급 Error!!!");
+      Get.dialog(
+          AlertDialogYes(titleText: "입력된 정보를 확인해 주세요!", widgetname: "billing"));
+      return false;
     }
   }
 
+  // 특정 카드 정보 가져오기
+  Future getCardInfo(String billingKey, int index) async {
+    try {
+      GetToken tokenInfo = await getToken();
+
+      // billing 정보 요청
+      http.Response response = await http.get(
+        Uri.https("api.iamport.kr", "/subscribe/customers/${billingKey}"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "${tokenInfo.access_token}",
+        },
+      );
+
+      print("response" + response.body);
+      // billing 정보 가져오기
+      var getBilling = BillingInfo.fromJson(json.decode(response.body));
+
+      // card 정보 가져오기
+      var getCard = CardInfo.fromJson(getBilling.response);
+
+      // if (getBilling.code == 0) {
+      cardsInfo.add(CardInfo(
+        customer_uid: getCard.customer_uid,
+        customer_name: getCard.customer_name,
+        customer_email: getCard.customer_email,
+        card_name: getCard.card_name,
+        card_number: getCard.card_number,
+      ));
+
+      usersetPay.value = cardsInfo[0].card_name +
+          "(" +
+          cardsInfo[0].card_number.substring(12, 16) +
+          ")";
+
+      print("HomeController - getCardInfo " + cardsInfo.toString());
+      // } else {
+      //   Exception("HomeController - getCardInfo error");
+      // }
+      update();
+    } catch (e) {
+      print("HomeController - getCardInfo error" + e.toString());
+    }
+  }
+
+  // 전체 카드 정보 가져오기
+  Future getCardAll() async {
+    cardsBillkey.clear();
+    cardsInfo.clear();
+    getUser();
+
+    List<WooCustomerMetaData> metaData = user.metaData!;
+
+    try {
+      GetToken token = await getToken();
+
+      for (int i = 0; i < metaData.length!; i++) {
+        if (metaData[i].key == "default_card" && metaData[i].key!.isNotEmpty) {
+          cardsBillkey.add(metaData[i].value);
+        } else if (metaData[i].key == "pay_cards" &&
+            metaData[i].key!.isNotEmpty) {
+          List dataSplit = metaData[i].value.split(' ');
+          for (int j = 0; j < dataSplit.length; j++) {
+            cardsBillkey.add(dataSplit[j]);
+          }
+        }
+      }
+
+      Map<String, dynamic> parameter = {"customer_uid[]": cardsBillkey};
+
+      http.Response response = await http.get(
+        Uri.https("api.iamport.kr", "subscribe/customers", parameter),
+        headers: {
+          "Authorization": "${token.access_token}",
+        },
+      );
+
+      var body = BillingInfo.fromJson(json.decode(response.body));
+
+      print(body.response.toString());
+
+      for (int i = 0; i < body.response.length; i++) {
+        CardInfo cardInfo = CardInfo(
+            card_name: body.response[i]['card_name'],
+            card_number: body.response[i]['card_number'],
+            customer_name: body.response[i]['customer_name'],
+            customer_email: body.response[i]['customer_email'],
+            customer_uid: body.response[i]['customer_uid']);
+
+        cardsInfo.add(cardInfo);
+      }
+
+      print("cardsInfo " + cardsInfo.toString());
+
+      update();
+      cardsBillkey.refresh();
+
+      print("HomeController - getCardAll" + cardsBillkey.toString());
+    } catch (e) {
+      print("HomeController - getCardAll Error " + e.toString());
+    }
+
+    // print(response.body);
+  }
+
+  // 결제 요청
+  Future<bool> payMent() async {
+    try {
+      GetToken token = await getToken();
+
+      print(payment['customer_uid']);
+      http.Response response = await http.post(
+          Uri.https("api.iamport.kr", "subscribe/payments/again"),
+          headers: {
+            "Authorization": "${token.access_token}"
+          },
+          body: {
+            'customer_uid': payment['customer_uid'],
+            'merchant_uid': payment['merchant_uid'],
+            'amount': payment['amount'].toString(),
+            'name': payment['name'],
+          });
+      print("response this" + response.toString());
+
+      var paymentResult = BillingInfo.fromJson(json.decode(response.body));
+
+      print("paymentResult" + response.body.toString());
+      print("paymentResult code" + paymentResult.code.toString());
+
+      if (paymentResult.code == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("HomeController - payMent Error " + e.toString());
+      return false;
+    }
+  }
 }

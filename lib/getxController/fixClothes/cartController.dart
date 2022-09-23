@@ -102,7 +102,6 @@ class CartController extends GetxController {
     return;
   }
 
-
   // option name  변환
   String name(String optionName) {
     // 반환할 이름
@@ -430,14 +429,20 @@ class CartController extends GetxController {
             orderMeta['사진'] = orders[i].metaData![j].value;
           } else if (orders[i].metaData![j].key!.indexOf('의뢰 방법') != -1) {
             orderMeta['의뢰 방법'] = orders[i].metaData![j].value;
-          } else if (orders[i].metaData![j].key!.indexOf('추가 설명') != -1) {
-            orderMeta['추가 설명'] = orders[i].metaData![j].value;
-          } else if (orders[i].metaData![j].key!.indexOf('추가 옵션') != -1) {
+          }
+
+          // else if (orders[i].metaData![j].key!.indexOf('추가 설명') != -1) {
+          //   orderMeta['추가 설명'] = orders[i].metaData![j].value;
+          // }
+
+          else if (orders[i].metaData![j].key!.indexOf('추가 옵션') != -1) {
             orderMeta['추가 옵션'] = orders[i].metaData![j].value;
           } else if (orders[i].metaData![j].key!.indexOf('치수') != -1) {
             orderMeta['치수'] = orders[i].metaData![j].value;
           }
         }
+
+        orderMeta['추가 설명'] = orders[i].customerNote!;
 
         // 첫 상위 카테고리 삽입
         cartItem.add(CartItem(
@@ -525,16 +530,17 @@ class CartController extends GetxController {
       'addresss_1': setAddress.value,
     };
     List metadata = [
-      {'key': '수거 희망일', 'value': fixdate.value}
+      {'key': '수거 희망일', 'value': fixdate.value},
+      {'key': '진행 상황', 'value': '주문 완료'}
     ];
 
     try {
       for (int i = 0; i < orderid.length; i++) {
         order =
             await wp_api.wooCommerceApi.updateOrder(id: orderid[i], orderMap: {
+          'status': 'fix-register',
           'billing': order_map,
           'shipping': order_map,
-          'customer_note': '주문 완료',
           'meta_data': metadata
         });
         print(orderid[i].toString() + "주소 등록이 완료되었습니다.");
@@ -555,7 +561,7 @@ class CartController extends GetxController {
       variation = await wp_api.wooCommerceApi
           .getProductVariations(productId: productId);
 
-      print("this variation info "  + variation.toString());
+      print("this variation info " + variation.toString());
     } catch (e) {
       print("isError" + e.toString());
       return false;

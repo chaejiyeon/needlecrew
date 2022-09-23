@@ -117,55 +117,52 @@ class _ImageUploadState extends State<ImageUpload> {
       },
       bodyBuilder: (context, offset) {
         return SliverChildListDelegate([
-        Container(
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        Container(
-        padding: EdgeInsets.only(left: 24),
-        child: FontStyle(
-        text: "이런 사진이면 좋아요.",
-        fontbold: "bold",
-        fontcolor: Colors.black,
-        fontsize: "md",
-        textdirectionright: false,
-        ),
-        ),
-        Container(
-        padding: EdgeInsets.only(left: 24, top: 10, right: 24),
-        child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-        sampleImage(
-        "assets/images/useguide/sampleImage.png", "전체 사진"),
-        SizedBox(
-        width: 11,
-        ),
-        sampleImage(
-        "assets/images/useguide/sampleImage2.png", "수선부위 사진"),
-        ],
-        ),
-        ),
-        Container(
-        padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: widget.isShopping == true ? 20 : 48),
-        child: Column(
-        children: List.generate(
-        widget.isShopping == true
-        ? getBtn.length - 1
-            : getBtn.length,
-        (index) => getImageBtn(getBtn[index], index)),
-        ),
-        ),
-        ],
-        )
-        ,
-        )
-        ,
-        ]
-        );
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 24),
+                  child: FontStyle(
+                    text: "이런 사진이면 좋아요.",
+                    fontbold: "bold",
+                    fontcolor: Colors.black,
+                    fontsize: "md",
+                    textdirectionright: false,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 24, top: 10, right: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      sampleImage(
+                          "assets/images/useguide/sampleImage.png", "전체 사진"),
+                      SizedBox(
+                        width: 11,
+                      ),
+                      sampleImage(
+                          "assets/images/useguide/sampleImage2.png", "수선부위 사진"),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: widget.isShopping == true ? 20 : 48),
+                  child: Column(
+                    children: List.generate(
+                        widget.isShopping == true
+                            ? getBtn.length - 1
+                            : getBtn.length,
+                        (index) => getImageBtn(getBtn[index], index)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ]);
       },
     );
   }
@@ -201,7 +198,7 @@ class _ImageUploadState extends State<ImageUpload> {
               dashPattern: [5, 5],
               color: HexColor("#d5d5d5"),
               padding:
-              EdgeInsets.only(left: 35, right: 35, bottom: 25, top: 25),
+                  EdgeInsets.only(left: 35, right: 35, bottom: 25, top: 25),
               child: Column(
                 children: [
                   SvgPicture.asset("assets/icons/fixClothes/" + widget.icon),
@@ -221,14 +218,14 @@ class _ImageUploadState extends State<ImageUpload> {
           files.length <= 0
               ? Container()
               : Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                    files.length, (index) => ImageCustom(files[index])),
-              ),
-            ),
-          ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                          files.length, (index) => ImageCustom(files[index])),
+                    ),
+                  ),
+                ),
         ],
       ),
     );
@@ -337,6 +334,8 @@ class GetImageBtn {
   final String img;
   final String text;
 
-  GetImageBtn(this.img,
-      this.text,);
+  GetImageBtn(
+    this.img,
+    this.text,
+  );
 }

@@ -72,6 +72,7 @@ class _FixRegisterState extends State<FixRegister>
     return Scaffold(
         appBar: FixClothesAppBar(
           appbar: AppBar(),
+          prev: "수거 알림",
         ),
         body: Container(
           color: Colors.white,
@@ -179,9 +180,9 @@ class _FixRegisterState extends State<FixRegister>
                                               element.cartWay == "직접 입력") !=
                                       -1
                                   ? setprice(
-                                          controller.wholePrice.value - 6000) +
+                                          controller.wholePrice.value) +
                                       " ~ "
-                                  : controller.wholePrice.value - 6000 <= 0 &&
+                                  : controller.wholePrice.value<= 0 &&
                                           controller.cartItem.indexWhere(
                                                   (element) =>
                                                       element.cartWay ==
@@ -189,7 +190,7 @@ class _FixRegisterState extends State<FixRegister>
                                               -1
                                       ? " - "
                                       : setprice(
-                                          controller.wholePrice.value - 6000),
+                                          controller.wholePrice.value),
                               "istooltip": true
                             },
                             {

@@ -51,8 +51,6 @@ class _CartInfoState extends State<CartInfo> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     Future myFuture = controller.getCart();
 
-    print("register orders id info " + controller.orders.length.toString());
-
     return Scaffold(
       body: FutureBuilder(
         future: myFuture,
@@ -142,8 +140,8 @@ class _CartInfoState extends State<CartInfo> with TickerProviderStateMixin {
                                       : Container(
                                           padding: EdgeInsets.only(
                                               left: 24, right: 24),
-                                          color: HexColor("#f7f7f7"),
-                                          child: SingleChildScrollView(
+                                    color: HexColor("#f7f7f7"),
+                                                child: SingleChildScrollView(
                                             padding: EdgeInsets.only(top: 20),
                                             child: Column(
                                               children: List.generate(
@@ -176,6 +174,7 @@ class _CartInfoState extends State<CartInfo> with TickerProviderStateMixin {
 
       // 고정 bottom navigation
       bottomNavigationBar:
+      // CostBottomNavigation(),
       FutureBuilder(
           future: myFuture,
           builder: (context, snapshot) {
@@ -212,7 +211,7 @@ class _CartInfoState extends State<CartInfo> with TickerProviderStateMixin {
                                           "titleText": "선택한 의뢰 예상 비용",
                                           "tooltipText": cost.tooltipText,
                                           "targetText" : cost.boldText,
-                                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? setprice(controller.wholePrice.value-6000) + " ~ " : controller.wholePrice.value-6000 <= 0 && controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? " - " : setprice(controller.wholePrice.value-6000),
+                                          "price": controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? setprice(controller.wholePrice.value) + " ~ " : controller.wholePrice.value <= 0 && controller.cartItem.indexWhere((element) => element.cartWay == "직접 입력") != -1 ? " - " : setprice(controller.wholePrice.value),
                                           "istooltip": true
                                         },
                                         {

@@ -1,21 +1,30 @@
 import 'package:needlecrew/getxController/homeController.dart';
+import 'package:needlecrew/modal/alert_loading.dart';
+import 'package:needlecrew/screens/main/fixClothes/fixRegisterInfo.dart';
 import 'package:needlecrew/screens/main/myPage/mysizeShirtUpdate.dart';
-import 'package:needlecrew/widgets/iamportForm.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class CircleBlackBtn extends GetView<HomeController> {
   final String btnText;
   final String pageName;
   final String widgetName;
   final String updateName;
+  final dynamic argument;
 
-  const CircleBlackBtn({Key? key, required this.btnText, required this.pageName, this.widgetName = "", this.updateName = ""}) : super(key: key);
+  const CircleBlackBtn(
+      {Key? key,
+      required this.btnText,
+      required this.pageName,
+      this.widgetName = "",
+      this.updateName = "",
+      this.argument})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
+
     return Container(
       height: 54,
       width: double.infinity,
@@ -26,15 +35,27 @@ class CircleBlackBtn extends GetView<HomeController> {
       ),
       child: TextButton(
         onPressed: () {
-
-          if(btnText == "결제하기"){
-            Get.to(IamportForm());
-          }else if(btnText == "변경 완료"){
+          if (btnText == "결제하기") {
+            Get.dialog(AlertLoading(titleText: "결제 중입니다."));
+          } else if (btnText == "변경 완료") {
             controller.updateUser(updateName);
-          }else if(btnText == "치수 측정 가이드 및 수정"){
+          } else if (btnText == "치수 측정 가이드 및 수정") {
             Get.to(MysizeShirtUpdate());
-          }else{
-            pageName != "back" ? Get.toNamed('/' + pageName)  : Get.back() ;
+          } else {
+            pageName != "back" ? Get.toNamed('/' + pageName) : Get.back();
+          }
+
+
+
+          if (pageName == "payTypeAdd") {
+
+            print("cardsInfo " + controller.cardsBillkey.toString());
+            if (controller.cardsInfo.length >= 1) {
+              print("userinfo this " + controller.userInfo("결제 수단"));
+              Get.to(FixRegisterInfo());
+            } else {
+              Get.toNamed("/" + pageName);
+            }
           }
         },
         child: Text(
