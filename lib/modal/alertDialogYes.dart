@@ -1,4 +1,5 @@
 import 'package:needlecrew/getxController/homeController.dart';
+import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/userUpdate.dart';
@@ -19,6 +20,7 @@ class AlertDialogYes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homecontroller = Get.put(HomeController());
+    final UseInfoController useInfoController = Get.put(UseInfoController());
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -65,6 +67,9 @@ class AlertDialogYes extends StatelessWidget {
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);
                     }else if(widgetname == "alert"){
                       Get.close(2);
+                    }else if(widgetname == "resultY"){
+                      useInfoController.updateState();
+                      Get.offAndToNamed("/useInfoProgress");
                     }else{
                       if(widgetname == "biilling"){
                         homecontroller.cardInfo.clear();

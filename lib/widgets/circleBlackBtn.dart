@@ -25,6 +25,8 @@ class CircleBlackBtn extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
 
+
+    controller.getCardAll();
     return Container(
       height: 54,
       width: double.infinity,
@@ -48,6 +50,7 @@ class CircleBlackBtn extends GetView<HomeController> {
 
 
           if (pageName == "payTypeAdd") {
+
 
             print("cardsInfo " + controller.cardsBillkey.toString());
             if (controller.cardsInfo.length >= 1) {

@@ -1,3 +1,4 @@
+import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,7 +27,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
   ];
   late TabController _tabController = TabController(length: 3, vsync: this);
 
-  late Future myFuture;
+  // late Stream myStream;
 
   int tabIndex = 0;
   int initTab = 0;
@@ -35,7 +36,9 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    myFuture = controller.getCompleteOrder();
+    // myFuture = controller.getCompleteOrder();
+
+    // myStream = Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder());
 
     super.initState();
     print("pageNum " + widget.pageNum.toString());
@@ -62,8 +65,6 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("imgindex : $tabIndex");
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar:
@@ -165,7 +166,27 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
                         controller: _tabController,
                         tabs: [
                           Tab(text: "수선 대기"),
-                          Tab(text: "수선 진행중"),
+                          Container(
+                            width: double.infinity,
+                            child: Stack(children: [
+                              controller.widgetUpdate == true
+                                  ? Positioned(
+                                      right: 7,
+                                      top: 15,
+                                      child: Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: HexColor("#fd9a03")),
+                                      ),
+                                    )
+                                  : Container(),
+                              Align(
+                                  alignment: Alignment.center,
+                                  child: Tab(text: "수선 진행중"))
+                            ]),
+                          ),
                           Tab(text: "수선 완료"),
                         ],
                       ),
@@ -180,34 +201,23 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
           Expanded(
             child: Container(
               color: Colors.white,
-              child:
-                  Obx(() {
-                if (controller.isInitialized.value) {
-                  print("this state count " +
-                      controller.readyLists.length.toString());
-                  return TabBarView(
-                    controller: _tabController,
-                    children: [
-                      UseInfoList(
-                          fixState: "ready",
-                          fixItems: controller.readyLists,
-                          myFuture: myFuture),
-                      UseInfoList(
-                          fixState: "progress",
-                          fixItems: controller.progressLists,
-                          myFuture: myFuture),
-                      UseInfoList(
-                          fixState: "complete",
-                          fixItems: controller.completeLists,
-                          myFuture: myFuture),
-                    ],
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              }),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  UseInfoList(
+                      fixState: "ready",
+                      fixItems: controller.readyLists,
+                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                  UseInfoList(
+                      fixState: "progress",
+                      fixItems: controller.progressLists,
+                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                  UseInfoList(
+                      fixState: "complete",
+                      fixItems: controller.completeLists,
+                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                ],
+              ),
             ),
           ),
         ],
@@ -243,28 +253,17 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              FutureBuilder(
-                  future: myFuture,
-                  builder: (context, snapshot) {
-                    bool isLoading =
-                        snapshot.connectionState == ConnectionState.waiting;
-
-                    return isLoading
-                        ? countSkeleton()
-                        : Text(
-                            content == "수선 대기"
-                                ? controller.readyLists.length.toString()
-                                : content == "수선 진행중"
-                                    ? controller.progressLists.length.toString()
-                                    : controller.completeLists.length
-                                        .toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          );
-                  }),
-
+              Text(
+                content == "수선 대기"
+                    ? controller.readyLists.length.toString()
+                    : content == "수선 진행중"
+                        ? controller.progressLists.length.toString()
+                        : controller.completeLists.length.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
               SizedBox(
                 width: 3,
               ),

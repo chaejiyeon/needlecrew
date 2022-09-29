@@ -19,14 +19,17 @@ import 'package:shimmer/shimmer.dart';
 class UserInfoListItem extends StatefulWidget {
   final FixReady fixReady;
   final String fixState;
-  final Future myFuture;
+  final Stream myStream;
 
-  const UserInfoListItem(
-      {Key? key,
-      required this.fixReady,
-      required this.fixState,
-      required this.myFuture})
-      : super(key: key);
+  // final Future myFuture;
+
+  const UserInfoListItem({
+    Key? key,
+    required this.fixReady,
+    required this.fixState,
+    required this.myStream,
+    // required this.myFuture
+  }) : super(key: key);
 
   @override
   State<UserInfoListItem> createState() => _UserInfoListItemState();
@@ -129,7 +132,8 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
         },
         bodyBuilder: (context, offset) {
           return SliverChildListDelegate([
-            UseInfoProcessSheet(progressNum: progressNum, date: widget.fixReady.readyDate),
+            UseInfoProcessSheet(
+                progressNum: progressNum, date: widget.fixReady.readyDate),
           ]);
         },
       );
@@ -336,7 +340,7 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
   }
 
   // bottomsheet 연결 버튼
-  Widget  useinfoBtn(String text, String bottomsheet) {
+  Widget useinfoBtn(String text, String bottomsheet) {
     return Container(
       margin: EdgeInsets.only(right: 10),
       width: 87,

@@ -20,7 +20,9 @@ class _MainHomeState extends State<MainHome>
     with SingleTickerProviderStateMixin {
   final UseInfoController useInfoController = Get.put(UseInfoController());
 
-  late Future myFuture;
+
+  late Stream myStream;
+  // late Future myFuture;
   // bool _showAppbar = true;
   ScrollController _scrollController = new ScrollController();
   bool isScrollingDown = false;
@@ -44,7 +46,8 @@ class _MainHomeState extends State<MainHome>
       // setState((){});
     });
 
-    myFuture = useInfoController.getCompleteOrder();
+    myStream = useInfoController.getCompleteOrder();
+    // myFuture = useInfoController.getCompleteOrder();
   }
 
   @override
@@ -68,7 +71,7 @@ class _MainHomeState extends State<MainHome>
         children: [
           BannerSlides(),
           MyUseInfo(
-            myFuture: myFuture,
+            myStream: myStream,
           ),
           Container(
             padding: EdgeInsets.only(left: 24, bottom: 10),

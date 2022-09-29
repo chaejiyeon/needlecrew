@@ -20,8 +20,8 @@ class AlertLoading extends StatelessWidget {
     final HomeController homeController = Get.put(HomeController());
     final UseInfoController useInfoController = Get.put(UseInfoController());
 
-    return Container(
-      child: Dialog(
+    return Dialog(
+        insetPadding: EdgeInsets.all(10),
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: FutureBuilder(
@@ -30,15 +30,16 @@ class AlertLoading extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.done) {
                 print("payment snapshot " + snapshot.data.toString());
                 String text = "";
+                String alertLoading = "";
                 if (snapshot.data == true) {
                   text = "결제가 완료되었습니다.";
-                  useInfoController.updateState();
-                  Get.offAndToNamed("/useInfoProgress");
+                  alertLoading = "resultY";
+
                 } else {
                   text = "결제에 실패하였습니다.";
+                  alertLoading = "resultN";
                 }
-                return Container(
-                    width: 297, child: AlertDialogYes(titleText: text));
+                return AlertDialogYes(titleText: text, widgetname: alertLoading,);
               } else {
                 return Container(
                   height: 174,
@@ -54,7 +55,6 @@ class AlertLoading extends StatelessWidget {
                 );
               }
             }),
-      ),
     );
   }
 }
