@@ -1,6 +1,7 @@
 import 'package:needlecrew/bottomsheet/fix_address_bottom_sheet_header.dart';
 import 'package:needlecrew/bottomsheet/fix_my_address_list.dart';
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/models/addressItem.dart';
 import 'package:needlecrew/screens/main/fixClothes/takeFixdate.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
@@ -24,6 +25,7 @@ class AddressInsert extends StatefulWidget {
 
 class _AddressInsertState extends State<AddressInsert> {
   final CartController controller = Get.put(CartController());
+  final HomeController homeController = Get.put(HomeController());
 
   String postCode = '-';
   String address = '-';
@@ -34,10 +36,10 @@ class _AddressInsertState extends State<AddressInsert> {
 
   TextEditingController textEditingController = TextEditingController();
 
-  List<AddressItem> addressitems = [
-    AddressItem("assets/icons/myPage/mypageHome_1.svg", "우리집",
-        "부산 강서구 명지국제3로 97 105동 221호")
-  ];
+  // List<AddressItem> addressitems = [
+  //   AddressItem("assets/icons/myPage/mypageHome_1.svg", "우리집",
+  //       "부산 강서구 명지국제3로 97 105동 221호")
+  // ];
 
   @override
   void initState() {
@@ -60,7 +62,7 @@ class _AddressInsertState extends State<AddressInsert> {
         ),
         headerHeight: 85,
         headerBuilder: (context, offset) {
-          return addressitems.length != 0
+          return homeController.items.length != 0
               ? FixAddressBottomSheetHeader(
                   addressExist: true,
                 )
@@ -70,14 +72,14 @@ class _AddressInsertState extends State<AddressInsert> {
         },
         bodyBuilder: (context, offset) {
           return SliverChildListDelegate([
-            addressitems.length != 0
+            homeController.items.length != 0
                 ? FixMyAddressList(
                     addressExist: true,
-                    items: addressitems,
+                    items: homeController.items,
                   )
                 : FixMyAddressList(
                     addressExist: false,
-                    items: addressitems,
+                    items: homeController.items,
                   )
           ]);
         });

@@ -11,13 +11,16 @@ final List<String> fixState = ['ready', 'progress', 'complete'];
 class UseInfoList extends StatefulWidget {
   final String fixState;
   final List<FixReady> fixItems;
-  final Stream myStream;
+  final Future myFuture;
+  // final Stream myStream;
 
   const UseInfoList(
       {Key? key,
       required this.fixState,
       required this.fixItems,
-      required this.myStream})
+      required this.myFuture
+      // required this.myStream
+      })
       : super(key: key);
 
   @override
@@ -29,21 +32,18 @@ class _UseInfoListState extends State<UseInfoList> {
 
   int skeletonCount = 0;
 
-  //
-  // @override
-  // void didUpdateWidget(UseInfoList oldWidget){
-  //   super.didUpdateWidget(oldWidget);
-  //   print("didUpdateWidget init!!!!!!");
-  //   if(fixState == "progress" && oldWidget.myStream != widget.myStream){
-  //     controller.widgetUpdate.value = true;
-  //
-  //     print("didUpdateWidget " + controller.widgetUpdate.value.toString());
-  //   }
-  // }
+  @override
+  void didUpdateWidget(UseInfoList oldWidget){
+    super.didUpdateWidget(oldWidget);
 
-  List<FixReady> useInfos = [];
+    print("didUpdateWidget Method init!!" + widget.fixState);
 
+    if(widget.fixState == "progress" && oldWidget.myFuture != widget.myFuture){
+      controller.widgetUpdate.value = true;
 
+      print("widget updated! -- ");
+    }
+  }
 
   @override
   void initState() {
@@ -59,34 +59,31 @@ class _UseInfoListState extends State<UseInfoList> {
   @override
   Widget build(BuildContext context) {
 
+
     return GestureDetector(
       child:
-      widget.fixItems.length > 0
-          ? ListView(
-              padding: EdgeInsets.zero,
-              children: List.generate(
-                widget.fixItems.length,
-                (index) => UserInfoListItem(
-                  fixReady: widget.fixItems[index],
-                  fixState: widget.fixState,
-                  myStream: widget.myStream,
-                ),
-              ),
-            )
-          : EmptyFix(),
-      // widget.fixItems.length > 0
-      //     ? ListView(
-      //         padding: EdgeInsets.zero,
-      //         children: List.generate(
-      //           widget.fixItems.length,
-      //           (index) => UserInfoListItem(
-      //             fixReady: widget.fixItems[index],
-      //             fixState: widget.fixState,
-      //             myStream: widget.myStream,
-      //           ),
-      //         ),
-      //       )
-      //     : EmptyFix(),
+      FutureBuilder(
+        future: widget.myFuture,
+        builder: (context, snapshot) {
+          bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+          return isLoading
+              ? countSkeleton()
+              : widget.fixItems.length > 0
+                  ? ListView(
+                      padding: EdgeInsets.zero,
+                      children: List.generate(
+                        widget.fixItems.length,
+                        (index) => UserInfoListItem(
+                          fixReady: widget.fixItems[index],
+                          fixState: widget.fixState,
+                          myFuture: widget.myFuture,
+                        ),
+                      ),
+                    )
+                  : EmptyFix();
+        },
+      ),
     );
   }
 
@@ -109,8 +106,8 @@ class _UseInfoListState extends State<UseInfoList> {
   }
 
   Widget countSkeleton() {
-    return StreamBuilder(
-        stream: widget.myStream,
+    return FutureBuilder(
+        future: widget.myFuture,
         builder: (context, snapshot) {
           return Shimmer.fromColors(
             baseColor: Color.fromRGBO(240, 240, 240, 1),

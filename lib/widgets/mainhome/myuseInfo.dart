@@ -10,8 +10,9 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MyUseInfo extends StatefulWidget {
-  final Stream myStream;
-  const MyUseInfo({Key? key, required this.myStream}) : super(key: key);
+  final Future myFuture;
+  // final Stream myStream;
+  const MyUseInfo({Key? key, required this.myFuture}) : super(key: key);
 
   @override
   State<MyUseInfo> createState() => _MyUseInfoState();
@@ -43,8 +44,8 @@ class _MyUseInfoState extends State<MyUseInfo> {
           SizedBox(
             height: 34,
           ),
-          StreamBuilder(
-              stream: widget.myStream,
+          FutureBuilder(
+              future: widget.myFuture,
               builder: (context, snapshot) {
                 bool isLoading = snapshot.connectionState == ConnectionState.waiting;
 

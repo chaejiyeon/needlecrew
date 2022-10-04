@@ -32,13 +32,12 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
   int tabIndex = 0;
   int initTab = 0;
 
-  // late Future myFuture;
+  late Future myFuture;
 
   @override
   void initState() {
-    // myFuture = controller.getCompleteOrder();
-
-    // myStream = Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder());
+    myFuture = controller.getCompleteOrder();
+    // myStream = controller.getCompleteOrder();
 
     super.initState();
     print("pageNum " + widget.pageNum.toString());
@@ -169,7 +168,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
                           Container(
                             width: double.infinity,
                             child: Stack(children: [
-                              controller.widgetUpdate == true
+                              controller.widgetUpdate.value == true
                                   ? Positioned(
                                       right: 7,
                                       top: 15,
@@ -207,15 +206,15 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
                   UseInfoList(
                       fixState: "ready",
                       fixItems: controller.readyLists,
-                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                      myFuture: myFuture),
                   UseInfoList(
                       fixState: "progress",
                       fixItems: controller.progressLists,
-                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                      myFuture: myFuture),
                   UseInfoList(
                       fixState: "complete",
                       fixItems: controller.completeLists,
-                      myStream: Stream.periodic(Duration(seconds: 10)).asyncMap((event) => controller.getCompleteOrder())),
+                      myFuture: myFuture),
                 ],
               ),
             ),

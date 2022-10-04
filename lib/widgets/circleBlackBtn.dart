@@ -54,7 +54,6 @@ class CircleBlackBtn extends GetView<HomeController> {
 
             print("cardsInfo " + controller.cardsBillkey.toString());
             if (controller.cardsInfo.length >= 1) {
-              print("userinfo this " + controller.userInfo("결제 수단"));
               Get.to(FixRegisterInfo());
             } else {
               Get.toNamed("/" + pageName);

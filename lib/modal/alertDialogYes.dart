@@ -2,6 +2,7 @@ import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
+import 'package:needlecrew/screens/main/myPage/userInfo.dart';
 import 'package:needlecrew/screens/main/myPage/userUpdate.dart';
 import 'package:needlecrew/screens/mainPage.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
@@ -62,7 +63,8 @@ class AlertDialogYes extends StatelessWidget {
                   onPressed: () {
 
                     if(widgetname == "updatePhoneNum"){
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => UserUpdate()), (route) => false);
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserInfo()));
+                      // Get.close(2);
                     }else if(widgetname == "cart"){
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);
                     }else if(widgetname == "alert"){
@@ -75,7 +77,6 @@ class AlertDialogYes extends StatelessWidget {
                         homecontroller.cardInfo.clear();
                       }
                       Get.back();
-
                     }
                   }),
             ),

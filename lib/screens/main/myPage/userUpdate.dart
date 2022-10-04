@@ -25,7 +25,7 @@ class UserUpdate extends StatelessWidget {
                 child: Column(
                   children: [
                     MypageMenu(listTitle: "주소 관리", widget: AddressList()),
-                    MypageMenu(listTitle: "전화변호 변경", widget: PhoneNumUpdate()),
+                    MypageMenu(listTitle: "전화번호 변경", widget: PhoneNumUpdate()),
                     MypageMenu(listTitle: "결제 수단", widget: PayType()),
                     MypageMenu(listTitle: "회원 탈퇴", widget: UserJoinOut()),
                   ],

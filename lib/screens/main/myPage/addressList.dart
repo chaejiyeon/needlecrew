@@ -26,28 +26,42 @@ class AddressList extends StatefulWidget {
 class _AddressListState extends State<AddressList> {
   final HomeController controller = Get.put(HomeController());
 
-  List<AddressItem> items = [
-    AddressItem("mypageHome_1.svg", "우리집", "부산 강서구 명지국제3로 97 105동 221호"),
-    AddressItem("mypageCompany_1.svg", "회사", "부산 사상구 모라동 22 1306호"),
-  ];
+  @override
+  void initState() {
+    controller.getUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: MypageAppBar(
         title: "주소 관리",
         icon: "",
         widget: MainHome(),
         appbar: AppBar(),
       ),
-      body: Container(
-        padding: EdgeInsets.only(top: 40),
-        color: Colors.white,
-        child: ListView(
-          children: List.generate(
-              items.length, (index) => addressListItem(items[index])),
-        ),
-      ),
+      body: StreamBuilder(
+          stream:
+              Future.delayed(Duration(seconds: 1), () => controller.getUser())
+                  .asStream(),
+          builder: (context, snapshot) {
+            return controller.items.length == 0
+                ? Container(
+                    alignment: Alignment.center,
+                    child:
+                        Text("등록된 주소가 없습니다.", style: TextStyle(fontSize: 15)),
+                  )
+                : Container(
+                    padding: EdgeInsets.only(top: 40),
+                    color: Colors.white,
+                    child: ListView(
+                      children: List.generate(controller.items.length,
+                          (index) => addressListItem(controller.items[index])),
+                    ),
+                  );
+          }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: HexColor("#fd9a03"),
         onPressed: () {
@@ -67,7 +81,12 @@ class _AddressListState extends State<AddressList> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SvgPicture.asset("assets/icons/myPage/" + address.img),
+              SvgPicture.asset(
+                  "assets/icons/myPage/" + address.addressName == "우리집"
+                      ? "mypageHome_1.svg"
+                      : address.addressName == "회사"
+                          ? "mypageCompany_1.svg"
+                          : "mypageLocation_1.svg"),
               SizedBox(
                 width: 10,
               ),
@@ -92,11 +111,13 @@ class _AddressListState extends State<AddressList> {
                     ),
                     Row(
                       children: [
-                        addressBtn("수정",  Colors.black, HexColor("#d5d5d5"), true, AddressUpdate()),
+                        addressBtn("수정", Colors.black, HexColor("#d5d5d5"),
+                            true, AddressUpdate()),
                         SizedBox(
                           width: 10,
                         ),
-                        addressBtn( "삭제",  HexColor("#fd9a03"), HexColor("#fd9a03"), false, AddressDelModal()),
+                        addressBtn("삭제", HexColor("#fd9a03"),
+                            HexColor("#fd9a03"), false, AddressDelModal()),
                       ],
                     ),
                   ],
@@ -117,14 +138,14 @@ class _AddressListState extends State<AddressList> {
     );
   }
 
-
   // 수정/삭제 버튼
-  Widget addressBtn(String text, Color txtColor,Color borderColor, bool iswidget, Widget widgetName) {
+  Widget addressBtn(String text, Color txtColor, Color borderColor,
+      bool iswidget, Widget widgetName) {
     return GestureDetector(
-      onTap: (){
-        if(iswidget == true){
+      onTap: () {
+        if (iswidget == true) {
           Get.to(widgetName);
-        }else{
+        } else {
           Get.dialog(widgetName);
         }
       },
@@ -133,15 +154,11 @@ class _AddressListState extends State<AddressList> {
         width: 55,
         height: 30,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: borderColor)
-        ),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: borderColor)),
         child: Text(
           text,
-          style: TextStyle(
-            color: txtColor,
-            fontSize: 13
-          ),
+          style: TextStyle(color: txtColor, fontSize: 13),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
+import 'package:needlecrew/modal/alertDialogYes.dart';
 import 'package:needlecrew/modal/fixClothes/fixSelectModal.dart';
 import 'package:needlecrew/models/tooltip_text.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
@@ -226,9 +227,6 @@ class _FixSelectState extends State<FixSelect> {
     }
   }
 
-
-
-
   @override
   void initState() {
     controller.isProductId(widget.productId);
@@ -245,6 +243,9 @@ class _FixSelectState extends State<FixSelect> {
       texteditingController.add(TextEditingController());
       focusNode.add(FocusNode());
     }
+
+
+    controller.getImages.clear();
 
     print("isShopping" + controller.isshopping.toString());
     super.initState();
@@ -443,65 +444,76 @@ class _FixSelectState extends State<FixSelect> {
 
                 // 참고사항 - 기타일 경우에만 표시
                 FutureBuilder(
-                    future: productFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-
-                        return product.description.toString() != ""
-                            ? Container(
-                                padding: EdgeInsets.zero,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FontStyle(
-                                        text: "참고 사항",
-                                        fontsize: "md",
-                                        fontbold: "bold",
-                                        fontcolor: Colors.black,
-                                        textdirectionright: false),
-                                    SizedBox(
-                                      height: 10,
+                  future: productFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return product.description.toString() != ""
+                          ? Container(
+                              padding: EdgeInsets.zero,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FontStyle(
+                                      text: "참고 사항",
+                                      fontsize: "md",
+                                      fontbold: "bold",
+                                      fontcolor: Colors.black,
+                                      textdirectionright: false),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(
+                                        top: 11, right: 13, left: 15),
+                                    margin: EdgeInsets.only(bottom: 40),
+                                    decoration: BoxDecoration(
+                                      color: HexColor("#f7f7f7"),
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
-                                    Container(
-                                      padding: EdgeInsets.only(
-                                          top: 11,
-                                          right: 13,
-                                          left: 15),
-                                      margin: EdgeInsets.only(bottom: 40),
-                                      decoration: BoxDecoration(
-                                        color: HexColor("#f7f7f7"),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SvgPicture.asset(
-                                              "assets/icons/fixClothes/pointIcon.svg"),
-                                          SizedBox(
-                                            width: 5,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SvgPicture.asset(
+                                            "assets/icons/fixClothes/pointIcon.svg"),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            parseHtmlTagRemove(product
+                                                        .description
+                                                        .toString()) ==
+                                                    "0"
+                                                ? ""
+                                                : parseHtmlTagRemove(product
+                                                    .description
+                                                    .toString()),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 13),
                                           ),
-                                          Expanded(
-                                            child: Text(
-                                                parseHtmlTagRemove(product.description.toString()) == "0" ? "" : parseHtmlTagRemove(product.description.toString()),
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              )
-                            : parseHtmlTagRemove(product.description.toString()) != "0" ? Container(
-                                height: 0,
-                              ) : Container(height: 0,);
-                      }else{
-                        return CircularProgressIndicator();
-                      }
-                    },),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : parseHtmlTagRemove(
+                                      product.description.toString()) !=
+                                  "0"
+                              ? Container(
+                                  height: 0,
+                                )
+                              : Container(
+                                  height: 0,
+                                );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
 
                 // 추가 옵션
                 FutureBuilder(
@@ -739,12 +751,19 @@ class _FixSelectState extends State<FixSelect> {
                             if ((texteditingController[0].text.length > 0 &&
                                     texteditingController[1].text.length > 0) ||
                                 (widget.lastCategory == "기타" &&
-                                    texteditingController[1].text.length > 0)) {
+                                        texteditingController[1].text.length >
+                                            0) &&
+                                    controller.getImages.length >= 1) {
                               controller.uploadImage();
                               cartDetailInfo();
                               registerCart(variationId);
                               // controller.getCart();
                               Get.to(() => CartInfo());
+                            }
+
+                            if (controller.getImages.length == 0) {
+                              Get.dialog(AlertDialogYes(
+                                  titleText: "이미지를 1장이상 등록해주세요!"));
                             }
                           },
                           child: (texteditingController[0].text.length > 0 &&

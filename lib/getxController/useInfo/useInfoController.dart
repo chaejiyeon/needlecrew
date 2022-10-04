@@ -90,7 +90,7 @@ class UseInfoController extends GetxController {
 
 
 
-  Stream<void> getCompleteOrder() async* {
+  Future<void> getCompleteOrder() async{
     try {
       user = await wp_api.getUser();
 
@@ -273,13 +273,6 @@ class UseInfoController extends GetxController {
             completeLists.length.toString());
 
 
-        // if(currentTab == 0){
-        //   yield readyLists;
-        // }else if(currentTab == 1){
-        //   yield progressLists;
-        // }else{
-        //   yield completeLists;
-        // }
       }
     } catch (e) {
       print("isError " + e.toString());

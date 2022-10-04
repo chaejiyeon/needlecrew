@@ -65,7 +65,7 @@ class _UpdateFormState extends State<UpdateForm> {
                   decoration: InputDecoration(
 
                       suffixIcon: controller.textController.text.isNotEmpty ? IconButton(
-                        icon: SvgPicture.asset("assets/icons/xmarkIcon_full.svg",),
+                        icon: SvgPicture.asset("assets/icons/xmarkIcon_full_acolor.svg",),
                         onPressed: () {
                           controller.textController.clear();
                           setState((){});

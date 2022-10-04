@@ -19,15 +19,17 @@ import 'package:shimmer/shimmer.dart';
 class UserInfoListItem extends StatefulWidget {
   final FixReady fixReady;
   final String fixState;
-  final Stream myStream;
+  final Future myFuture;
+  // final Stream myStream;
 
-  // final Future myFuture;
+
 
   const UserInfoListItem({
     Key? key,
     required this.fixReady,
     required this.fixState,
-    required this.myStream,
+    required this.myFuture,
+    // required this.myStream,
     // required this.myFuture
   }) : super(key: key);
 

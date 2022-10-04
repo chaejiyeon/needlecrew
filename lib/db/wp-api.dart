@@ -6,6 +6,7 @@ import 'dart:ffi';
 import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/main.dart';
+import 'package:needlecrew/models/billing_info.dart';
 import 'package:needlecrew/screens/login/startPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -24,6 +25,8 @@ final baseUrl = "http://needlecrew.com";
 var token = "";
 
 var storage = FlutterSecureStorage();
+
+final HomeController homecontroller = Get.put(HomeController());
 
 // 회원가입
 Future<void> joinUs(
@@ -46,7 +49,6 @@ Future<void> joinUs(
       firstName: name.substring(1, name.length),
     );
 
-
     final result = wooCommerceApi.createCustomer(user);
 
     await result;
@@ -59,7 +61,10 @@ Future<void> joinUs(
 
     if (user.username != null) {
       print(user.username.toString() + "회원가입 성공");
-      if(loginApp == "apple" || loginApp == "kakao" || loginApp == "google" || loginApp == "naver"){
+      if (loginApp == "apple" ||
+          loginApp == "kakao" ||
+          loginApp == "google" ||
+          loginApp == "naver") {
         print("social login init");
         Login(email, password);
       }
@@ -68,7 +73,10 @@ Future<void> joinUs(
     }
   } catch (error) {
     if (error.toString().indexOf('registration-error-email-exists') != -1) {
-      if(loginApp == "apple" || loginApp == "kakao" || loginApp == "google" || loginApp == "naver"){
+      if (loginApp == "apple" ||
+          loginApp == "kakao" ||
+          loginApp == "google" ||
+          loginApp == "naver") {
         print("social login init");
         Login(email, password);
       }
@@ -79,11 +87,22 @@ Future<void> joinUs(
   }
 }
 
+
+// 로그인
 Future<bool> Login(String email, String password) async {
   try {
     String userName = "";
+
+    Map userInfo = {
+      'phoneNum': '',
+      'default_address': '',
+      'default_card': '',
+    };
+
     user =
         await wooCommerceApi.loginCustomer(username: email, password: password);
+
+    List<WooCustomerMetaData> metadata = user.metaData!;
 
     if (user != null) {
       token = await wooCommerceApi.authenticateViaJWT(
@@ -91,13 +110,36 @@ Future<bool> Login(String email, String password) async {
       userName = user.lastName! + user.firstName!;
       print("login 성공!!!!!!!!" + user.toString());
 
+
+      for (int i = 0; i < metadata.length; i++) {
+        if (metadata[i].key == "phoneNum") {
+          userInfo['phoneNum'] = metadata[i].value;
+        } else if (metadata[i].key == "default_address") {
+          userInfo['default_address'] = metadata[i].value;
+        } else if (metadata[i].key == "default_card") {
+          CardInfo cardInfo = await homecontroller.getCardInfo(metadata[i].value);
+          userInfo['default_card'] = cardInfo.card_name +
+              "(" +
+              cardInfo.card_number.substring(12, 16) +
+              ")";
+        }
+      }
+
+
+
       Get.toNamed('/mainHome');
     } else {
       print("login 실패!!!!!!!");
     }
 
+
+
     await storage.write(key: 'loginToken', value: token);
     await storage.write(key: 'username', value: userName);
+    await storage.write(key: 'phoneNum', value: userInfo['phoneNum']);
+    await storage.write(
+        key: 'default_address', value: userInfo['default_address']);
+    await storage.write(key: 'default_card', value: userInfo['default_card']);
 
     // String? thistoken = await storage.read(key: 'loginToken');
     print("login token " + token);

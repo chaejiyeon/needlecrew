@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:ffi';
 import 'dart:io';
+
 // import 'dart:math';
 import 'dart:typed_data';
 
@@ -17,7 +19,6 @@ import 'package:http/http.dart' as http;
 
 class FixSelectController extends GetxController {
   static FixSelectController get to => Get.find();
-
 
   final isInitialized = false.obs;
 
@@ -36,7 +37,7 @@ class FixSelectController extends GetxController {
   // 총 비용
   RxInt wholePrice = 0.obs;
 
-  RxMap radioGroup = {"추가 옵션" : "", "가격" : ""}.obs;
+  RxMap radioGroup = {"추가 옵션": "", "가격": ""}.obs;
 
   RxInt radioId = 0.obs;
 
@@ -51,10 +52,9 @@ class FixSelectController extends GetxController {
 
   // 선택한 카테고리 Id list
   RxList crumbs = [].obs;
+
   // back버튼 클릭 여부
   RxBool backClick = false.obs;
-
-
 
   @override
   void onInit() {
@@ -101,9 +101,9 @@ class FixSelectController extends GetxController {
 
   // radio button (추가 옵션)
   void isRadioGroup(Map groupValue) {
-    if(radioGroup["추가 옵션"] == groupValue["추가 옵션"]){
+    if (radioGroup["추가 옵션"] == groupValue["추가 옵션"]) {
       radioGroup["가격"] = groupValue["가격"];
-    }else{
+    } else {
       radioGroup["추가 옵션"] = groupValue["추가 옵션"];
     }
     print("추가 옵션: " + radioGroup.toString());
@@ -119,8 +119,6 @@ class FixSelectController extends GetxController {
     update();
   }
 
-
-
   // 수선접수 상품 이미지 삭제
   void deleteImage(File file) {
     for (int i = 0; i < getImages.length; i++) {
@@ -129,24 +127,35 @@ class FixSelectController extends GetxController {
       }
     }
 
-    print("getImgages this  " + getImages.length.toString());
-    print("getImgages this  " + getImages.toString());
+    print("delImg this  " + getImages.length.toString());
+    print("delImg this  " + getImages.toString());
     update();
   }
-
-
 
   // 이미지 compress
   Future<void> compressFile(File file) async {
     final filePath = file.absolute.path;
 
-    final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+    var lastIndex;
+    // = filePath.lastIndexOf(RegExp(r'.jp'));
+
+    if (filePath.lastIndexOf(RegExp(r'.jp')) != -1) {
+      lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+    } else if (filePath.lastIndexOf(RegExp(r'.png')) != -1) {
+      lastIndex = filePath.lastIndexOf(RegExp(r'.png'));
+    }
+
     final splitted = filePath.substring(0, (lastIndex));
     final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
 
     var result = await FlutterImageCompress.compressAndGetFile(
         file.absolute.path, outPath,
-        minWidth: 100, minHeight: 100, quality: 70);
+        minWidth: 425,
+        minHeight: 425,
+        quality: 70,
+        format: outPath.lastIndexOf(RegExp(r'.png')) != -1
+            ? CompressFormat.png
+            : CompressFormat.jpeg);
 
     // var result = await FlutterImageCompress.compressWithFile(
     //   file.absolute.path,
@@ -169,44 +178,66 @@ class FixSelectController extends GetxController {
   // 이미지 파일 업로드
   Future<bool> uploadFile(filePath) async {
     try {
-
-
       String? token = await wp_api.storage.read(key: 'loginToken');
       print("this auth    " + token!);
       print("uint8list this    " + filePath.toString());
-      String url = wp_api.baseUrl + "/wp-json/wp/v2/media";
+      String url = "/wp-json/wp/v2/media";
 
-      String fileName = (filePath.toString().split("/").last).replaceAll("'", "");
+      String fileName =
+          (filePath.toString().split("/").last).replaceAll("'", "");
 
       // String fileName = String.fromCharCode(fileBytes);
       String storeImage = fileName.replaceAll('jpg', 'png');
 
       print("filenme this    " + storeImage);
 
-      Map<String, String> requestHeaders = {
-        'Authorization': 'Bearer ${wp_api.token}',
-        'Content-Disposition': 'attachment; filename=$storeImage',
-        'Content-Type': 'image/png'
-      };
+      // Map<String, String> requestHeaders = {
+      //   'Authorization': 'Bearer ${wp_api.token}',
+      //   'Content-Disposition': 'attachment; filename=$storeImage',
+      //   'Content-Type': 'image/png'
+      // };
 
-      List<int> imageBytes = File(filePath.path).readAsBytesSync();
-      // List<Uint8List> uint8list = fileBytes;
+      // List<int> imageBytes = File(filePath.path).readAsBytesSync();
 
-      // List<int> imageBytes = filePath.readAsBytesSync();
+      // Image image = decodeImage()
 
       //TODO image compress and convert to png mime
 
-      var request = http.Request('POST', Uri.parse(url));
-      request.headers.addAll(requestHeaders);
-      request.bodyBytes = imageBytes;
-      var res = await request.send();
+
+
+
+
+      var request = await wp_api.wooCommerceApi.post(url, {
+        'file': storeImage,
+      });
+
+
+      // var request = await http.post(
+      //   Uri.https('needlecrew.com', url),
+      //   headers: {
+      //     'Authorization': '${token}',
+      //     'Content-Disposition': 'attachment; filename=$storeImage',
+      //     'Content-Type': 'image/png'
+      //   },
+      //   body: jsonEncode({
+      //     'media_details': {
+      //       'file': storeImage,
+      //     }
+      //   }),
+      // );
+      //
+      print("updalad Image body this" + request.body.toString());
+      // var request = http.Request('POST', Uri.parse(url));
+      // request.headers.addAll(requestHeaders);
+      // request.bodyBytes = imageBytes;
+      // var res = await request.send();
 
       // return res.statusCode == 200 ? true : false;
-      if (res.statusCode == 200) {
+      if (request.statusCode == 200) {
         print("등록 성공!!!!!!");
         return true;
       } else {
-        log("등록 실패!!!!!! ${res.statusCode}");
+        log("등록 실패!!!!!! ${request.statusCode}");
         return false;
       }
     } catch (e) {
@@ -215,17 +246,13 @@ class FixSelectController extends GetxController {
     }
   }
 
-
-
   // 이미지 업로드 시작
   void uploadImage() async {
-    print("getImages this   " + getImages.toString());
+    // print("getImages this   " + getImages.toString());
     try {
       for (int i = 0; i < getImages.length; i++) {
         compressFile(getImages[i]);
       }
-
-
     } catch (e) {
       print("isError $e");
     }

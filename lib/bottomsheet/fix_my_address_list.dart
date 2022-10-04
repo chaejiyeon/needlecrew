@@ -30,7 +30,6 @@ class _FixMyAddressListState extends State<FixMyAddressList> {
             ),
           )
         : Container(
-            alignment: Alignment.center,
             child: Text("등록된 주소가 없습니다."),
           );
   }
@@ -44,7 +43,12 @@ class _FixMyAddressListState extends State<FixMyAddressList> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SvgPicture.asset(addressitem.img),
+              SvgPicture.asset(
+                  "assets/icons/myPage/" + addressitem.addressName == "우리집"
+                      ? "mypageHome_1.svg"
+                      : addressitem.addressName == "회사"
+                          ? "mypageCompany_1.svg"
+                          : "mypageLocation_1.svg"),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,14 +80,16 @@ class _FixMyAddressListState extends State<FixMyAddressList> {
                   }),
             ],
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Container(
             padding: EdgeInsets.only(right: 10),
             child: Container(
               height: 1,
               width: double.infinity,
-              decoration: BoxDecoration(
-                  color: HexColor("#d5d5d5").withOpacity(0.5)),
+              decoration:
+                  BoxDecoration(color: HexColor("#d5d5d5").withOpacity(0.5)),
             ),
           ),
         ],
