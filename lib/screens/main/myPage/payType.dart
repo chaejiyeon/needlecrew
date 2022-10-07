@@ -1,3 +1,4 @@
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/modal/alertDialogYesNo.dart';
 import 'package:needlecrew/models/user_card_info.dart';
 import 'package:needlecrew/screens/main/myPage/payTypeAdd.dart';
@@ -28,6 +29,8 @@ class _PayTypeState extends State<PayType> {
   ];
   final _carouselcontroller = CarouselController();
   late int currentPage = 0;
+
+  final HomeController controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {

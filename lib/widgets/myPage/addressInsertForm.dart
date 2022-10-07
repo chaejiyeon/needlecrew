@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:kpostal/kpostal.dart';
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:needlecrew/widgets/myPage/mypageAppbar.dart';
@@ -27,8 +28,11 @@ class AddressInsertForm extends StatefulWidget {
 }
 
 class _AddressInsertFormState extends State<AddressInsertForm> {
+  final HomeController controller = Get.find();
   final _textController = TextEditingController();
   late String selectAddress = "";
+
+  List setText = ["지번, 도로명, 건물명 검색", "상세주소"];
 
   String postCode = '-';
   String address = '-';
@@ -50,7 +54,7 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -89,20 +93,20 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
         onChanged: (value){
           setState((){});
         },
-        controller: _textController,
+        controller: controller.textController,
         textAlign:
             widget.addressSearch == true ? TextAlign.center : TextAlign.start,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.only(left: 30,top: 16, bottom: 17),
           suffixIcon:  IconButton(
-                  icon:_textController.text.isNotEmpty
+                  icon: controller.textController.text.isNotEmpty
                       ? SvgPicture.asset("assets/icons/xmarkIcon_full.svg",) : Container(),
                   onPressed: () {
-                    _textController.clear();
+                    controller.textController.clear();
                     setState((){});
                   },
                 ),
-          hintText: title,
+          hintText: title != "" ? title : setText[1],
           hintStyle: TextStyle(
             color: widget.addressSearch == true
                 ? HexColor("#a5a5a5")
@@ -152,9 +156,10 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
             borderRadius: BorderRadius.circular(40),
             border: Border.all(color: HexColor("#d5d5d5"))),
         child: Text(
-          postCode != "-" && address != "-" ? address : "지번, 도로명, 건물명 검색",
-          style: TextStyle(color: widget.addressSearch == true
-              ? HexColor("#a5a5a5") : Colors.black, fontSize: 15),
+          postCode != "-" && address != "-" ? address : setText[0],
+          style: TextStyle(color: widget.hinttext1 != "" ? Colors.black : HexColor("#a5a5a5")),
+          // TextStyle(color: widget.addressSearch == true
+          //     ? HexColor("#a5a5a5") : Colors.black, fontSize: 15),
         ),
       ),
     );

@@ -1,12 +1,13 @@
 import 'dart:ffi';
 
+import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
+import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/modal/addressDelModal.dart';
 import 'package:needlecrew/models/addressItem.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/addressAdd.dart';
 import 'package:needlecrew/screens/main/myPage/addressUpdate.dart';
-import 'package:needlecrew/widgets/circleLineBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:needlecrew/widgets/myPage/mypageAppbar.dart';
@@ -24,11 +25,12 @@ class AddressList extends StatefulWidget {
 }
 
 class _AddressListState extends State<AddressList> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
+
+  List<AddressItem> items = [];
 
   @override
   void initState() {
-    controller.getUser();
     super.initState();
   }
 
@@ -43,10 +45,12 @@ class _AddressListState extends State<AddressList> {
         appbar: AppBar(),
       ),
       body: StreamBuilder(
-          stream:
-              Future.delayed(Duration(seconds: 1), () => controller.getUser())
-                  .asStream(),
-          builder: (context, snapshot) {
+          stream: Future.delayed(Duration(seconds: 1), () => wp_api.getUser())
+              .asStream(),
+          builder: (context, AsyncSnapshot<WooCustomer> snapshot) {
+            if (snapshot.hasData) {
+              controller.getAddress(snapshot.data!);
+            }
             return controller.items.length == 0
                 ? Container(
                     alignment: Alignment.center,
@@ -57,8 +61,10 @@ class _AddressListState extends State<AddressList> {
                     padding: EdgeInsets.only(top: 40),
                     color: Colors.white,
                     child: ListView(
-                      children: List.generate(controller.items.length,
-                          (index) => addressListItem(controller.items[index])),
+                      children: List.generate(
+                          controller.items.length,
+                          (index) =>
+                              addressListItem(index, controller.items[index])),
                     ),
                   );
           }),
@@ -73,7 +79,7 @@ class _AddressListState extends State<AddressList> {
   }
 
   // 주소 리스트
-  Widget addressListItem(AddressItem address) {
+  Widget addressListItem(int index, AddressItem address) {
     return Container(
       padding: EdgeInsets.only(top: 13, left: 20, right: 20),
       child: Column(
@@ -81,12 +87,15 @@ class _AddressListState extends State<AddressList> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SvgPicture.asset(
-                  "assets/icons/myPage/" + address.addressName == "우리집"
-                      ? "mypageHome_1.svg"
-                      : address.addressName == "회사"
-                          ? "mypageCompany_1.svg"
-                          : "mypageLocation_1.svg"),
+              address.addressName == "우리집" || address.addressName == "회사"
+                  ? SvgPicture.asset(address.addressName == "우리집"
+                      ? "assets/icons/myPage/mypageHome_1.svg"
+                      : "assets/icons/myPage/mypageCompany_1.svg")
+                  : Image.asset(
+                      "assets/icons/myPage/mypageLocation_1.png",
+                      width: 40,
+                      height: 40,
+                    ),
               SizedBox(
                 width: 10,
               ),
@@ -111,12 +120,12 @@ class _AddressListState extends State<AddressList> {
                     ),
                     Row(
                       children: [
-                        addressBtn("수정", Colors.black, HexColor("#d5d5d5"),
-                            true, AddressUpdate()),
+                        addressBtn(index, "수정", Colors.black,
+                            HexColor("#d5d5d5"), true, AddressUpdate(index: index,)),
                         SizedBox(
                           width: 10,
                         ),
-                        addressBtn("삭제", HexColor("#fd9a03"),
+                        addressBtn(index, "삭제", HexColor("#fd9a03"),
                             HexColor("#fd9a03"), false, AddressDelModal()),
                       ],
                     ),
@@ -139,12 +148,12 @@ class _AddressListState extends State<AddressList> {
   }
 
   // 수정/삭제 버튼
-  Widget addressBtn(String text, Color txtColor, Color borderColor,
+  Widget addressBtn(int index, String text, Color txtColor, Color borderColor,
       bool iswidget, Widget widgetName) {
     return GestureDetector(
       onTap: () {
         if (iswidget == true) {
-          Get.to(widgetName);
+          Get.to(widgetName, arguments: index);
         } else {
           Get.dialog(widgetName);
         }

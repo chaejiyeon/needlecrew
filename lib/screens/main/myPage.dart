@@ -25,15 +25,23 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  final HomeController controller = Get.find();
   String? name = "";
+
 
   Future<void> username() async {
     name = await wp_api.storage.read(key: 'username');
   }
 
   @override
+  void initState(){
+    // controller.initialUser();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+
 
     return SafeArea(
       child: Container(

@@ -20,7 +20,7 @@ class UpdateForm extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateForm> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
 
 
   @override

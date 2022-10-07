@@ -63,7 +63,7 @@ class AlertDialogYes extends StatelessWidget {
                   onPressed: () {
 
                     if(widgetname == "updatePhoneNum"){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserInfo()));
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => UserInfo()), (route) => false);
                       // Get.close(2);
                     }else if(widgetname == "cart"){
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);

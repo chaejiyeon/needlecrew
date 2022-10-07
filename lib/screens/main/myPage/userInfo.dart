@@ -21,14 +21,14 @@ class UserInfo extends StatefulWidget {
 }
 
 class _UserInfoState extends State<UserInfo> {
+  final HomeController homeController = Get.find();
+
 
   @override
   void initState() {
-    controller.getUserInfo();
     super.initState();
   }
 
-  final HomeController controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -43,34 +43,46 @@ class _UserInfoState extends State<UserInfo> {
           padding: EdgeInsets.all(30),
           color: Colors.white,
           child: StreamBuilder(
-            stream: controller.getUserInfo(),
-            builder: (context, snapshot){
-              return  Column(
+            stream: Stream.periodic(
+              Duration(seconds: 1),
+            ).asyncMap((event) => wp_api.getUser()),
+            builder: (context, AsyncSnapshot<WooCustomer> snapshot) {
+              bool dataExist = snapshot.connectionState == ConnectionState.done;
+
+              if (snapshot.hasData) {
+                homeController.getUserInfo(snapshot.data!);
+              }
+              return Column(
                 children: [
                   UserInfoMenu(
                       appTitle: "회원 정보",
                       title: "이름",
-                      info:
-                      controller.userInfo['username'] != null ? controller.userInfo['username'] : '',
+                      info: dataExist == false &&
+                          homeController.userInfo['username'] != null
+                          ? homeController.userInfo['username']
+                          : '',
                       line: true),
                   UserInfoMenu(
                       appTitle: "회원 정보",
                       title: "전화번호",
-                      info:
-                      controller.userInfo['phoneNum'] != null ? controller.userInfo['phoneNum'] : '',
+                      info: dataExist == false &&
+                          homeController.userInfo['phoneNum'] != null
+                          ? homeController.userInfo['phoneNum']
+                          : '',
                       line: true),
                   UserInfoMenu(
                       appTitle: "회원 정보",
                       title: "주소",
-                      info: controller.userInfo['default_address'] != null
-                          ? controller.userInfo['default_address']
+                      info: dataExist == false &&
+                          homeController.userInfo['default_address'] != null
+                          ? homeController.userInfo['default_address']
                           : '',
                       line: true),
                   UserInfoMenu(
                       appTitle: "회원 정보",
                       title: "결제 수단",
-                      info: controller.userInfo['default_card'] != null
-                          ? controller.userInfo['default_card']
+                      info: homeController.userInfo['default_card'] != null
+                          ? homeController.userInfo['default_card']
                           : '',
                       line: false),
                 ],

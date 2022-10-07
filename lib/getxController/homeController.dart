@@ -97,15 +97,17 @@ class HomeController extends GetxController {
     'name': '',
   }.obs;
 
-
   // 마이페이지 정보
   Map userInfo = {
     'username': '',
     'phoneNum': '',
-    'default_address' : '',
+    'default_address': '',
+    'company_address': '',
+    'add_address1': '',
+    'add_address2': '',
+    'test_address': '',
     'default_card': '',
   };
-
 
   // 주소 목록
   List<AddressItem> items = [];
@@ -125,7 +127,8 @@ class HomeController extends GetxController {
 
   // 초기화
   Future<void> initialize() async {
-    await getUser();
+    await initialUser();
+    // await getUser();
     isInitialized.value = true;
     return;
   }
@@ -159,7 +162,6 @@ class HomeController extends GetxController {
     update();
   }
 
-
   // 단위 변환
   String setPrice(int price) {
     String setPrice = NumberFormat('###,###,###').format(price);
@@ -167,51 +169,82 @@ class HomeController extends GetxController {
     return setPrice;
   }
 
-
   // 회원 정보 storage에서 가져오기
-  Stream getUserInfo() async* {
+  Future initialUser() async {
     userInfo['username'] = await wp_api.storage.read(key: 'username');
     userInfo['phoneNum'] = await wp_api.storage.read(key: 'phoneNum');
     userInfo['default_address'] =
         await wp_api.storage.read(key: 'default_address');
+    userInfo['company_address'] =
+        await wp_api.storage.read(key: 'company_address');
+    userInfo['add_address1'] = await wp_api.storage.read(key: 'add_address1');
+    userInfo['add_address2'] = await wp_api.storage.read(key: 'add_address2');
     userInfo['default_card'] = await wp_api.storage.read(key: 'default_card');
+    // print("HomeController - initialUser" + userInfo['add_address'] );
 
-    print("HomeController - getUserInfo " + userInfo.toString());
+    if (userInfo['default_address'] != null)
+      items.add(AddressItem(0, "우리집", userInfo['default_address']));
+    if (userInfo['company_address'] != null)
+      items.add(AddressItem(1, "회사", userInfo['company_address']));
+    if(userInfo['test_address'] != null){
+      List address = userInfo['test_address'].split(",");
+      for(int i=0; i<address.length; i++){
+        items.add(AddressItem(2, "기타", address[i]));
+      }
+    }
 
-    yield userInfo;
+    if (userInfo['add_address1'] != null)
+      items.add(AddressItem(2, "기타", userInfo['add_address1']));
+    if (userInfo['add_address2'] != null)
+      items.add(AddressItem(2, "기타", userInfo['add_address2']));
+
+    print("HomeController - initialUser" + items.toString());
   }
 
-
-  // 해당 유저에 정보
-  Future getUser() async{
-    items.clear();
-
-    try {
-      user = await wp_api.getUser();
-      token = await wp_api.wooCommerceApi
-          .authenticateViaJWT(username: user.email, password: user.password);
-
-      List<WooCustomerMetaData> metadata = user.metaData!;
-
-      print("user metadata this " + metadata.toString());
-
-      for(int i=0; i<metadata.length; i++){
-        if(metadata[i].key == "default_address") {
-          items.add(AddressItem("우리집", metadata[i].value));
-        }else if(metadata[i].key == "billing_company"){
-          items.add(AddressItem("회사", metadata[i].value));
-        }else if(metadata[i].key == "billing_address_1" || metadata[i].key == "billing_address_2"){
-          items.add(AddressItem("기타", metadata[i].value));
-        }
+  // user mypage
+  Future getUserInfo(WooCustomer user) async {
+    for (int i = 0; i < user.metaData!.length; i++) {
+      if (user.metaData![i].key == "phoneNum") {
+        userInfo['phoneNum'] = user.metaData![i].value;
+      } else if (user.metaData![i].key == "default_address") {
+        userInfo['default_address'] = user.metaData![i].value;
+      } else if (user.metaData![i].key == "default_card") {
+        CardInfo cardInfo = await getCardInfo(user.metaData![i].value);
+        userInfo['default_card'] = cardInfo.card_name +
+            "(" +
+            cardInfo.card_number.substring(12, 16) +
+            ")";
       }
-
-      print("user info " + user.toString());
-      return user;
-    } catch (e) {
-      print("isError " + e.toString());
-      // return false;
     }
-    // return true;
+
+    print("HomeController - getUserInfo billing company " +
+        items.length.toString());
+  }
+
+  // 등록된 주소
+  void getAddress(WooCustomer user) {
+    items.clear();
+    for (int i = 0; i < user.metaData!.length; i++) {
+      if (user.metaData![i].key == "default_address") {
+        items.add(AddressItem(0, '우리집', user.metaData![i].value.toString()));
+      }
+    }
+    if (user.billing!.company != "") {
+      print("HomeController - getUserInfo billing company " +
+          user.billing!.company.toString());
+      items.add(AddressItem(1, '회사', user.billing!.company.toString()));
+    }
+    if (user.billing!.address1 != "") {
+      items.add(AddressItem(2, '기타', user.billing!.address1.toString()));
+      print("HomeController - getUserInfo billing company " +
+          user.billing!.address1.toString());
+    }
+    if (user.billing!.address2 != "") {
+      items.add(AddressItem(2, '기타', user.billing!.address2.toString()));
+    }
+
+    items.sort((a, b) => a.sort.compareTo(b.sort));
+    print("HomeController - getAddress" + items.length.toString());
   }
 
   // getOrder
@@ -335,7 +368,6 @@ class HomeController extends GetxController {
             WooCustomerMetaData(null, updateName.value, textController.text)
           ]
         });
-
 
         Get.dialog(AlertDialogYes(
           titleText: updatename + "가 변경되었습니다!",
@@ -547,8 +579,6 @@ class HomeController extends GetxController {
         card_name: getCard.card_name,
         card_number: getCard.card_number,
       );
-
-
     } catch (e) {
       print("HomeController - getCardInfo error" + e.toString());
     }
@@ -558,7 +588,7 @@ class HomeController extends GetxController {
   Future getCardAll() async {
     cardsBillkey.clear();
     cardsInfo.clear();
-    getUser();
+    user = await wp_api.getUser();
 
     List<WooCustomerMetaData> metaData = user.metaData!;
 

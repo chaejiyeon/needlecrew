@@ -87,7 +87,6 @@ Future<void> joinUs(
   }
 }
 
-
 // 로그인
 Future<bool> Login(String email, String password) async {
   try {
@@ -96,6 +95,10 @@ Future<bool> Login(String email, String password) async {
     Map userInfo = {
       'phoneNum': '',
       'default_address': '',
+      'company_address': '',
+      'add_address1': '',
+      'add_address2': '',
+      'test_address': '',
       'default_card': '',
     };
 
@@ -110,35 +113,50 @@ Future<bool> Login(String email, String password) async {
       userName = user.lastName! + user.firstName!;
       print("login 성공!!!!!!!!" + user.toString());
 
-
       for (int i = 0; i < metadata.length; i++) {
         if (metadata[i].key == "phoneNum") {
           userInfo['phoneNum'] = metadata[i].value;
         } else if (metadata[i].key == "default_address") {
           userInfo['default_address'] = metadata[i].value;
         } else if (metadata[i].key == "default_card") {
-          CardInfo cardInfo = await homecontroller.getCardInfo(metadata[i].value);
+          CardInfo cardInfo =
+              await homecontroller.getCardInfo(metadata[i].value);
           userInfo['default_card'] = cardInfo.card_name +
               "(" +
               cardInfo.card_number.substring(12, 16) +
               ")";
         }
       }
-
-
+      print(
+          "wp-api add address init2!!!!!!" + user.billing!.address2.toString());
+      if (user.billing!.company != "") {
+        userInfo['company_address'] = user.billing!.company.toString();
+      }
+      if (user.billing!.address1 != "") {
+        print("wp-api add address init!!!!!!");
+        userInfo['test_address'] = user.billing!.address1.toString();
+        userInfo['add_address1'] = user.billing!.address1.toString();
+      }
+      if (user.billing!.address2 != "") {
+        userInfo['test_address'] += "," + user.billing!.address2.toString();
+        userInfo['add_address2'] = user.billing!.address2.toString();
+      }
 
       Get.toNamed('/mainHome');
     } else {
       print("login 실패!!!!!!!");
     }
 
-
-
     await storage.write(key: 'loginToken', value: token);
     await storage.write(key: 'username', value: userName);
     await storage.write(key: 'phoneNum', value: userInfo['phoneNum']);
     await storage.write(
         key: 'default_address', value: userInfo['default_address']);
+    await storage.write(
+        key: 'company_address', value: userInfo['company_address']);
+    await storage.write(key: 'add_address1', value: userInfo['add_address1']);
+    await storage.write(key: 'add_address2', value: userInfo['add_address2']);
+    await storage.write(key: 'test_address', value: userInfo['test_address']);
     await storage.write(key: 'default_card', value: userInfo['default_card']);
 
     // String? thistoken = await storage.read(key: 'loginToken');
@@ -193,7 +211,7 @@ Future<WooCustomer> getUser() async {
       logOut();
       print("Expired token - 재로그인");
     }
-    print("is getUser info error" + e.toString());
+    print("wp-api - getUser info error" + e.toString());
 
     return user;
   }
