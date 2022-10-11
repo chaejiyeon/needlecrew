@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
-import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';

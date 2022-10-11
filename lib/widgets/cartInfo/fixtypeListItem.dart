@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:needlecrew/modal/tearIconModal.dart';
+import 'package:needlecrew/modal/tear_icon_modal.dart';
 import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/models/tooltip_text.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixUpdate.dart';

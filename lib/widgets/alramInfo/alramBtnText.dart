@@ -1,5 +1,5 @@
 // alram appbar itemBtn
-import 'package:needlecrew/modal/alramDeleteModal.dart';
+import 'package:needlecrew/modal/alram_delete_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

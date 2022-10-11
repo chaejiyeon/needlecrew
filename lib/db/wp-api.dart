@@ -117,7 +117,9 @@ Future<bool> Login(String email, String password) async {
         if (metadata[i].key == "phoneNum") {
           userInfo['phoneNum'] = metadata[i].value;
         } else if (metadata[i].key == "default_address") {
-          userInfo['default_address'] = metadata[i].value;
+          if(metadata[i].value != "") {
+            userInfo['default_address'] = metadata[i].value;
+          }
         } else if (metadata[i].key == "default_card") {
           CardInfo cardInfo =
               await homecontroller.getCardInfo(metadata[i].value);
@@ -134,11 +136,11 @@ Future<bool> Login(String email, String password) async {
       }
       if (user.billing!.address1 != "") {
         print("wp-api add address init!!!!!!");
-        userInfo['test_address'] = user.billing!.address1.toString();
+        // userInfo['test_address'] = user.billing!.address1.toString();
         userInfo['add_address1'] = user.billing!.address1.toString();
       }
       if (user.billing!.address2 != "") {
-        userInfo['test_address'] += "," + user.billing!.address2.toString();
+        // userInfo['test_address'] += "," + user.billing!.address2.toString();
         userInfo['add_address2'] = user.billing!.address2.toString();
       }
 
@@ -156,7 +158,7 @@ Future<bool> Login(String email, String password) async {
         key: 'company_address', value: userInfo['company_address']);
     await storage.write(key: 'add_address1', value: userInfo['add_address1']);
     await storage.write(key: 'add_address2', value: userInfo['add_address2']);
-    await storage.write(key: 'test_address', value: userInfo['test_address']);
+    // await storage.write(key: 'test_address', value: userInfo['test_address']);
     await storage.write(key: 'default_card', value: userInfo['default_card']);
 
     // String? thistoken = await storage.read(key: 'loginToken');

@@ -1,4 +1,4 @@
-import 'package:needlecrew/screens/main/fixClothes/addressInfo.dart';
+import 'package:needlecrew/screens/main/fixClothes/addressInfo.dart' as cart_info_modal;
 import 'package:needlecrew/screens/main/fixClothes/addressInsert.dart';
 import 'package:needlecrew/screens/main/fixClothes/chooseClothes.dart';
 import 'package:flutter/cupertino.dart';

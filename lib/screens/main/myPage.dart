@@ -1,5 +1,5 @@
 import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/modal/mypage/userLogoutYesNo.dart';
+import 'package:needlecrew/modal/mypage/user_logout_yes_no.dart';
 import 'package:needlecrew/screens/main/alramInfo.dart';
 import 'package:needlecrew/screens/main/myPage/alramSetting.dart';
 import 'package:needlecrew/screens/main/myPage/announcementInfo.dart';

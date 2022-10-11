@@ -15,6 +15,8 @@ class AddressUpdate extends StatelessWidget {
     final HomeController controller = Get.find();
 
     final address = controller.items[index].address.split(",");
+
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -23,13 +25,12 @@ class AddressUpdate extends StatelessWidget {
         backgroundColor: Colors.white,
         body: AddressInsertForm(
             appbarName: "주소 수정",
-            addressSearch: false,
             hinttext1:
-                address.length > 0 && address[0] != null ? address[0] : "",
-            hinttext2: address.length == 2 ? address[1] : ""),
+                address.length > 1 && address[0] != null ? address[0] : "",
+            hinttext2: address.length == 1 ? address[0] : address.length == 2 ? address[1] : "",index: index),
         bottomNavigationBar: Container(
             padding: EdgeInsets.all(20),
-            child: CircleBlackBtn(btnText: "완료", pageName: "back")),
+            child: CircleBlackBtn(btnText: "완료", pageName: "addressUpdate", updateName: "주소",)),
       ),
     );
   }

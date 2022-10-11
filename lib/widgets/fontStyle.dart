@@ -21,6 +21,7 @@ class FontStyle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Text(
       text,
       overflow: isEllipsis == false ? null : TextOverflow.ellipsis,

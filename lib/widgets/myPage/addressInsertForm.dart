@@ -10,17 +10,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class AddressInsertForm extends StatefulWidget {
-  final bool addressSearch;
   final String appbarName;
   final String hinttext1;
   final String hinttext2;
+  final int index;
 
   const AddressInsertForm(
       {Key? key,
-      required this.addressSearch,
       required this.appbarName,
       required this.hinttext1,
-      required this.hinttext2})
+      required this.hinttext2,
+      this.index = 0})
       : super(key: key);
 
   @override
@@ -29,7 +29,6 @@ class AddressInsertForm extends StatefulWidget {
 
 class _AddressInsertFormState extends State<AddressInsertForm> {
   final HomeController controller = Get.find();
-  final _textController = TextEditingController();
   late String selectAddress = "";
 
   List setText = ["지번, 도로명, 건물명 검색", "상세주소"];
@@ -41,24 +40,45 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
   String kakaoLatitude = '-';
   String kakaoLongitude = '-';
 
-
   @override
   void initState() {
+    setState(() {
+      selectAddress = controller.items[widget.index].addressName;
+    });
+    controller.textController = TextEditingController();
+    controller.textController.text = widget.hinttext2;
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _textController.dispose();
+    controller.textController.dispose();
   }
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    if (selectAddress == "우리집") {
+      controller.updateUserInfo("default_address");
+    } else if (selectAddress == "회사") {
+      controller.updateUserInfo("company");
+    } else {
+      if (widget.index == 2) {
+        controller.updateUserInfo("address_1");
+      } else if (widget.index == 3) {
+        controller.updateUserInfo("address_2");
+      } else {
+        controller.updateUserInfo("add_address");
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MypageAppBar(title: widget.appbarName, icon: "", widget: MainHome(), appbar: AppBar()),
+      appBar: MypageAppBar(
+          title: widget.appbarName,
+          icon: "",
+          widget: MainHome(),
+          appbar: AppBar()),
       body: Container(
         padding: EdgeInsets.only(left: 24, right: 24),
         child: Column(
@@ -90,27 +110,27 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
     return Container(
       padding: EdgeInsets.only(bottom: 10),
       child: TextField(
-        onChanged: (value){
-          setState((){});
+        onChanged: (value) {
+          setState(() {});
         },
         controller: controller.textController,
-        textAlign:
-            widget.addressSearch == true ? TextAlign.center : TextAlign.start,
+        textAlign: widget.hinttext2 != "" ? TextAlign.start : TextAlign.center,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(left: 30,top: 16, bottom: 17),
-          suffixIcon:  IconButton(
-                  icon: controller.textController.text.isNotEmpty
-                      ? SvgPicture.asset("assets/icons/xmarkIcon_full.svg",) : Container(),
-                  onPressed: () {
-                    controller.textController.clear();
-                    setState((){});
-                  },
-                ),
-          hintText: title != "" ? title : setText[1],
+          contentPadding: EdgeInsets.only(left: 30, top: 16, bottom: 17),
+          suffixIcon: IconButton(
+            icon: controller.textController.text != ""
+                ? SvgPicture.asset(
+                    "assets/icons/xmarkIcon_full.svg",
+                  )
+                : Container(),
+            onPressed: () {
+              controller.textController.clear();
+              setState(() {});
+            },
+          ),
+          hintText: title != "" ? null : setText[1],
           hintStyle: TextStyle(
-            color: widget.addressSearch == true
-                ? HexColor("#a5a5a5")
-                : Colors.black,
+            color: widget.hinttext2 != "" ? Colors.black : HexColor("#a5a5a5"),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
@@ -143,21 +163,37 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
               this.kakaoLatitude = result.kakaoLatitude.toString();
               this.kakaoLongitude = result.kakaoLongitude.toString();
             });
+            controller.updateText = result.address;
           },
         ));
       },
       child: Container(
-        padding: EdgeInsets.only(left: widget.addressSearch == true ? 0 : 30,top: 16, bottom: 17),
+        padding: EdgeInsets.only(
+            left: widget.hinttext1 != "" || postCode != "-" || address != "-"
+                ? 30
+                : 0,
+            top: 16,
+            bottom: 17),
         margin: EdgeInsets.only(bottom: 10),
-        alignment: widget.addressSearch == true ? Alignment.center : null,
+        alignment: widget.hinttext1 != "" || postCode != "-" || address != "-"
+            ? null
+            : Alignment.center,
         // height: 64,
         width: double.infinity,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40),
             border: Border.all(color: HexColor("#d5d5d5"))),
         child: Text(
-          postCode != "-" && address != "-" ? address : setText[0],
-          style: TextStyle(color: widget.hinttext1 != "" ? Colors.black : HexColor("#a5a5a5")),
+          widget.hinttext1 != "" && postCode == "-" && address == "-"
+              ? widget.hinttext1
+              : postCode != "-" && address != "-"
+                  ? address
+                  : setText[0],
+          style: TextStyle(
+              color: widget.hinttext1 != "" || postCode != "-" || address != "-"
+                  ? Colors.black
+                  : HexColor("#a5a5a5"),
+              fontSize: 15),
           // TextStyle(color: widget.addressSearch == true
           //     ? HexColor("#a5a5a5") : Colors.black, fontSize: 15),
         ),
@@ -168,14 +204,17 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
   // 주소 Type 버튼
   Widget Typecheck(String icon, String text) {
     return GestureDetector(
-      onTap: (){
-        setState((){
+      onTap: () {
+        setState(() {
           selectAddress = text;
         });
       },
       child: Column(
         children: [
-          SvgPicture.asset("assets/icons/myPage/" + icon, color: selectAddress == text ? HexColor("#fd9a03") : Colors.black,),
+          SvgPicture.asset(
+            "assets/icons/myPage/" + icon,
+            color: selectAddress == text ? HexColor("#fd9a03") : Colors.black,
+          ),
           SizedBox(
             height: 10,
           ),
@@ -184,14 +223,19 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
             width: MediaQuery.of(context).size.width / 3.7,
             height: 40,
             decoration: BoxDecoration(
-              border: Border.all(color: selectAddress == text ? HexColor("#fd9a03") : HexColor("#d5d5d5")),
+              border: Border.all(
+                  color: selectAddress == text
+                      ? HexColor("#fd9a03")
+                      : HexColor("#d5d5d5")),
               borderRadius: BorderRadius.circular(30),
             ),
             child: FontStyle(
                 text: text,
                 fontbold: "",
                 fontsize: "md",
-                fontcolor: selectAddress == text ? HexColor("#fd9a03") : Colors.black,textdirectionright: false),
+                fontcolor:
+                    selectAddress == text ? HexColor("#fd9a03") : Colors.black,
+                textdirectionright: false),
           ),
         ],
       ),

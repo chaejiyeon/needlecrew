@@ -2,8 +2,8 @@ import 'package:needlecrew/bottomsheet/useInfoBottomsheet/fix_cancle_info_sheet.
 import 'package:needlecrew/bottomsheet/useInfoBottomsheet/fix_info_sheet.dart';
 import 'package:needlecrew/bottomsheet/useInfoBottomsheet/use_info_process_sheet.dart';
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
-import 'package:needlecrew/modal/fixClothes/fixCompleteModal.dart';
-import 'package:needlecrew/modal/imageInfo.dart';
+import 'package:needlecrew/modal/fixClothes/fix_complete_modal.dart';
+import 'package:needlecrew/modal/image_info_modal.dart';
 import 'package:needlecrew/models/fix_ready.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/widgets/circleLineBtn.dart';

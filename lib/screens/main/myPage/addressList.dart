@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/modal/addressDelModal.dart';
+import 'package:needlecrew/modal/address_del_modal.dart';
 import 'package:needlecrew/models/addressItem.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/addressAdd.dart';
@@ -25,7 +25,7 @@ class AddressList extends StatefulWidget {
 }
 
 class _AddressListState extends State<AddressList> {
-  final HomeController controller = Get.find();
+  final HomeController controller = Get.put(HomeController());
 
   List<AddressItem> items = [];
 
@@ -80,6 +80,13 @@ class _AddressListState extends State<AddressList> {
 
   // 주소 리스트
   Widget addressListItem(int index, AddressItem address) {
+    List addressInfo = address.address.split(",");
+    String addressText = "";
+
+    for(int i=0; i<addressInfo.length; i++){
+      addressText  += addressInfo[i] + " ";
+    }
+
     return Container(
       padding: EdgeInsets.only(top: 13, left: 20, right: 20),
       child: Column(
@@ -87,7 +94,7 @@ class _AddressListState extends State<AddressList> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              address.addressName == "우리집" || address.addressName == "회사"
+              address.sort == "우리집" || address.addressName == "회사"
                   ? SvgPicture.asset(address.addressName == "우리집"
                       ? "assets/icons/myPage/mypageHome_1.svg"
                       : "assets/icons/myPage/mypageCompany_1.svg")
@@ -110,7 +117,7 @@ class _AddressListState extends State<AddressList> {
                         fontcolor: Colors.black,
                         textdirectionright: false),
                     FontStyle(
-                        text: address.address,
+                        text: addressText,
                         fontsize: "",
                         fontbold: "",
                         fontcolor: HexColor("#aaaaaa"),
@@ -120,12 +127,12 @@ class _AddressListState extends State<AddressList> {
                     ),
                     Row(
                       children: [
-                        addressBtn(index, "수정", Colors.black,
+                        addressBtn(index, "수정", address.addressName, Colors.black,
                             HexColor("#d5d5d5"), true, AddressUpdate(index: index,)),
                         SizedBox(
                           width: 10,
                         ),
-                        addressBtn(index, "삭제", HexColor("#fd9a03"),
+                        addressBtn(index, "삭제", address.addressName, HexColor("#fd9a03"),
                             HexColor("#fd9a03"), false, AddressDelModal()),
                       ],
                     ),
@@ -148,13 +155,22 @@ class _AddressListState extends State<AddressList> {
   }
 
   // 수정/삭제 버튼
-  Widget addressBtn(int index, String text, Color txtColor, Color borderColor,
+  Widget addressBtn(int index, String text, String addressType, Color txtColor, Color borderColor,
       bool iswidget, Widget widgetName) {
     return GestureDetector(
       onTap: () {
+
         if (iswidget == true) {
           Get.to(widgetName, arguments: index);
         } else {
+          if(text == "삭제") {
+            controller.updateText = "";
+            if(addressType == "우리집") {
+              controller.updateUserInfo("default_address");
+            }else if(addressType == "회사"){
+              controller.updateUserInfo("company");
+            }
+          }
           Get.dialog(widgetName);
         }
       },

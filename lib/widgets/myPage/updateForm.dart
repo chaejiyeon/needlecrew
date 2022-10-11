@@ -13,7 +13,12 @@ class UpdateForm extends StatefulWidget {
   final String updateType;
   final String hintText;
 
-  const UpdateForm({Key? key, required this.appbarName, required this.updateType, required this.hintText,}) : super(key: key);
+  const UpdateForm({
+    Key? key,
+    required this.appbarName,
+    required this.updateType,
+    required this.hintText,
+  }) : super(key: key);
 
   @override
   State<UpdateForm> createState() => _UpdateFormState();
@@ -22,18 +27,18 @@ class UpdateForm extends StatefulWidget {
 class _UpdateFormState extends State<UpdateForm> {
   final HomeController controller = Get.find();
 
-
   @override
   void initState() {
+    controller.textController = TextEditingController();
+    controller.textController.text = widget.hintText;
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    // _textController.dispose();
+    controller.textController.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,11 @@ class _UpdateFormState extends State<UpdateForm> {
       color: Colors.white,
       child: Column(
         children: [
-          MypageAppBar(title: widget.appbarName, icon: "", widget: MainHome(), appbar: AppBar()),
+          MypageAppBar(
+              title: widget.appbarName,
+              icon: "",
+              widget: MainHome(),
+              appbar: AppBar()),
           Container(
             padding: EdgeInsets.all(30),
             child: Column(
@@ -51,27 +60,31 @@ class _UpdateFormState extends State<UpdateForm> {
                     text: widget.updateType,
                     fontsize: "",
                     fontbold: "",
-                    fontcolor: Colors.black,textdirectionright: false),
+                    fontcolor: Colors.black,
+                    textdirectionright: false),
                 SizedBox(
                   height: 10,
                 ),
-                TextFormField(
-                  onChanged: (value){
-                    setState((){});
+                TextField(
+                  onChanged: (value) {
+                    setState(() {});
                   },
                   controller: controller.textController,
                   style: TextStyle(height: 1),
-                  keyboardType: widget.updateType == "전화번호" ? TextInputType.number : null,
+                  keyboardType:
+                      widget.updateType == "전화번호" ? TextInputType.number : null,
                   decoration: InputDecoration(
-
-                      suffixIcon: controller.textController.text.isNotEmpty ? IconButton(
-                        icon: SvgPicture.asset("assets/icons/xmarkIcon_full_acolor.svg",),
-                        onPressed: () {
-                          controller.textController.clear();
-                          setState((){});
-                        },
-                      ) : null,
-                      hintText: widget.hintText,
+                      suffixIcon: controller.textController.text != ""
+                          ? IconButton(
+                              icon: SvgPicture.asset(
+                                "assets/icons/xmarkIcon_full_acolor.svg",
+                              ),
+                              onPressed: () {
+                                controller.textController.clear();
+                                setState(() {});
+                              },
+                            )
+                          : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

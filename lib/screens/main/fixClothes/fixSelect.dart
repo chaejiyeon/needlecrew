@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:needlecrew/getxController/fixClothes/fixselectController.dart';
-import 'package:needlecrew/modal/alertDialogYes.dart';
-import 'package:needlecrew/modal/fixClothes/fixSelectModal.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
+import 'package:needlecrew/modal/fixClothes/fix_select_modal.dart';
 import 'package:needlecrew/models/tooltip_text.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/fixClothes/fixQuestion.dart';

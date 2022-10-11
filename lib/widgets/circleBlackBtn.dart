@@ -23,8 +23,7 @@ class CircleBlackBtn extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
-
+    final HomeController controller = Get.find();
 
     controller.getCardAll();
     return Container(
@@ -37,26 +36,24 @@ class CircleBlackBtn extends GetView<HomeController> {
       ),
       child: TextButton(
         onPressed: () {
-          if (btnText == "결제하기") {
-            Get.dialog(AlertLoading(titleText: "결제 중입니다."));
-          } else if (btnText == "변경 완료") {
-            controller.updateUser(updateName);
-          } else if (btnText == "치수 측정 가이드 및 수정") {
-            Get.to(MysizeShirtUpdate());
-          } else {
-            pageName != "back" ? Get.toNamed('/' + pageName) : Get.back();
-          }
-
-
-
           if (pageName == "payTypeAdd") {
-
-
             print("cardsInfo " + controller.cardsBillkey.toString());
             if (controller.cardsInfo.length >= 1) {
               Get.to(FixRegisterInfo());
             } else {
               Get.toNamed("/" + pageName);
+            }
+          } else if (pageName == "addressUpdate" || pageName == "payType") {
+            controller.updateUser(updateName);
+          } else {
+            if (btnText == "결제하기") {
+              Get.dialog(AlertLoading(titleText: "결제 중입니다."));
+            } else if (btnText == "변경 완료") {
+              controller.updateUser(updateName);
+            } else if (btnText == "치수 측정 가이드 및 수정") {
+              Get.to(MysizeShirtUpdate());
+            } else {
+              pageName != "back" ? Get.toNamed('/' + pageName) : Get.back();
             }
           }
         },

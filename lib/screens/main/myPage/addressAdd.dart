@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/widgets/circleBlackBtn.dart';
 import 'package:needlecrew/widgets/myPage/addressInsertForm.dart';
 import 'package:flutter/material.dart';
@@ -10,20 +12,22 @@ class AddressAdd extends StatefulWidget {
 }
 
 class _AddressAddState extends State<AddressAdd> {
+
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: (){
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: AddressInsertForm(appbarName: "주소 등록",addressSearch: true, hinttext1: "지번,도로명,건물명 검색",hinttext2: "상세주소"),
+        body: AddressInsertForm(appbarName: "주소 등록", hinttext1: "",hinttext2: ""),
 
 
         bottomNavigationBar: Container(
-            padding: EdgeInsets.only(left: 24, right: 24, bottom: 56),
-            child: CircleBlackBtn(btnText: "완료", pageName: "back")),
+            padding: EdgeInsets.all(20),
+            child: CircleBlackBtn(btnText: "완료", pageName: "addressUpdate", )),
       ),
     );
   }

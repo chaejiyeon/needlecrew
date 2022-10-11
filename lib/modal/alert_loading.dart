@@ -1,6 +1,6 @@
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
-import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/screens/main/myPage/userUpdate.dart';

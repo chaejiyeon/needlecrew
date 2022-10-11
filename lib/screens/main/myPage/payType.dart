@@ -1,6 +1,8 @@
+import 'package:intl/intl.dart';
 import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/modal/alertDialogYesNo.dart';
-import 'package:needlecrew/models/user_card_info.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes_no.dart';
+import 'package:needlecrew/models/billing_info.dart';
 import 'package:needlecrew/screens/main/myPage/payTypeAdd.dart';
 import 'package:needlecrew/widgets/circleBlackBtn.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
@@ -19,121 +21,150 @@ class PayType extends StatefulWidget {
 }
 
 class _PayTypeState extends State<PayType> {
-  List<UserCardInfo> userinfos = [
-    UserCardInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-    UserCardInfo("dddd", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-    UserCardInfo("신응수", "cwal@amuz.co.kr", "롯데카드", "1234-5678-9101-4892", "01/19",
-        "1234", "1993/05/23"),
-  ];
   final _carouselcontroller = CarouselController();
   late int currentPage = 0;
 
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
+
+  // 카드 번호 설정
+  String setCardNum(String cardnum) {
+    String number = "";
+
+    number = cardnum.substring(0, 4) +
+        "-" +
+        cardnum.substring(4, 8) +
+        "-" +
+        cardnum.substring(8, 12) +
+        "-" +
+        cardnum.substring(12, 16);
+
+    return number;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    controller.updateUserInfo("default_card");
+
+    controller.selectCard = currentPage;
+
     return Scaffold(
       body: Container(
         child: Column(
           children: [
             appbar("결제 수단", Icon(CupertinoIcons.plus_circle), "trashIcon.svg"),
-            Container(
-              height: 230,
-              child: CarouselSlider(
-                carouselController: _carouselcontroller,
-                items: List.generate(
-                    userinfos.length, (index) => cardCutom(userinfos[index])),
-                options: CarouselOptions(
-                    aspectRatio: 2.0,
-                    enableInfiniteScroll: false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        currentPage = index;
-                      });
-                    }),
-              ),
-            ),
-
-            Container(
-              padding: EdgeInsets.zero,
-              width: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(CupertinoIcons.back, size: 20),
-                  Container(
-                    child: Row(
-                      children: [
-                        FontStyle(
-                            text: (currentPage + 1).toString(),
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,textdirectionright: false),
-                        FontStyle(
-                            text: "/",
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,textdirectionright: false),
-                        FontStyle(
-                            text: userinfos.length.toString(),
-                            fontsize: "",
-                            fontbold: "",
-                            fontcolor: Colors.black,textdirectionright: false),
-                      ],
-                    ),
-                  ),
-                  Icon(CupertinoIcons.forward, size: 20),
-                ],
-              ),
-            ),
-
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(40),
-                  child: Column(
-                    children: [
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "이름",
-                          info: userinfos[currentPage].userName,
-                          line: true),
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "이메일",
-                          info: userinfos[currentPage].userEmail,
-                          line: true),
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "카드번호",
-                          info: userinfos[currentPage].cardNum,
-                          line: true),
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "유효기간",
-                          info: userinfos[currentPage].date,
-                          line: true),
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "비밀번호",
-                          info: userinfos[currentPage].password,
-                          line: true),
-                      UserInfoMenu(
-                          appTitle: "결제 수단",
-                          title: "생년월일",
-                          info: userinfos[currentPage].birthday,
-                          line: false),
-                    ],
-                ),
-              ),
+              child: controller.cardsInfo.length == 0
+                  ? Container(
+                      alignment: Alignment.center,
+                      child: Text("등록된 카드가 없습니다."),
+                    )
+                  : Container(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 230,
+                            child: CarouselSlider(
+                              carouselController: _carouselcontroller,
+                              items: List.generate(
+                                  controller.cardsInfo.length,
+                                  (index) =>
+                                      cardCutom(controller.cardsInfo[index])),
+                              options: CarouselOptions(
+                                  aspectRatio: 2.0,
+                                  enableInfiniteScroll: false,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      currentPage = index;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.zero,
+                            width: 100,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(CupertinoIcons.back, size: 20),
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      FontStyle(
+                                          text: (currentPage + 1).toString(),
+                                          fontsize: "",
+                                          fontbold: "",
+                                          fontcolor: Colors.black,
+                                          textdirectionright: false),
+                                      FontStyle(
+                                          text: "/",
+                                          fontsize: "",
+                                          fontbold: "",
+                                          fontcolor: Colors.black,
+                                          textdirectionright: false),
+                                      FontStyle(
+                                          text: controller.cardsInfo.length
+                                              .toString(),
+                                          fontsize: "",
+                                          fontbold: "",
+                                          fontcolor: Colors.black,
+                                          textdirectionright: false),
+                                    ],
+                                  ),
+                                ),
+                                Icon(CupertinoIcons.forward, size: 20),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.all(40),
+                              child: Column(
+                                children: [
+                                  UserInfoMenu(
+                                      appTitle: "결제 수단",
+                                      title: "이름",
+                                      info: controller
+                                          .cardsInfo[currentPage].customer_name,
+                                      line: true),
+                                  UserInfoMenu(
+                                      appTitle: "결제 수단",
+                                      title: "이메일",
+                                      info: controller.cardsInfo[currentPage]
+                                          .customer_email,
+                                      line: true),
+                                  UserInfoMenu(
+                                      appTitle: "결제 수단",
+                                      title: "카드번호",
+                                      info: setCardNum(controller
+                                          .cardsInfo[currentPage].card_number),
+                                      line: true),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-          padding: EdgeInsets.all(20),
-          child: CircleBlackBtn(btnText: "변경 완료", pageName: "mainHome")),
+      bottomNavigationBar: controller.cardsInfo.length == 0
+          ? Container(
+              height: 0,
+            )
+          : Container(
+              padding: EdgeInsets.all(20),
+              child: CircleBlackBtn(
+                btnText: "선택 완료",
+                pageName: "payType",
+                updateName: "결제 수단",
+              )),
     );
   }
 
@@ -160,18 +191,29 @@ class _PayTypeState extends State<PayType> {
                 text: title,
                 fontsize: "md",
                 fontbold: "bold",
-                fontcolor: Colors.black,textdirectionright: false),
+                fontcolor: Colors.black,
+                textdirectionright: false),
           ),
           Container(
             child: Row(
               children: [
-                IconButton(onPressed: () {
-                  Get.to(
-                      PayTypeAdd(isFirst: false,));
-                }, icon: icon1),
+                IconButton(
+                    onPressed: () {
+                      Get.to(PayTypeAdd(
+                        isFirst: false,
+                      ));
+                    },
+                    icon: icon1),
                 GestureDetector(
                     onTap: () {
-                      Get.dialog(AlertDialogYesNo(titleText: "등록된 정보를 삭제하시겠습니까?",contentText: "결제 정보가 등록되어 있지 않으면\n수선의뢰 시 다시 작성해야합니다.", icon: "", iconPath: "", btntext1: "취소", btntext2: "삭제",));
+                      Get.dialog(AlertDialogYesNo(
+                        titleText: "등록된 정보를 삭제하시겠습니까?",
+                        contentText: "결제 정보가 등록되어 있지 않으면\n수선의뢰 시 다시 작성해야합니다.",
+                        icon: "",
+                        iconPath: "",
+                        btntext1: "취소",
+                        btntext2: "삭제",
+                      ));
                     },
                     child: SvgPicture.asset("assets/icons/" + icon2)),
               ],
@@ -183,7 +225,7 @@ class _PayTypeState extends State<PayType> {
   }
 
   // card custom 위젯
-  Widget cardCutom(UserCardInfo userinfos) {
+  Widget cardCutom(CardInfo cardInfo) {
     return Stack(
       children: [
         Container(
@@ -200,11 +242,11 @@ class _PayTypeState extends State<PayType> {
           child: Container(
             padding: EdgeInsets.only(left: 20),
             child: FontStyle(
-              text: userinfos.cardName,
-              fontcolor: Colors.white,
-              fontsize: "md",
-              fontbold: "",textdirectionright: false
-            ),
+                text: cardInfo.card_name,
+                fontcolor: Colors.white,
+                fontsize: "md",
+                fontbold: "",
+                textdirectionright: false),
           ),
         ),
         Align(
@@ -213,11 +255,11 @@ class _PayTypeState extends State<PayType> {
           alignment: Alignment.bottomRight,
           child: Container(
             child: FontStyle(
-              text: userinfos.cardNum.substring(15, 19),
-              fontcolor: Colors.white,
-              fontbold: "",
-              fontsize: "md",textdirectionright: false
-            ),
+                text: cardInfo.card_number.substring(12, 16),
+                fontcolor: Colors.white,
+                fontbold: "",
+                fontsize: "md",
+                textdirectionright: false),
           ),
         ),
       ],

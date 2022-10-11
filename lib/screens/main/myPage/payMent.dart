@@ -2,7 +2,6 @@ import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/models/billing_info.dart';
-import 'package:needlecrew/models/user_card_info.dart';
 import 'package:needlecrew/screens/main/alramInfo.dart';
 import 'package:needlecrew/screens/main/cartInfo.dart';
 import 'package:needlecrew/widgets/circleBlackBtn.dart';

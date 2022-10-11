@@ -1,35 +1,46 @@
+import 'package:needlecrew/getxController/homeController.dart' as fix_complete_modal;
+import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes_no.dart';
+import 'package:needlecrew/screens/main/myPage/payMent.dart';
+import 'package:needlecrew/screens/main/myPage/payType.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
 
 
-class AddressDelModal extends StatelessWidget {
-  const AddressDelModal({Key? key}) : super(key: key);
+class FixCompleteModal extends StatelessWidget {
+  final UseInfoController controller;
+  final int orderid;
+  const FixCompleteModal({Key? key, required this.orderid, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    final fix_complete_modal.HomeController homeController = Get.put(fix_complete_modal.HomeController());
+
+    homeController.getCardAll();
+    return  Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
-        width: 300,
-        height: 151,
+        width: 297,
+        height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(height: 10,),
-            // SvgPicture.asset("assets/icons/tearIcon.svg"),
             Container(
               padding: EdgeInsets.all(10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   FontStyle(
-                      text: "해당 주소를 삭제하시겠습니까?",
+                      text: "수선을 확정하시겠습니까?",
                       fontsize: "md",
                       fontbold: "bold",
                       fontcolor: Colors.black,textdirectionright: false),
+                  SizedBox(height: 5,),
+                  Text("수선 확정 시 수선을 진행합니다.\n수선 진행 중에는 치수를 변경할 수 없습니다.", textAlign: TextAlign.center, style: TextStyle(color: HexColor("#606060")),),
                 ],
               ),
             ),
@@ -58,7 +69,10 @@ class AddressDelModal extends StatelessWidget {
                           border: Border(
                             top: BorderSide(color: HexColor("#d5d5d5")),
                           )),
-                      child: TextButton(child: Text("삭제",style: TextStyle(color: Colors.black)), onPressed: () {}),
+                      child: TextButton(child: Text("확정",style: TextStyle(color: Colors.black)), onPressed: () {
+                        controller.updateOrderId.value = orderid;
+                        homeController.cardsInfo.length == 0 ? Get.dialog(AlertDialogYes(titleText: "결제할 카드를 등록해주세요.",widgetname: "alert",)) : Get.off(() => PayMent(orderid: orderid,));
+                      }),
                     ),
                   ),
                 ],

@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 // import 'package:needlecrew/getxController/fixClothes/CartController.dart';
-import 'package:needlecrew/modal/addressIsHomeModal.dart';
+import 'package:needlecrew/modal/address_is_home_modal.dart';
 import 'package:needlecrew/screens/main/fixClothes/imageUpload.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
 import 'package:needlecrew/widgets/fixClothes/progressbar.dart';

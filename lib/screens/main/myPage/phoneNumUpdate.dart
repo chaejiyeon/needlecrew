@@ -17,6 +17,18 @@ class _PhoneNumUpdateState extends State<PhoneNumUpdate> {
   final HomeController controller = Get.put(HomeController());
 
   @override
+  void initState(){
+    controller.textController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    controller.textController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     controller.updateUserInfo('phoneNum');
     return GestureDetector(

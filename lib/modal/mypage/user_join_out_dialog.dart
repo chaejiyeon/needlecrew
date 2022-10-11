@@ -1,41 +1,33 @@
+import 'package:needlecrew/getxController/homeController.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class AlertDialogYesNo extends StatelessWidget {
+class UserJoinOutDialog extends StatelessWidget {
   final String titleText;
-  final String contentText;
-  final String icon;
-  final String iconPath;
-  final String btntext1;
-  final String btntext2;
 
-  const AlertDialogYesNo(
-      {Key? key,
-      required this.titleText,
-      required this.contentText,
-      required this.icon,
-      required this.iconPath,
-      required this.btntext1,
-      required this.btntext2})
-      : super(key: key);
+  const UserJoinOutDialog({
+    Key? key,
+    required this.titleText,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final HomeController controller = Get.find();
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
-        height: 200,
+        width: 250,
+        height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               height: 10,
             ),
-            icon != "" ? SvgPicture.asset("assets/" + (iconPath != "" ? iconPath +"/" +icon: icon),) : Container(),
             Container(
               padding: EdgeInsets.only(top: 10),
               child: Column(
@@ -45,16 +37,10 @@ class AlertDialogYesNo extends StatelessWidget {
                       text: titleText,
                       fontsize: "md",
                       fontbold: "bold",
-                      fontcolor: Colors.black,textdirectionright: false),
+                      fontcolor: Colors.black,
+                      textdirectionright: false),
                 ],
               ),
-            ),
-
-            Container(
-              padding: EdgeInsets.only(bottom: 10),
-              alignment: Alignment.center,
-              child:
-                  Text(contentText, style: TextStyle(color: HexColor("#909090")),textAlign: TextAlign.center,),
             ),
             Container(
               child: Row(
@@ -62,22 +48,19 @@ class AlertDialogYesNo extends StatelessWidget {
                   Expanded(
                     flex: 5,
                     child: Container(
-                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                           border: Border(
                         top: BorderSide(color: HexColor("#d5d5d5")),
                         right: BorderSide(color: HexColor("#d5d5d5")),
                       )),
-                      child: Center(
-                        child: TextButton(
-                            child: Text(
-                              btntext1,
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            onPressed: () {
-                              Get.back();
-                            }),
-                      ),
+                      child: TextButton(
+                          child: Text(
+                            "취소",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          onPressed: () {
+                            Get.back();
+                          }),
                     ),
                   ),
                   Expanded(
@@ -89,8 +72,10 @@ class AlertDialogYesNo extends StatelessWidget {
                       )),
                       child: TextButton(
                           child:
-                              Text(btntext2, style: TextStyle(color: Colors.black)),
-                          onPressed: () {}),
+                              Text("탈퇴", style: TextStyle(color: Colors.black)),
+                          onPressed: () {
+                            controller.JoinOut();
+                          }),
                     ),
                   ),
                 ],

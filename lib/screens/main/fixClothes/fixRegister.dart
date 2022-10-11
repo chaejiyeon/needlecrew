@@ -4,7 +4,7 @@ import 'package:needlecrew/bottomsheet/fix_register_bottom_sheet.dart';
 import 'package:needlecrew/widgets/cartInfo/cartListItem.dart';
 import 'package:needlecrew/widgets/visible_info.dart';
 import 'package:needlecrew/getxController/fixClothes/cartController.dart';
-import 'package:needlecrew/modal/cartInfoModal.dart';
+import 'package:needlecrew/modal/cart_info_modal.dart';
 import 'package:needlecrew/widgets/circleLineBtn.dart';
 import 'package:needlecrew/widgets/fixClothes/fixClothesAppbar.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';

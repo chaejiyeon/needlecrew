@@ -7,7 +7,7 @@ import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
-import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:needlecrew/models/addressItem.dart';
@@ -25,7 +25,8 @@ class HomeController extends GetxController {
   // var storage = FlutterSecureStorage();
 
   // user update 내용
-  final textController = TextEditingController();
+  late TextEditingController textController = TextEditingController();
+  String updateText = "";
 
   RxBool mainModalcheck = false.obs;
 
@@ -79,6 +80,7 @@ class HomeController extends GetxController {
   // billing key 발급 된 사용가능 카드 목록
   RxList cardsBillkey = [].obs;
   List<CardInfo> cardsInfo = [];
+  int selectCard = 0;
 
   // getOrder
   Map orderMap = {
@@ -128,7 +130,7 @@ class HomeController extends GetxController {
   // 초기화
   Future<void> initialize() async {
     await initialUser();
-    // await getUser();
+    await getCardAll();
     isInitialized.value = true;
     return;
   }
@@ -179,24 +181,24 @@ class HomeController extends GetxController {
         await wp_api.storage.read(key: 'company_address');
     userInfo['add_address1'] = await wp_api.storage.read(key: 'add_address1');
     userInfo['add_address2'] = await wp_api.storage.read(key: 'add_address2');
+    userInfo['test_address'] = await wp_api.storage.read(key: 'test_address');
     userInfo['default_card'] = await wp_api.storage.read(key: 'default_card');
-    // print("HomeController - initialUser" + userInfo['add_address'] );
 
     if (userInfo['default_address'] != null)
-      items.add(AddressItem(0, "우리집", userInfo['default_address']));
+      items.add(AddressItem(
+          0, "우리집", "default_address", userInfo['default_address']));
     if (userInfo['company_address'] != null)
-      items.add(AddressItem(1, "회사", userInfo['company_address']));
-    if(userInfo['test_address'] != null){
-      List address = userInfo['test_address'].split(",");
-      for(int i=0; i<address.length; i++){
-        items.add(AddressItem(2, "기타", address[i]));
-      }
-    }
+      items.add(AddressItem(
+          1,
+          "회사",
+          "company",
+          userInfo[
+              'company_address'])); // if (userInfo['test_address'] != null) {
 
     if (userInfo['add_address1'] != null)
-      items.add(AddressItem(2, "기타", userInfo['add_address1']));
+      items.add(AddressItem(2, "기타", "address_1", userInfo['add_address1']));
     if (userInfo['add_address2'] != null)
-      items.add(AddressItem(2, "기타", userInfo['add_address2']));
+      items.add(AddressItem(2, "기타", "address_2", userInfo['add_address2']));
 
     print("HomeController - initialUser" + items.toString());
   }
@@ -209,11 +211,13 @@ class HomeController extends GetxController {
       } else if (user.metaData![i].key == "default_address") {
         userInfo['default_address'] = user.metaData![i].value;
       } else if (user.metaData![i].key == "default_card") {
-        CardInfo cardInfo = await getCardInfo(user.metaData![i].value);
-        userInfo['default_card'] = cardInfo.card_name +
-            "(" +
-            cardInfo.card_number.substring(12, 16) +
-            ")";
+        if (user.metaData![i].value != null) {
+          CardInfo cardInfo = await getCardInfo(user.metaData![i].value);
+          userInfo['default_card'] = cardInfo.card_name +
+              "(" +
+              cardInfo.card_number.substring(12, 16) +
+              ")";
+        }
       }
     }
 
@@ -226,21 +230,25 @@ class HomeController extends GetxController {
     items.clear();
     for (int i = 0; i < user.metaData!.length; i++) {
       if (user.metaData![i].key == "default_address") {
-        items.add(AddressItem(0, '우리집', user.metaData![i].value.toString()));
+        items.add(AddressItem(
+            0, '우리집', "default_address", user.metaData![i].value.toString()));
       }
     }
     if (user.billing!.company != "") {
       print("HomeController - getUserInfo billing company " +
           user.billing!.company.toString());
-      items.add(AddressItem(1, '회사', user.billing!.company.toString()));
+      items.add(
+          AddressItem(1, '회사', "company", user.billing!.company.toString()));
     }
     if (user.billing!.address1 != "") {
-      items.add(AddressItem(2, '기타', user.billing!.address1.toString()));
+      items.add(
+          AddressItem(2, '기타', "address_1", user.billing!.address1.toString()));
       print("HomeController - getUserInfo billing company " +
           user.billing!.address1.toString());
     }
     if (user.billing!.address2 != "") {
-      items.add(AddressItem(2, '기타', user.billing!.address2.toString()));
+      items.add(
+          AddressItem(2, '기타', "address_2", user.billing!.address2.toString()));
     }
 
     items.sort((a, b) => a.sort.compareTo(b.sort));
@@ -356,33 +364,62 @@ class HomeController extends GetxController {
     return true;
   }
 
+  // user 회원탈퇴
+  Future JoinOut() async {
+    try {
+      await wp_api.wooCommerceApi.deleteCustomer(customerId: user.id!);
+      await wp_api.logOut();
+
+      print("HomeController - JoinOut 회원탈퇴 완료");
+    } catch (e) {
+      print("HomeController - JoinOut 회원탈퇴 실패 " + e.toString());
+    }
+  }
+
   // ***mypage controller***
 
   // 유저 정보 업데이트
   Future<bool> updateUser(String updatename) async {
-    print("textcontorller text " + textController.text + "update success!");
     try {
+      await wp_api.wooCommerceApi.updateCustomer(id: user.id!, data: {
+        'meta_data': [
+          updateName.value != "add_address" || updateName.value != "company"
+              ? WooCustomerMetaData(
+                  null,
+                  updateName.value,
+                  updateName.value != "default_address"
+                      ? updateText + "," + textController.text
+                      : updateName.value == ""
+                          ? cardsBillkey[selectCard].toString()
+                          : textController.text)
+              : null
+        ],
+        'billing': updateName.value == "company" ||
+                updateName.value == "address_1" ||
+                updateName.value == "address_2" ||
+                updateName.value == "add_address"
+            ? {
+                updateName.value: updateText + "," + textController.text,
+              }
+            : null,
+      });
+
+      print("user " + updateName.value + "update success!");
+      // print("user " + updateName.value + phonenum.toString());
       if (textController.text != "") {
-        await wp_api.wooCommerceApi.updateCustomer(id: user.id!, data: {
-          'meta_data': [
-            WooCustomerMetaData(null, updateName.value, textController.text)
-          ]
-        });
-
         Get.dialog(AlertDialogYes(
-          titleText: updatename + "가 변경되었습니다!",
-          widgetname: "updatePhoneNum",
+          titleText: updatename + " 변경되었습니다!",
+          widgetname: "updateUserInfo",
         ));
-
-        await wp_api.storage.delete(key: 'phoneNum');
-        await wp_api.storage.write(key: 'phoneNum', value: textController.text);
-
-        String? phonenum = await wp_api.storage.read(key: 'phoneNum');
-
-        print("user " + updateName.value + "update success!");
-        print("user " + updateName.value + phonenum.toString());
       } else {
-        Get.dialog(AlertDialogYes(titleText: updatename + "를 입력해주세요."));
+        if (updatename.indexOf("삭제") != -1) {
+          Get.dialog(AlertDialogYes(
+            titleText: updatename + "완료",
+            widgetname: "updateUserInfo",
+          ));
+        } else {
+          Get.dialog(AlertDialogYes(titleText: updatename + "를 입력해주세요."));
+        }
       }
     } catch (e) {
       print("isError " + e.toString());
@@ -563,15 +600,6 @@ class HomeController extends GetxController {
       // card 정보 가져오기
       var getCard = CardInfo.fromJson(getBilling.response);
 
-      // if (getBilling.code == 0) {
-      // cardsInfo.add(CardInfo(
-      //   customer_uid: getCard.customer_uid,
-      //   customer_name: getCard.customer_name,
-      //   customer_email: getCard.customer_email,
-      //   card_name: getCard.card_name,
-      //   card_number: getCard.card_number,
-      // ));
-
       return CardInfo(
         customer_uid: getCard.customer_uid,
         customer_name: getCard.customer_name,
@@ -640,8 +668,6 @@ class HomeController extends GetxController {
     } catch (e) {
       print("HomeController - getCardAll Error " + e.toString());
     }
-
-    // print(response.body);
   }
 
   // 결제 요청

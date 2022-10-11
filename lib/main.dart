@@ -29,9 +29,7 @@ import 'screens/main/myPage/payType.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-
-  );
+  await Firebase.initializeApp();
   SharedPreferences.setMockInitialValues({});
   KakaoSdk.init(
       nativeAppKey: 'e30822d334ce26f168c65295d55a25b0', loggingEnabled: true);

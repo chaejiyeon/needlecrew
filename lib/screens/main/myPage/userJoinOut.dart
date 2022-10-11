@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:needlecrew/modal/mypage/userJoinOutDialog.dart';
+import 'package:needlecrew/modal/mypage/user_join_out_dialog.dart';
 import 'package:needlecrew/screens/main/mainHome.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:needlecrew/widgets/myPage/mypageAppbar.dart';

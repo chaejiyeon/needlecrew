@@ -1,7 +1,7 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
-import 'package:needlecrew/modal/tearIconModal.dart';
+import 'package:needlecrew/modal/tear_icon_modal.dart';
 import 'package:needlecrew/widgets/fixClothes/listLine.dart';
 import 'package:needlecrew/widgets/fontStyle.dart';
 import 'package:flutter/cupertino.dart';

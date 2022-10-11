@@ -6,7 +6,7 @@ import 'package:flutter_woocommerce_api/models/order.dart';
 import 'package:get/get.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:intl/intl.dart';
-import 'package:needlecrew/modal/alertDialogYes.dart';
+import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/widgets/cartInfo/cartListItem.dart';
 
