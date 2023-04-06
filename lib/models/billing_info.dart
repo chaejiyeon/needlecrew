@@ -24,19 +24,20 @@ class CardInfo {
   final dynamic card_number;
 
   CardInfo({
-    required this.customer_uid,
-    required this.customer_name,
-    required this.customer_email,
-    required this.card_name,
-    required this.card_number,
+    this.customer_uid,
+    this.customer_name,
+    this.customer_email,
+    this.card_name,
+    this.card_number,
   });
 
   factory CardInfo.fromJson(Map json) {
     return CardInfo(
-        customer_uid: json['customer_uid'],
-        customer_name: json["customer_name"],
-        customer_email: json["customer_email"],
-        card_name: json["card_name"],
-        card_number: json["card_number"],);
+      customer_uid: json['customer_uid'],
+      customer_name: json["customer_name"],
+      customer_email: json["customer_email"],
+      card_name: json["card_name"],
+      card_number: json["card_number"],
+    );
   }
 }

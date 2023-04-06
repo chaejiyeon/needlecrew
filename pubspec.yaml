@@ -51,7 +51,7 @@ dependencies:
   # intl
   intl: ^0.17.0
   #  bottom_sheet
-  bottom_sheet: ^3.1.1
+  bottom_sheet: ^3.1.2
   #vertical scroll tabview
   vertical_scrollable_tabview: ^0.0.7
   #  table calendar
@@ -66,7 +66,7 @@ dependencies:
   platform: ^3.1.0
   packages_info: ^0.0.1-dev.1
   #  apple_login
-  sign_in_with_apple: ^3.3.0
+  sign_in_with_apple: ^4.3.0
   # naver_login
   flutter_naver_login: ^1.6.0
   #  google_login
@@ -105,18 +105,19 @@ dependencies:
 
   # 파이어베이스 인증
   #  douwngrade 적용
-  firebase_auth: ^3.3.20
-  firebase_core: ^1.18.0
+  firebase_auth: ^4.2.5
+  firebase_core: ^2.4.1
   uuid: ^3.0.6
 
   # 알람 설정
   flutter_switch: ^0.3.2
+#  flutter_local_notifications: ^12.0.1+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-#  글자 안에 스타일 적용시 사용 - ex) 이거 볼드체, 이거 이태리체 > 앞부분 볼드체 적용 뒷부분 이태리체 적용
+  # 글자 안에 스타일 적용시 사용 - ex) 이거 볼드체, 이거 이태리체 > 앞부분 볼드체 적용 뒷부분 이태리체 적용
   easy_rich_text: ^1.1.0
 
 
@@ -131,7 +132,15 @@ dependencies:
 #  apple login (iOS 13 이하 구현 시 웹 인증 구현)
   flutter_web_auth: ^0.4.1
 
+  image: ^3.2.0
 
+  flutter_native_splash: ^2.2.16
+
+# naver sms 인증 - 암호화
+  crypto: ^3.0.2
+  file: ^6.1.4
+
+  flutter_screenutil: ^5.6.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

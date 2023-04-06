@@ -1,4 +1,4 @@
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 

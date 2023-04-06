@@ -1,9 +1,9 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/useInfo/useInfoController.dart';
 import 'package:needlecrew/modal/tear_icon_modal.dart';
-import 'package:needlecrew/widgets/fixClothes/listLine.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/fixClothes/list_line.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

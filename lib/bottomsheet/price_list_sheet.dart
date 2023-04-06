@@ -1,4 +1,4 @@
-import 'package:needlecrew/widgets/mainhome/priceInfo/tableListItem.dart';
+import 'package:needlecrew/widgets/mainhome/priceInfo/table_list_item.dart';
 import 'package:flutter/material.dart';
 
 class PriceListSheet extends StatefulWidget {

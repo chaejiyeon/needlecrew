@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:needlecrew/screens/main/fixClothes/fixRegister.dart';
-import 'package:needlecrew/screens/main/fixClothes/fixRegisterInfo.dart';
-import 'package:needlecrew/widgets/circleBlackBtn.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/screens/main/fixClothes/fix_register.dart';
+import 'package:needlecrew/screens/main/fixClothes/fix_register_info.dart';
+import 'package:needlecrew/widgets/circle_black_btn.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';

@@ -1,7 +1,7 @@
-import 'package:needlecrew/models/guideItem.dart';
+import 'package:needlecrew/models/guide_item.dart';
 import 'package:flutter/material.dart';
 
-import 'guidItemList.dart';
+import 'guid_item_list.dart';
 
 class Guide extends StatelessWidget {
   const Guide({Key? key}) : super(key: key);

@@ -12,7 +12,42 @@ class CartItem {
   final String guaranteePrice; // 물품가액
   final String productPrice; // 상품가격
 
+  CartItem(
+      this.categoryId,
+      this.cartId,
+      this.productId,
+      this.cartProductName,
+      this.cartCount,
+      this.cartCategory,
+      this.cartImages,
+      this.cartWay,
+      this.cartSize,
+      this.cartContent,
+      this.guaranteePrice,
+      this.productPrice);
+}
 
-  CartItem(this.categoryId, this.cartId, this.productId, this.cartProductName, this.cartCount, this.cartCategory, this.cartImages, this.cartWay, this.cartSize,
-      this.cartContent, this.guaranteePrice, this.productPrice);
+class OrderMetaData {
+  late int orderId; // 고유 ID
+  late int productId; // 고유 ID
+  late String cartProductName;
+  late List cartImages; // cart Image
+  late int cartCount;
+  late String cartWay;
+  late String cartSize; // 치수
+  late String cartContent;
+  late String guaranteePrice; // 물품가액
+  late String productPrice; // 상품가격
+
+  OrderMetaData(
+      this.orderId,
+      this.productId,
+      this.cartProductName,
+      this.cartCount,
+      this.cartImages,
+      this.cartWay,
+      this.cartSize,
+      this.cartContent,
+      this.guaranteePrice,
+      this.productPrice);
 }

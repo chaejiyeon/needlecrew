@@ -1,6 +1,10 @@
-import 'package:needlecrew/widgets/circleBlackBtn.dart' as fix_register_bottom_sheet;
-import 'package:needlecrew/widgets/fixClothes/listLine.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/functions.dart';
+import 'package:needlecrew/widgets/circle_black_btn.dart'
+    as fix_register_bottom_sheet;
+import 'package:needlecrew/widgets/fixClothes/list_line.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -17,6 +21,7 @@ class FixRegisterBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String payPrice = NumberFormat('###,###,###').format(price);
+    final HomeController controller = Get.find();
 
     return Container(
       child: ListView(
@@ -64,9 +69,7 @@ class FixRegisterBottomSheet extends StatelessWidget {
             child: Column(
               children: [
                 listItem(
-                    "디자인 및 소재(또는 수선 난이도)에 따라 최종 금액이 변동될 수 있습니다.",
-                    false,
-                    true),
+                    "디자인 및 소재(또는 수선 난이도)에 따라 최종 금액이 변동될 수 있습니다.", false, true),
                 SizedBox(
                   height: 14,
                 ),
@@ -84,7 +87,10 @@ class FixRegisterBottomSheet extends StatelessWidget {
           ),
           Container(
               padding: EdgeInsets.only(left: 24, right: 24, top: 55),
-              child: fix_register_bottom_sheet.CircleBlackBtn(btnText: "확인", pageName: "payTypeAdd"))
+              child: fix_register_bottom_sheet.CircleBlackBtn(
+                function: () => Functions().payTypeAdd(),
+                btnText: "확인",
+              ))
         ],
       ),
     );

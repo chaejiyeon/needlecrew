@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:needlecrew/widgets/tootipCustom.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/tootip_custom.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 
 class TooltipPriceInfo extends StatelessWidget {
   final String title;

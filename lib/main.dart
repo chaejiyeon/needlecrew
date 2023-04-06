@@ -1,34 +1,32 @@
-import 'dart:async';
-import 'dart:ffi';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/widget_controller/initial_bindings.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/screens/login/startPage.dart';
-import 'package:needlecrew/screens/login/login.dart';
-import 'package:needlecrew/screens/main/fixClothes.dart';
-import 'package:needlecrew/screens/main/fixClothes/chooseClothes.dart';
-import 'package:needlecrew/screens/main/fixClothes/fixRegisterInfo.dart';
-import 'package:needlecrew/screens/main/myPage.dart';
-import 'package:needlecrew/screens/main/myPage/payTypeAdd.dart';
-import 'package:needlecrew/screens/main/myPage/payTypeAddConfirm.dart';
-import 'package:needlecrew/screens/mainPage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:needlecrew/getxServices/home_init_service.dart';
+import 'package:needlecrew/screens/login/loading_page.dart';
+import 'package:needlecrew/screens/login/login_page.dart';
+import 'package:needlecrew/screens/main/fix_clothes.dart';
+import 'package:needlecrew/screens/main/fixClothes/fix_register_info.dart';
+import 'package:needlecrew/screens/main/myPage/pay_type_add.dart';
+import 'package:needlecrew/screens/main/myPage/pay_type_add_confirm.dart';
+import 'package:needlecrew/screens/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 
-import 'screens/join/agreeTerms.dart';
-import 'screens/main/myPage/payType.dart';
+import 'screens/join/agree_terms.dart';
+import 'screens/main/myPage/pay_type.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Firebase.initializeApp();
   SharedPreferences.setMockInitialValues({});
   KakaoSdk.init(
@@ -52,105 +50,64 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
-    return GetMaterialApp(
-      title: 'Nidlecrew',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'NotoSansCJKkrRegular',
-        primaryColor: Colors.white,
-        appBarTheme: AppBarTheme(
-          brightness: Brightness.light,
-        ),
-      ),
-      home: const MyHomePage(),
-      getPages: [
-        GetPage(name: '/login', page: () => LoginPage()),
-        GetPage(name: '/join', page: () => AgreeTerms()),
-        GetPage(name: '/startPage', page: () => loadingPage()),
-        GetPage(name: '/mainHome', page: () => MainPage(pageNum: 0)),
-        GetPage(
-            name: '/useInfoReady',
-            page: () => MainPage(pageNum: 1, selectTab: 0)),
-        GetPage(
-            name: '/useInfoProgress',
-            page: () => MainPage(pageNum: 1, selectTab: 1)),
-        GetPage(
-            name: '/useInfoComplete',
-            page: () => MainPage(pageNum: 1, selectTab: 2)),
-        GetPage(name: '/myPage', page: () => MainPage(pageNum: 2)),
-        GetPage(name: '/fixClothes', page: () => FixClothes()),
-        GetPage(name: '/fixRegisterInfo', page: () => FixRegisterInfo()),
-        GetPage(
-            name: '/payTypeAddConfirmFirst',
-            page: () => PayTypeAddConfirm(
-                  isFirst: true,
-                )),
-        GetPage(
-            name: '/payTypeAddConfirm',
-            page: () => PayTypeAddConfirm(
-                  isFirst: false,
-                )),
-        GetPage(name: '/payType', page: () => PayType()),
-        GetPage(name: '/payTypeAdd', page: () => PayTypeAdd(isFirst: true)),
-      ],
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          title: 'Needlecrew',
+          debugShowCheckedModeBanner: false,
+          initialBinding: InitialBindings(),
+          theme: ThemeData(
+            fontFamily: 'NotoSansCJKkrRegular',
+            primaryColor: Colors.white,
+            appBarTheme: AppBarTheme(
+              brightness: Brightness.light,
+            ),
+          ),
+          home: Obx(() => homeInitService.mainHome.value.value ?? Container()),
+          getPages: [
+            GetPage(name: '/login', page: () => LoginPage()),
+            GetPage(name: '/join', page: () => AgreeTerms()),
+            GetPage(name: '/startPage', page: () => LoadingPage()),
+            GetPage(name: '/mainHome', page: () => MainPage(pageNum: 0)),
+            GetPage(
+                name: '/useInfoReady',
+                page: () => MainPage(pageNum: 1, selectTab: 0)),
+            GetPage(
+                name: '/useInfoProgress',
+                page: () => MainPage(pageNum: 1, selectTab: 1)),
+            GetPage(
+                name: '/useInfoComplete',
+                page: () => MainPage(pageNum: 1, selectTab: 2)),
+            GetPage(name: '/myPage', page: () => MainPage(pageNum: 2)),
+            GetPage(name: '/fixClothes', page: () => FixClothes()),
+            GetPage(name: '/fixRegisterInfo', page: () => FixRegisterInfo()),
+            GetPage(
+                name: '/payTypeAddConfirmFirst',
+                page: () => PayTypeAddConfirm(
+                      isFirst: true,
+                    )),
+            GetPage(
+                name: '/payTypeAddConfirm',
+                page: () => PayTypeAddConfirm(
+                      isFirst: false,
+                    )),
+            GetPage(name: '/payType', page: () => PayType()),
+            GetPage(name: '/payTypeAdd', page: () => PayTypeAdd(isFirst: true)),
+          ],
+        );
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends GetView<HomeInitService> {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late bool check = false;
-
-  @override
-  void initState() {
-    super.initState();
-    isLogged().then((value) {
-      setState(() {
-        check = value;
-      });
-    });
-
-    print("ischeck" + check.toString());
-
-    Timer(Duration(milliseconds: 2000), () {
-      if (check == false) {
-        Get.to(loadingPage());
-      } else {
-        Get.toNamed('/mainHome');
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-        child: Scaffold(
-          backgroundColor: HexColor("#fd9a03"),
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 338,
-                ),
-                Container(
-                  width: 170,
-                  child: Image.asset("assets/icons/logoIcon.png"),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    return Obx(() => homeInitService.mainHome.value.value ?? Container());
   }
 }

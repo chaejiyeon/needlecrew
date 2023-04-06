@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 
 class AddressIsHomeModal extends StatelessWidget {
   const AddressIsHomeModal({Key? key}) : super(key: key);

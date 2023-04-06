@@ -1,6 +1,6 @@
 import 'package:needlecrew/bottomsheet/address_insert.dart';
-import 'package:needlecrew/widgets/fixClothes/listLine.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/fixClothes/list_line.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

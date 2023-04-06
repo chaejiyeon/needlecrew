@@ -1,9 +1,9 @@
-import 'package:needlecrew/screens/main/fixClothes/addressInfo.dart' as cart_info_modal;
-import 'package:needlecrew/screens/main/fixClothes/addressInsert.dart';
-import 'package:needlecrew/screens/main/fixClothes/chooseClothes.dart';
+import 'package:needlecrew/screens/main/fixClothes/address_info.dart' as cart_info_modal;
+import 'package:needlecrew/screens/main/fixClothes/address_insert.dart';
+import 'package:needlecrew/screens/main/fixClothes/choose_clothes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';

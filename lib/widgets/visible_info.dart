@@ -1,6 +1,6 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
-import 'package:needlecrew/widgets/tootipCustom.dart';
+import 'package:needlecrew/widgets/tootip_custom.dart';
 
 class VisibleInfo extends StatelessWidget {
   final bool visible;

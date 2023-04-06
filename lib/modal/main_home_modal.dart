@@ -1,11 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:needlecrew/getxController/fixClothes/cartController.dart';
-import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/screens/main/fixClothes.dart';
-import 'package:needlecrew/widgets/fixClothes/startAddressChoose.dart';
-import 'package:needlecrew/screens/main/mainHome.dart';
-import 'package:needlecrew/widgets/circleLineBtn.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/db/wp-api.dart';
+import 'package:needlecrew/screens/main/fix_clothes.dart';
+import 'package:needlecrew/widgets/fixClothes/start_address_choose.dart';
+import 'package:needlecrew/screens/main/main_home.dart';
+import 'package:needlecrew/widgets/circle_line_btn.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,27 +14,18 @@ import 'package:get/get.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 
 class MainHomeModal extends StatefulWidget {
-
-  const MainHomeModal({Key? key,}) : super(key: key);
+  const MainHomeModal({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<MainHomeModal> createState() => _MainHomeModalState();
 }
 
 class _MainHomeModalState extends State<MainHomeModal> {
-  late Future getName;
-
-  String? name = "";
-
-
-
-
   @override
   void initState() {
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getUsername();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
 
     super.initState();
   }
@@ -44,14 +35,9 @@ class _MainHomeModalState extends State<MainHomeModal> {
     super.dispose();
   }
 
-  getUsername() async {
-    name = await wp_api.storage.read(key: 'username');
-  }
-
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
-
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -75,25 +61,15 @@ class _MainHomeModalState extends State<MainHomeModal> {
             SizedBox(
               height: 30,
             ),
-
-            FutureBuilder(
-                future: getUsername(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    print("getusername this     " + name!);
-                    return FontStyle(
-                        text: "반가워요, " + name! + "님!",
-                        fontsize: "lg",
-                        fontbold: "bold",
-                        fontcolor: Colors.white,
-                        textdirectionright: false);
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }),
-
+            Obx(
+              () => FontStyle(
+                  text:
+                      "반가워요, ${homeInitService.user.value.value?.lastName}${homeInitService.user.value.value?.firstName} 님!",
+                  fontsize: "lg",
+                  fontbold: "bold",
+                  fontcolor: Colors.white,
+                  textdirectionright: false),
+            ),
             FontStyle(
                 text: "지금 바로 니들크루 수선의뢰를",
                 fontsize: "md",
@@ -127,7 +103,11 @@ class _MainHomeModalState extends State<MainHomeModal> {
                     iswidget: true,
                   ),
                   Expanded(
-                      child: SvgPicture.asset("assets/images/mainInfo.svg", width: 185, height: 185,)),
+                      child: SvgPicture.asset(
+                    "assets/images/mainInfo.svg",
+                    width: 185,
+                    height: 185,
+                  )),
                 ],
               ),
             )

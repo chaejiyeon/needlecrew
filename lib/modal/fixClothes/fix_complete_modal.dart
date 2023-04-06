@@ -1,11 +1,12 @@
-import 'package:needlecrew/getxController/homeController.dart' as fix_complete_modal;
-import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/modal/alert_dialog_yes_no.dart';
-import 'package:needlecrew/screens/main/myPage/payMent.dart';
-import 'package:needlecrew/screens/main/myPage/payType.dart';
+import 'package:needlecrew/screens/main/myPage/pay_ment.dart';
+import 'package:needlecrew/screens/main/myPage/pay_type.dart';
 import 'package:flutter/material.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -17,9 +18,9 @@ class FixCompleteModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fix_complete_modal.HomeController homeController = Get.put(fix_complete_modal.HomeController());
+    final HomeController homeController = Get.put(HomeController());
 
-    homeController.getCardAll();
+    paymentService.getCardAll();
     return  Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
@@ -71,7 +72,7 @@ class FixCompleteModal extends StatelessWidget {
                           )),
                       child: TextButton(child: Text("확정",style: TextStyle(color: Colors.black)), onPressed: () {
                         controller.updateOrderId.value = orderid;
-                        homeController.cardsInfo.length == 0 ? Get.dialog(AlertDialogYes(titleText: "결제할 카드를 등록해주세요.",widgetname: "alert",)) : Get.off(() => PayMent(orderid: orderid,));
+                        paymentService.cardsInfo.length == 0 ? Get.dialog(AlertDialogYes(titleText: "결제할 카드를 등록해주세요.",widgetname: "alert",)) : Get.off(() => PayMent(orderid: orderid,));
                       }),
                     ),
                   ),

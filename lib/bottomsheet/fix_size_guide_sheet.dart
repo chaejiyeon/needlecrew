@@ -1,5 +1,5 @@
-import 'package:needlecrew/models/sizeCheckGuideItem.dart';
-import 'package:needlecrew/widgets/mainhome/sizeCheckGuide/sizeInfo.dart';
+import 'package:needlecrew/models/size_check_guide_item.dart';
+import 'package:needlecrew/widgets/mainhome/sizeCheckGuide/size_info.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -41,11 +41,11 @@ class _FixSizeQuideSheetState extends State<FixSizeQuideSheet>
   ];
 
   List<SizeCheckGuideItem> outerItems = [
-    SizeCheckGuideItem(2, "총 기장 줄임", "guideImageItem_outer_1.png"),
-    SizeCheckGuideItem(2, "전체 품 줄임", "guideImageItem_outer_2.png"),
-    SizeCheckGuideItem(2, "소매 기장", "guideImageItem_outer_3.png"),
-    SizeCheckGuideItem(2, "소매 통", "guideImageItem_outer_4.png"),
-    SizeCheckGuideItem(2, "어깨 줄임", "guideImageItem_outer_5.png"),
+    SizeCheckGuideItem(4, "총 기장 줄임", "guideImageItem_outer_1.png"),
+    SizeCheckGuideItem(4, "전체 품 줄임", "guideImageItem_outer_2.png"),
+    SizeCheckGuideItem(4, "소매 기장", "guideImageItem_outer_3.png"),
+    SizeCheckGuideItem(4, "소매 통", "guideImageItem_outer_4.png"),
+    SizeCheckGuideItem(4, "어깨 줄임", "guideImageItem_outer_5.png"),
   ];
 
   List<SizeCheckGuideItem> skirtItems = [
@@ -56,10 +56,12 @@ class _FixSizeQuideSheetState extends State<FixSizeQuideSheet>
   ];
 
   List<SizeCheckGuideItem> onepieceItems = [
-    SizeCheckGuideItem(2, "총 기장 줄임", "guideImageItem_onepiece_1.png"),
-    SizeCheckGuideItem(2, "허리 길이", "guideImageItem_onepiece_2.png"),
-    SizeCheckGuideItem(2, "힙", "guideImageItem_onepiece_3.png"),
-    SizeCheckGuideItem(2, "통", "guideImageItem_onepiece_4.png"),
+    SizeCheckGuideItem(3, "총 기장 줄임", "guideImageItem_onepiece_1.png"),
+    SizeCheckGuideItem(3, "품", "guideImageItem_onepiece_2.png"),
+    SizeCheckGuideItem(3, "소매 기장 줄임", "guideImageItem_onepiece_3.png"),
+    SizeCheckGuideItem(3, "소매 통", "guideImageItem_onepiece_4.png"),
+    SizeCheckGuideItem(3, "암홀", "guideImageItem_onepiece_5.png"),
+    SizeCheckGuideItem(3, "어깨 줄임", "guideImageItem_onepiece_6.png"),
   ];
 
   late TabController _tabController =
@@ -88,7 +90,6 @@ class _FixSizeQuideSheetState extends State<FixSizeQuideSheet>
       padding: EdgeInsets.only(left: 24, right: 24),
       shrinkWrap: true,
       children: [
-
         Container(
           padding: EdgeInsets.only(top: 30),
           margin: EdgeInsets.only(bottom: 20),
@@ -107,27 +108,27 @@ class _FixSizeQuideSheetState extends State<FixSizeQuideSheet>
             ),
           ),
         ),
-         Container(
-            height: MediaQuery.of(context).size.height,
-            child: TabBarView(
-              controller: _tabController,
-              children: List.generate(
-                  tabHeader.length,
-                  (index) => tabHeader[index] == "상의"
-                      ? SizeInfo(
-                          tabItems: shirtItems,
-                        )
-                      : tabHeader[index] == "하의"
-                          ? SizeInfo(tabItems: pantsItems)
-                          : tabHeader[index] == "원피스"
-                              ? SizeInfo(tabItems: onepieceItems)
-                              : tabHeader[index] == "스커트"
-                                  ? SizeInfo(tabItems: skirtItems)
-                                  : tabHeader[index] == "아우터"
-                                      ? SizeInfo(tabItems: outerItems)
-                                      : Container()),
-            ),
+        Container(
+          height: MediaQuery.of(context).size.height,
+          child: TabBarView(
+            controller: _tabController,
+            children: List.generate(
+                tabHeader.length,
+                (index) => tabHeader[index] == "상의"
+                    ? SizeInfo(
+                        tabItems: shirtItems,
+                      )
+                    : tabHeader[index] == "하의"
+                        ? SizeInfo(tabItems: pantsItems)
+                        : tabHeader[index] == "원피스"
+                            ? SizeInfo(tabItems: onepieceItems)
+                            : tabHeader[index] == "스커트"
+                                ? SizeInfo(tabItems: skirtItems)
+                                : tabHeader[index] == "아우터"
+                                    ? SizeInfo(tabItems: outerItems)
+                                    : Container()),
           ),
+        ),
       ],
     );
   }

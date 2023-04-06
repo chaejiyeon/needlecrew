@@ -20,6 +20,12 @@ import Firebase
       if !result {
           result = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
       }
+
+      // 2022/10/11 - flutter local notification setting
+//       if #available(iOS 10.0, *) {
+//        UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+//       }
+
       return result
    }
 

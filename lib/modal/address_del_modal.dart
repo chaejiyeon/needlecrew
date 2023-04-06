@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
-
+import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 
 class AddressDelModal extends StatelessWidget {
   const AddressDelModal({Key? key}) : super(key: key);
@@ -13,15 +11,20 @@ class AddressDelModal extends StatelessWidget {
   Widget build(BuildContext context) {
     final HomeController controller = Get.find();
 
+    printInfo(info: 'argument this ${Get.arguments}');
+
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
         width: 297,
         height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             // SvgPicture.asset("assets/icons/tearIcon.svg"),
             Container(
               padding: EdgeInsets.all(10),
@@ -32,11 +35,11 @@ class AddressDelModal extends StatelessWidget {
                       text: "해당 주소를 삭제하시겠습니까?",
                       fontsize: "md",
                       fontbold: "bold",
-                      fontcolor: Colors.black,textdirectionright: false),
+                      fontcolor: Colors.black,
+                      textdirectionright: false),
                 ],
               ),
             ),
-
 
             Container(
               child: Row(
@@ -46,12 +49,17 @@ class AddressDelModal extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                            top: BorderSide(color: HexColor("#d5d5d5")),
-                            right: BorderSide(color: HexColor("#d5d5d5")),
-                          )),
-                      child: TextButton(child: Text("취소",style: TextStyle(color: Colors.black),), onPressed: () {
-                        Get.back();
-                      }),
+                        top: BorderSide(color: HexColor("#d5d5d5")),
+                        right: BorderSide(color: HexColor("#d5d5d5")),
+                      )),
+                      child: TextButton(
+                          child: Text(
+                            "취소",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          onPressed: () {
+                            Get.back();
+                          }),
                     ),
                   ),
                   Expanded(
@@ -59,11 +67,14 @@ class AddressDelModal extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                            top: BorderSide(color: HexColor("#d5d5d5")),
-                          )),
-                      child: TextButton(child: Text("삭제",style: TextStyle(color: Colors.black)), onPressed: () {
-                        controller.updateUser("주소 삭제");
-                      }),
+                        top: BorderSide(color: HexColor("#d5d5d5")),
+                      )),
+                      child: TextButton(
+                          child:
+                              Text("삭제", style: TextStyle(color: Colors.black)),
+                          onPressed: () {
+                            controller.deleteAddress(Get.arguments);
+                          }),
                     ),
                   ),
                 ],

@@ -1,10 +1,10 @@
-import 'package:needlecrew/getxController/fixClothes/cartController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/screens/main/cartInfo.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/controller/fixClothes/cartController.dart';
+import 'package:needlecrew/screens/main/cart_info.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 
 class TearIconModal extends StatelessWidget {
   final String title;
@@ -83,7 +83,8 @@ class TearIconModal extends StatelessWidget {
                               style: TextStyle(color: Colors.black)),
                           onPressed: () {
                             controller.deleteCart("choose",orderId);
-                            Get.back();
+                            controller.deleteImage();
+                            // Get.back();
                           }),
                     ),
                   ),

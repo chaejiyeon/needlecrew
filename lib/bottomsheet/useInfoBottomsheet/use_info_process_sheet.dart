@@ -1,5 +1,5 @@
-import 'package:needlecrew/widgets/fixClothes/listLine.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/fixClothes/list_line.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

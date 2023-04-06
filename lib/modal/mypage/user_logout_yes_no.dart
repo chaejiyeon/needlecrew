@@ -1,6 +1,6 @@
+import 'package:needlecrew/controller/homeController.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -26,7 +26,9 @@ class UserLogoutYesNo extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -71,9 +73,13 @@ class UserLogoutYesNo extends StatelessWidget {
                       child: TextButton(
                           child: Text("로그아웃",
                               style: TextStyle(color: Colors.black)),
-                          onPressed: () {
+                          onPressed: () async {
+                            wp_api.storage.deleteAll();
+                            var userName =
+                                await wp_api.storage.read(key: 'user_name');
+                            printInfo(info: '로그아웃 $userName');
                             wp_api.logOut();
-                            controller.mainModalcheck.value = false;
+                            homeInitService.mainModalcheck.value = false;
                           }),
                     ),
                   ),

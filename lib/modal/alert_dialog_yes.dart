@@ -1,11 +1,12 @@
-import 'package:needlecrew/getxController/homeController.dart';
-import 'package:needlecrew/getxController/useInfo/useInfoController.dart';
-import 'package:needlecrew/screens/main/cartInfo.dart';
-import 'package:needlecrew/screens/main/mainHome.dart';
-import 'package:needlecrew/screens/main/myPage/userInfo.dart';
-import 'package:needlecrew/screens/main/myPage/userUpdate.dart';
-import 'package:needlecrew/screens/mainPage.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/db/wp-api.dart';
+import 'package:needlecrew/screens/main/cart_info.dart';
+import 'package:needlecrew/screens/main/main_home.dart';
+import 'package:needlecrew/screens/main/myPage/user_info.dart';
+import 'package:needlecrew/screens/main/myPage/user_update.dart';
+import 'package:needlecrew/screens/main_page.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -14,9 +15,11 @@ import 'package:hexcolor/hexcolor.dart';
 class AlertDialogYes extends StatelessWidget {
   final String titleText;
   final String widgetname;
+  final dynamic function;
 
-
-  const AlertDialogYes({Key? key, required this.titleText, this.widgetname = ""}) : super(key: key);
+  const AlertDialogYes(
+      {Key? key, required this.titleText, this.widgetname = "", this.function})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,22 +64,31 @@ class AlertDialogYes extends StatelessWidget {
                     style: TextStyle(color: Colors.black),
                   ),
                   onPressed: () {
-
-                    if(widgetname == "updateUserInfo"){
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => UserInfo()), (route) => false);
-                      // Get.close(2);
-                    }else if(widgetname == "cart"){
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => CartInfo()), (route) => false);
-                    }else if(widgetname == "alert"){
-                      Get.close(2);
-                    }else if(widgetname == "resultY"){
-                      useInfoController.updateState();
-                      Get.offAndToNamed("/useInfoProgress");
-                    }else{
-                      if(widgetname == "biilling"){
-                        homecontroller.cardInfo.clear();
+                    if (function != null) {
+                      function();
+                    } else {
+                      if (widgetname == "updateUserInfo") {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => UserInfo()),
+                            (route) => false);
+                        // Get.close(2);
+                      } else if (widgetname == "cart") {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => CartInfo()),
+                            (route) => false);
+                      } else if (widgetname == "alert") {
+                        Get.close(2);
+                      } else if (widgetname == "resultY") {
+                        useInfoController.updateState();
+                        Get.offAndToNamed("/useInfoProgress");
+                      } else {
+                        if (widgetname == "biilling") {
+                          paymentService.cardInfo.clear();
+                        }
+                        Get.back();
                       }
-                      Get.back();
                     }
                   }),
             ),

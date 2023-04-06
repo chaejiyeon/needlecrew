@@ -1,10 +1,11 @@
-import 'package:needlecrew/widgets/circleBlackBtn.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/widgets/circle_black_btn.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-// 주소 등록 페이지 bottom sheet
+// ㄹ주소 등록 페이지 bottom sheet
 class AddressInsert extends StatefulWidget {
   const AddressInsert({Key? key}) : super(key: key);
 
@@ -16,7 +17,7 @@ class _AddressInsertState extends State<AddressInsert> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Column(
@@ -42,7 +43,10 @@ class _AddressInsertState extends State<AddressInsert> {
               ],
             ),
           ),
-          Container(padding: EdgeInsets.all(20),child: CircleBlackBtn(btnText: "완료", pageName: "back")),
+          Container(
+              padding: EdgeInsets.all(20),
+              child: CircleBlackBtn(
+                  function: () => Get.back(), btnText: "완료")),
         ],
       ),
     );
@@ -100,8 +104,6 @@ class _AddressInsertState extends State<AddressInsert> {
     );
   }
 }
-
-
 
 // 주소 관리 bottom sheet
 class AddressManagement extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:needlecrew/widgets/fontStyle.dart';
+import 'package:needlecrew/widgets/font_style.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -12,8 +12,8 @@ class AlramDeleteModal extends StatelessWidget {
     return  Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Container(
-        width: 300,
-        height: 200,
+        width: 297,
+        height: 174,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
