@@ -1,11 +1,13 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:needlecrew/models/util/set_color.dart';
 import 'package:needlecrew/widgets/circle_black_btn.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-// ㄹ주소 등록 페이지 bottom sheet
+// 주소 등록 페이지 bottom sheet
 class AddressInsert extends StatefulWidget {
   const AddressInsert({Key? key}) : super(key: key);
 
@@ -30,7 +32,7 @@ class _AddressInsertState extends State<AddressInsert> {
                 insertTextfield("지번,도로명,건물명 검색"),
                 insertTextfield("상세주소"),
                 Container(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.only(top: 20.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -45,8 +47,7 @@ class _AddressInsertState extends State<AddressInsert> {
           ),
           Container(
               padding: EdgeInsets.all(20),
-              child: CircleBlackBtn(
-                  function: () => Get.back(), btnText: "완료")),
+              child: CircleBlackBtn(function: () => Get.back(), btnText: "완료")),
         ],
       ),
     );
@@ -60,16 +61,16 @@ class _AddressInsertState extends State<AddressInsert> {
         textAlign: TextAlign.center,
         decoration: InputDecoration(
             hintText: hintTxt,
-            hintStyle: TextStyle(color: HexColor("#909090")),
+            hintStyle: TextStyle(color: SetColor().color90),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(40),
                 borderSide: BorderSide(
-                  color: HexColor("#909090"),
+                  color: SetColor().color90,
                 )),
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(40),
                 borderSide: BorderSide(
-                  color: HexColor("#909090").withOpacity(0.5),
+                  color: SetColor().color90.withOpacity(0.5),
                 ))),
       ),
     );

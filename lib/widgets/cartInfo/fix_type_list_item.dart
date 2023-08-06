@@ -1,13 +1,13 @@
 import 'package:intl/intl.dart';
-import 'package:needlecrew/controller/fixClothes/cartController.dart';
-import 'package:needlecrew/modal/tear_icon_modal.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/models/tooltip_text.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/screens/main/fixClothes/fix_update.dart';
 import 'package:needlecrew/widgets/cartInfo/tooltip_price_info.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -63,18 +63,7 @@ class FixTypeListItem extends GetView<CartController> {
           children: [
             pageName == "register"
                 ? Container()
-                :
-                // Obx(() =>
-                // {
-                // if (controller.isInitialized.value) {
-                //   return
-                checkBoxCustom(orderMetaData.orderId, ''),
-            // } else {
-            //   return Container(
-            //       child: Center(child: CircularProgressIndicator()));
-            // }
-            // }
-            // ),
+                : checkBoxCustom(orderMetaData.orderId!, ''),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,22 +72,22 @@ class FixTypeListItem extends GetView<CartController> {
                   Container(
                       margin: EdgeInsets.only(top: index != 0 ? 15 : 5),
                       height: 150,
-                      child: orderMetaData.cartImages.length == 1 &&
-                              orderMetaData.cartImages[0] == ""
+                      child: orderMetaData.cartImages?.length == 1 &&
+                              orderMetaData.cartImages?[0] == ""
                           ? Image.asset("assets/images/defaultImg.png")
                           : ListView(
                               scrollDirection: Axis.horizontal,
                               children: List.generate(
-                                  orderMetaData.cartImages.length,
+                                  orderMetaData.cartImages!.length,
                                   (index) => ImageItem(
-                                      orderMetaData.cartImages[index])))),
+                                      orderMetaData.cartImages![index])))),
                   SizedBox(
                     height: 10,
                   ),
 
                   // detail info
                   FontStyle(
-                      text: orderMetaData.cartProductName,
+                      text: orderMetaData.cartProductName!,
                       fontsize: "md",
                       fontbold: "bold",
                       fontcolor: Colors.black,
@@ -108,22 +97,22 @@ class FixTypeListItem extends GetView<CartController> {
                   ),
                   orderMetaData.cartWay == "기타"
                       ? Container()
-                      : detailInfo("의뢰 방법", orderMetaData.cartWay),
+                      : detailInfo("의뢰 방법", orderMetaData.cartWay!),
                   orderMetaData.cartWay == "기타"
                       ? Container()
                       : detailInfo(
                           "치수",
                           orderMetaData.cartSize == ""
                               ? "0 cm"
-                              : orderMetaData.cartSize + " cm"),
+                              : orderMetaData.cartSize! + " cm"),
                   orderMetaData.cartWay == "기타"
                       ? detailInfo("수량", orderMetaData.cartCount.toString())
                       : Container(),
-                  detailInfo("추가 설명", orderMetaData.cartContent),
+                  detailInfo("추가 설명", orderMetaData.cartContent!),
                   detailInfo(
                       "물품 가액",
                       orderMetaData.guaranteePrice != ""
-                          ? setPrice(int.parse(orderMetaData.guaranteePrice)) +
+                          ? setPrice(int.parse(orderMetaData.guaranteePrice!)) +
                               "원"
                           : "0" + "원"),
                   Container(
@@ -136,7 +125,7 @@ class FixTypeListItem extends GetView<CartController> {
                   ),
                   TooltipPriceInfo(
                       title: "의뢰 예상 비용",
-                      price: setPrice(int.parse(orderMetaData.productPrice)),
+                      price: setPrice(int.parse(orderMetaData.productPrice!)),
                       tooltipText: controller.cartItem.any((element) =>
                               element['category_items']
                                   .any((Map e) => e.containsValue('직접입력')))
@@ -165,11 +154,25 @@ class FixTypeListItem extends GetView<CartController> {
                             children: [
                               fixBtn(
                                   "삭제",
-                                  TearIconModal(
-                                    title: "선택한 의뢰를 삭제할까요?",
-                                    btnText1: "취소",
-                                    btnText2: "삭제",
-                                    orderId: orderMetaData.orderId,
+                                  CustomDialog(
+                                    header: DialogHeader(
+                                      title: '선택한 의뢰를 삭제할까요?',
+                                      btnIcon: 'tearIcon.svg',
+                                    ),
+                                    bottom:
+                                        DialogBottom(isExpanded: true, btn: [
+                                      BtnModel(
+                                          text: '취소',
+                                          callback: () => Get.back()),
+                                      BtnModel(
+                                          text: '삭제',
+                                          callback: () async {
+                                            await controller.deleteCart(
+                                                "single",
+                                                orderMetaData.orderId);
+                                            await controller.deleteImage();
+                                          })
+                                    ]),
                                   )),
                               SizedBox(
                                 width: 5,

@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/controller/fix_clothes/fixselect_controller.dart';
 
-import '../../controller/fixClothes/fixselectController.dart';
 
 
 class RadioBtn extends StatefulWidget {
@@ -25,7 +26,7 @@ class RadioBtn extends StatefulWidget {
 }
 
 class _RadioBtnState extends State<RadioBtn> {
-  final FixSelectController controller = Get.put(FixSelectController());
+  final FixSelectController controller = Get.find();
   bool ischecked = false;
 
 
@@ -72,7 +73,7 @@ class CustomRadioWidget<T> extends StatelessWidget {
         onChanged(this.value);
       },
       child: Container(
-        padding: EdgeInsets.only(bottom: 19),
+        padding: EdgeInsets.only(bottom: 19.h),
         child: Row(
           children: [
             Container(

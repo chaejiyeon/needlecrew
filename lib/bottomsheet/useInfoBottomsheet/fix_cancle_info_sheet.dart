@@ -1,15 +1,18 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
-import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
-import 'package:needlecrew/modal/tear_icon_modal.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
+import 'package:needlecrew/models/cart_item.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
+import 'package:needlecrew/screens/main/fixClothes/fix_update.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
+import 'package:needlecrew/widgets/phone_call_btn.dart';
 
 class FixCancleInfoSheet extends StatelessWidget {
   final String fixInfoTitle;
@@ -17,12 +20,18 @@ class FixCancleInfoSheet extends StatelessWidget {
   final bool fixPossible;
   final UseInfoController controller;
 
+  ///
+  final String productName;
+
   const FixCancleInfoSheet({
     Key? key,
     required this.fixInfoTitle,
     required this.orderId,
     required this.fixPossible,
     required this.controller,
+
+    ///
+    required this.productName,
   }) : super(key: key);
 
   // 물품 가액 표시
@@ -38,8 +47,6 @@ class FixCancleInfoSheet extends StatelessWidget {
     controller.updateOrderId.value = orderId;
 
     ScrollController _scrollcontroller = ScrollController();
-
-    String fixType = "일반바지-바지 안쪽기장-치수:101.5cm";
 
     List<String> images = [
       "guideImage_1.png",
@@ -100,14 +107,18 @@ class FixCancleInfoSheet extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: EasyRichText(
-                          "안녕하세요 고객님\n니들크루입니다.\n\n고객님께서 접수해주신 의뢰 '${fixType}'는 시접 여유분의 부족으로\n수선이 불가능합니다. \n\n의뢰 수정을 원하실 경우 아래의 버튼을 눌러 원하는 수선 길이를 수정해주시길 바랍니다.\n\n기타 문의사항이 있으신 경우 고객센터로 연락\n부탁드리겠습니다.\n\n감사합니다.",
-                          defaultStyle: TextStyle(fontSize: 14),
-                          patternList: [
-                            EasyRichTextPattern(
-                                targetString: "'${fixType}'",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
+                        child: Obx(
+                          () => EasyRichText(
+                            "안녕하세요 고객님\n니들크루입니다.\n\n고객님께서 접수해주신 의뢰 '${"$productName 치수: ${controller.orderMetaData['치수']} cm"}'는 아래와 같은 사유로 수선이 불가능합니다.\n\n • ${controller.orderMetaData['수선 불가 사유']} \n\n의뢰 수정을 원하실 경우 아래의 버튼을 눌러 원하는 수선 길이를 수정해주시길 바랍니다.\n\n기타 문의사항이 있으신 경우 고객센터로 연락\n부탁드리겠습니다.\n\n감사합니다.",
+                            defaultStyle: TextStyle(fontSize: 14),
+                            patternList: [
+                              EasyRichTextPattern(
+                                  targetString:
+                                      "'${"$productName 치수: ${controller.orderMetaData['치수']} cm"}'",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
                       ),
                       Container(
@@ -117,117 +128,12 @@ class FixCancleInfoSheet extends StatelessWidget {
                             children: [
                               btnCustom(context, "수선 취소"),
                               btnCustom(context, "의뢰 수정"),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //
-                              //     controller.isselectedBtn("수선 취소");
-                              //
-                              //     Get.dialog(TearIconModal(
-                              //         title: "접수한 의뢰를 취소할까요?",
-                              //         btnText1: "아니요",
-                              //         btnText2: "예, 취소할게요."));
-                              //   },
-                              //   child: Container(
-                              //     padding: EdgeInsets.all(10),
-                              //     alignment: Alignment.center,
-                              //     width:
-                              //         MediaQuery.of(context).size.width / 2.5,
-                              //     decoration: BoxDecoration(
-                              //         borderRadius:
-                              //             BorderRadius.all(Radius.circular(8)),
-                              //         color: controller.isSelected == true && controller.isSelectedValue == "수선 취소"? HexColor("fd9a03") : Colors.white,
-                              //         boxShadow: [
-                              //           BoxShadow(
-                              //             color: HexColor("#d5d5d5")
-                              //                 .withOpacity(0.5),
-                              //             spreadRadius: 0.5,
-                              //             blurRadius: 7,
-                              //             offset: Offset(0, 2),
-                              //           ),
-                              //         ]),
-                              //     child: Text("수선 취소"),
-                              //   ),
-                              // ),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     controller.isselectedBtn("의뢰 수정");
-                              //   },
-                              //   child: Container(
-                              //     padding: EdgeInsets.all(10),
-                              //     alignment: Alignment.center,
-                              //     width:
-                              //         MediaQuery.of(context).size.width / 2.5,
-                              //     decoration: BoxDecoration(
-                              //         borderRadius:
-                              //             BorderRadius.all(Radius.circular(8)),
-                              //         color: controller.isSelected == true && controller.isSelectedValue == "의뢰 수정" ? HexColor("fd9a03") : Colors.white,
-                              //         boxShadow: [
-                              //           BoxShadow(
-                              //             color: HexColor("#d5d5d5")
-                              //                 .withOpacity(0.5),
-                              //             spreadRadius: 0.5,
-                              //             blurRadius: 7,
-                              //             offset: Offset(0, 2),
-                              //           ),
-                              //         ]),
-                              //     child: Text("의뢰 수정"),
-                              //   ),
-                              // ),
                             ]),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(top: 54),
-                  margin: EdgeInsets.only(bottom: 50),
-                  color: Colors.white,
-                  height: 200,
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                          child: Container(
-                        width: 130,
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: HexColor("#d5d5d5").withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(3, 1),
-                              )
-                            ]),
-                        child: Row(
-                          children: [
-                            Icon(CupertinoIcons.phone_fill),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            FontStyle(
-                                text: "1600-1234",
-                                fontsize: "",
-                                fontbold: "bold",
-                                fontcolor: Colors.black,
-                                textdirectionright: false),
-                          ],
-                        ),
-                      )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Expanded(
-                          child: Container(
-                              // margin: EdgeInsets.only(bottom: 10),
-                              child: Text(
-                        "평일 오전 9시 ~ 오후 6시까지 상담하며\n주말 및 공휴일은 휴무입니다.",
-                        textAlign: TextAlign.center,
-                      ))),
-                    ],
-                  ),
-                ),
+                PhoneCallBtn()
               ],
             );
           } else {
@@ -489,41 +395,106 @@ class FixCancleInfoSheet extends StatelessWidget {
     );
   }
 
-
   // 버튼 커스텀
   Widget btnCustom(BuildContext context, String btnText) {
     return GestureDetector(
-        onTap: () {
-          if(fixPossible == true) {
-          Get.dialog(TearIconModal(
-              title: "접수한 의뢰를 취소할까요?", btnText1: "아니요", btnText2: "예, 취소할게요."));
+      onTap: () {
+        printInfo(info: 'btn text this $btnText is fix possible $fixPossible');
+        CartController cartController = Get.find();
+
+        if (fixPossible) {
+          Get.dialog(
+              barrierDismissible: false,
+              CustomDialog(
+                header: DialogHeader(
+                  title: '접수한 의뢰를 취소할까요?',
+                  btnIcon: 'tearIcon.svg',
+                ),
+                bottom: DialogBottom(isExpanded: true, btn: [
+                  BtnModel(text: '아니요', callback: () => Get.back()),
+                  BtnModel(
+                      text: '예, 취소할게요.',
+                      callback: () async {
+                        await cartController.deleteCart("single", orderId);
+                        await cartController.deleteImage();
+                      })
+                ]),
+              ));
+          // TearIconModal(
+          // title: "접수한 의뢰를 취소할까요?",
+          // btnText1: "아니요",
+          // btnText2: "예, 취소할게요."));
+        } else {
+          switch (btnText) {
+            case '의뢰 수정':
+              Get.to(FixUpdate(
+                  orderMetaData: OrderMetaData(
+                      orderId: orderId,
+                      productId: controller.order.lineItems!.first.productId!,
+                      variationId:
+                          controller.order.lineItems!.first.variationId!,
+                      cartProductName: productName,
+                      cartCount: controller.order.lineItems!.first.quantity!,
+                      cartImages: controller.orderMetaData['사진'],
+                      cartWay: controller.orderMetaData['의뢰 방법'],
+                      cartSize: controller.orderMetaData['치수'],
+                      cartContent: controller.orderMetaData['추가 설명'],
+                      guaranteePrice: controller.orderMetaData['물품 가액'],
+                      productPrice: controller.orderMetaData['상품 가격'])));
+              break;
+            case '수선 취소':
+              Get.dialog(
+                  barrierDismissible: false,
+                  CustomDialog(
+                      header: DialogHeader(
+                          title: '수선을 취소하시겠습니까?',
+                          content: '수선 취소시 등록된 카드 정보로\n왕복 배송비 6,000원이 결제됩니다.'),
+                      bottom: DialogBottom(isExpanded: true, btn: [
+                        BtnModel(text: '이전', callback: () => Get.back()),
+                        BtnModel(
+                            text: '확인',
+                            callback: () async {
+                              if (await controller.updateOrder(orderId, {
+                                'status': 'fix-canclen',
+                                'meta_data': [
+                                  {'key': '수선 불가 사유', 'value': '수선 불가'}
+                                ]
+                              })) {
+                                // if (await controller.getCompleteOrder()) {
+                                //   Get.close(2);
+                                // }
+                              }
+                            })
+                      ])));
+              break;
+          }
         }
       },
-        child:  Container(
-            padding: EdgeInsets.all(10),
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width / 2.5,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                color: fixPossible == false && btnText == "수선 취소"
-                    ? HexColor("fd9a03")
-                    : HexColor("f7f7f7"),
-                boxShadow: [
-                  BoxShadow(
-                    color: HexColor("#d5d5d5").withOpacity(0.5),
-                    spreadRadius: 0.5,
-                    blurRadius: 7,
-                    offset: Offset(0, 2),
-                  ),
-                ]),
-            child: Text(
-              btnText,
-              style: TextStyle(
-                  color: fixPossible == false && btnText == "수선 취소"
-                      ? Colors.white
-                      : HexColor("aaaaaa")),
-            ),
-          ),
+      child: Container(
+        padding: EdgeInsets.all(10),
+        alignment: Alignment.center,
+        width: MediaQuery.of(context).size.width / 2.5,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: fixPossible == false && btnText == "수선 취소"
+                ? HexColor("fd9a03")
+                : HexColor("f7f7f7"),
+            boxShadow: [
+              BoxShadow(
+                color: HexColor("#d5d5d5").withOpacity(0.5),
+                spreadRadius: 0.5,
+                blurRadius: 7,
+                offset: Offset(0, 2),
+              ),
+            ]),
+        child: Text(
+          btnText,
+          style: TextStyle(
+              color: fixPossible == false && btnText == "수선 취소"
+                  ? Colors.white
+                  : HexColor("aaaaaa")),
+        ),
+      ),
     );
   }
 }

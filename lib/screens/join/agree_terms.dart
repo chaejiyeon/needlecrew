@@ -1,4 +1,5 @@
-import 'package:needlecrew/controller/loginController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/login_controller.dart';
 import 'package:needlecrew/main.dart';
 import 'package:needlecrew/screens/join/choose_gender.dart';
 import 'package:needlecrew/widgets/base_appbar.dart';
@@ -35,7 +36,7 @@ class _AgreeTermsState extends State<AgreeTerms> {
         prevFunction: () => Get.back(),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 25, right: 25, top: 30, bottom: 20),
+        padding: EdgeInsets.only(left: 25.w, right: 25.w, top: 30.h, bottom: 20.h),
         child: Column(
           children: [
             Container(

@@ -1,4 +1,4 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

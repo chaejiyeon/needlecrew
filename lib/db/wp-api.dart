@@ -2,40 +2,37 @@ library wp_api;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter_woocommerce_api/models/customer.dart';
-import 'package:needlecrew/controller/homeController.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
-import 'package:needlecrew/getxServices/order_services.dart';
-import 'package:needlecrew/getxServices/payment_service.dart';
-import 'package:needlecrew/getxServices/update_user_service.dart';
-import 'package:needlecrew/main.dart';
+import 'package:needlecrew/custom_dialog.dart';
+import 'package:needlecrew/getx_services/home_init_service.dart';
+import 'package:needlecrew/getx_services/order_services.dart';
+import 'package:needlecrew/getx_services/payment_service.dart';
+import 'package:needlecrew/getx_services/product_services.dart';
+import 'package:needlecrew/getx_services/update_user_service.dart';
+import 'package:needlecrew/getx_services/utils_service.dart';
 import 'package:needlecrew/models/address_item.dart';
 import 'package:needlecrew/models/billing_info.dart';
-import 'package:needlecrew/screens/login/loading_page.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:flutter_woocommerce_api/models/order.dart';
-import 'package:flutter_woocommerce_api/models/order_payload.dart';
 import 'package:get/get.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 
 late FlutterWooCommerceApi wooCommerceApi;
 
-late WooCustomer user = WooCustomer();
 var customer = "";
 
-// final baseUrl = "http://needlecrew.com";
 var token = "";
 
 var storage = FlutterSecureStorage();
 
-final HomeController homecontroller = Get.put(HomeController());
+// final HomeController homecontroller = Get.put(HomeController());
 final HomeInitService homeInitService = Get.put(HomeInitService());
+final ProductServices productServices = Get.put(ProductServices());
 final OrderServices orderServices = Get.put(OrderServices());
 final PaymentService paymentService = Get.put(PaymentService());
+final UtilsService utilsService = Get.put(UtilsService());
 final UpdateUserService updateUserService = Get.put(UpdateUserService());
 
 // 회원가입
@@ -48,6 +45,7 @@ Future<void> joinUs(
   // 회원가입 후 로그인 (email이 없을 경우 - 비회원) / 바로 로그인 (email이 있을 경우 - 회원)
   try {
     print("join user register init!!!!!!!");
+    var user = WooCustomer();
     user = WooCustomer(
         username: userName,
         password: password,
@@ -90,6 +88,7 @@ Future<void> joinUs(
 
 // 로그인
 Future<bool> Login(String email, String password) async {
+  var user;
   try {
     String userName = "";
 
@@ -102,17 +101,12 @@ Future<bool> Login(String email, String password) async {
       'test_address': '',
       'default_card': '',
     };
-
-    var setUser =
-        await wooCommerceApi.loginCustomer(username: email, password: password);
-    print("0. login init !!!!! ${user.runtimeType} $setUser");
     user =
         await wooCommerceApi.loginCustomer(username: email, password: password);
-
     print("1. login init !!!!!");
-    List<WooCustomerMetaData> metadata = user.metaData!;
 
-    if (user.id != null) {
+    if (user.runtimeType == WooCustomer && user.id != null) {
+      List<WooCustomerMetaData> metadata = user.metaData!;
       print("2. login init !!!!!");
       token = await wooCommerceApi.authenticateViaJWT(
           username: user.email, password: password);
@@ -160,7 +154,23 @@ Future<bool> Login(String email, String password) async {
         }
       }
     } else {
-      print("login 실패!!!!!!!");
+      if (user.contains('오류')) {
+        if (user.contains('비밀번호')) {
+          homeInitService.loginLoading.value = false;
+          Get.off(() => Get.dialog(
+              barrierDismissible: false,
+              CustomDialog(
+                header: DialogHeader(
+                  title: '로그인 실패',
+                  content: '로그인 정보를 확인해주세요!',
+                ),
+                bottom: DialogBottom(isExpanded: true, btn: [
+                  BtnModel(callback: () => Get.back(), text: '확인'),
+                ]),
+              )));
+        }
+      }
+      print("login 실패!!!!!!! $user");
     }
 
     await storage.write(key: 'login_token', value: token);

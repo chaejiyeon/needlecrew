@@ -1,10 +1,12 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/custom_circle_btn.dart';
+import 'package:needlecrew/models/util/set_color.dart';
 import 'package:needlecrew/screens/main/fixClothes/address_info.dart';
-import 'package:needlecrew/screens/main/fixClothes/choose_clothes.dart';
 import 'package:needlecrew/screens/main/fixClothes/fix_question.dart';
-import 'package:needlecrew/widgets/circle_line_btn.dart';
+import 'package:needlecrew/screens/main/update_screens/select_fix_clothes/select_clothes_type.dart';
 import 'package:needlecrew/widgets/fixClothes/header.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -17,7 +19,6 @@ class StartAddressChoose extends StatefulWidget {
 }
 
 class _StartAddressState extends State<StartAddressChoose> {
-
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,7 @@ class _StartAddressState extends State<StartAddressChoose> {
             btnText: "수선 문의하기",
             widget: FixQuestion(),
             imgPath: "fixClothes",
-            bottomPadding: 50,
+            bottomPadding: 50.h,
           ),
 
           // choose button
@@ -62,34 +63,28 @@ class _StartAddressState extends State<StartAddressChoose> {
             alignment: Alignment.center,
             child: Column(
               children: [
-                CircleLineBtn(
-                  btnText: "쇼핑몰에서 보낼래요",
-                  fontboxwidth: double.infinity,
-                  bordercolor: HexColor("#d5d5d5"),
-                  fontcolor: Colors.black,
-                  fontsize: "md",
-                  btnIcon: "",
-                  btnColor: Colors.transparent,
-                  widgetName: AddressInfo(isHome: false),
-                  fontboxheight: "",
-                  iswidget: true,
+                CustomCircleBtn(
+                  btnMargin: EdgeInsets.only(bottom: 10.h),
+                  btnText: '쇼핑몰에서 보낼래요',
+                  btnTextColor: Colors.black,
+                  borderColor: SetColor().colorD5,
+                  btnFt: () {
+                    Get.close(1);
+                    Get.to(AddressInfo(isHome: false));
+                  },
                 ),
-                SizedBox(
-                  height: 10,
+                CustomCircleBtn(
+                  btnText: '우리집에서 보내요',
+                  btnTextColor: Colors.black,
+                  borderColor: SetColor().colorD5,
+                  btnFt: () {
+                    Get.close(1);
+                    Get.to(SelectClothesType(
+                      isFirst: true,
+                    ));
+                    // Get.to(SelectClothesType());
+                  },
                 ),
-                CircleLineBtn(
-                  btnText: "우리집에서 보내요",
-                  fontboxwidth: double.infinity,
-                  bordercolor: HexColor("#d5d5"
-                      "d5"),
-                  fontcolor: Colors.black,
-                  fontsize: "md",
-                  btnIcon: "",
-                  btnColor: Colors.transparent,
-                  widgetName: ChooseClothes(),
-                  fontboxheight: "",
-                  iswidget: true,
-                )
               ],
             ),
           ),

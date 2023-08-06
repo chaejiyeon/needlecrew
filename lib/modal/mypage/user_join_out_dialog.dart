@@ -1,4 +1,4 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +15,7 @@ class UserJoinOutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+    final HomeController controller = Get.find();
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),

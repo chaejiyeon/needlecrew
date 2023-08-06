@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/controller/loginController.dart';
+import 'package:needlecrew/controller/login_controller.dart';
 
 class CircleCheckBtn extends StatefulWidget {
   final String list;

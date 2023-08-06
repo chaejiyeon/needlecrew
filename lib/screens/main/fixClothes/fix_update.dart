@@ -1,8 +1,21 @@
+import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
+import 'package:flutter_woocommerce_api/models/order_payload.dart';
 import 'package:get/get.dart';
-import 'package:needlecrew/controller/fixClothes/cartController.dart';
-import 'package:needlecrew/controller/fixClothes/fixselectController.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/controller/fix_clothes/fixselect_controller.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
+import 'package:needlecrew/controller/widget_controller/custom_widget_controller.dart';
+import 'package:needlecrew/custom_bottom_btn.dart';
+import 'package:needlecrew/custom_dialog.dart';
+import 'package:needlecrew/db/wp-api.dart';
+import 'package:needlecrew/format_method.dart';
+import 'package:needlecrew/functions.dart';
 import 'package:needlecrew/models/cart_item.dart';
+import 'package:needlecrew/models/util/font_size.dart';
+import 'package:needlecrew/models/util/set_color.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fixClothes/image_upload.dart';
@@ -13,7 +26,6 @@ import 'package:needlecrew/widgets/custom/custom_widgets.dart';
 import 'package:needlecrew/widgets/fixClothes/radio_btn.dart';
 import 'package:needlecrew/widgets/fixClothes/circle_line_text_field.dart';
 import 'package:needlecrew/widgets/font_style.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -28,298 +40,376 @@ class FixUpdate extends StatefulWidget {
 }
 
 class _FixUpdateState extends State<FixUpdate> {
-  final CartController cartController = Get.put(CartController());
+  final CartController cartController = Get.find();
   final FixSelectController fixselectController =
       Get.put(FixSelectController());
+  final UseInfoController useInfoController = Get.find();
+  final CustomWidgetController widgetController =
+      Get.put(CustomWidgetController(), tag: 'order_update');
 
-  TextEditingController controller = TextEditingController();
+  List editingControllers = [
+    {
+      '치수 입력': TextEditingController(),
+      '물품 가액': TextEditingController(),
+      '추가 설명': TextEditingController(),
+      '수거 주소': TextEditingController(),
+      '수거 희망일': TextEditingController()
+    }
+  ];
 
-  late Future variationFuture;
+  List delImg = [];
+
+  getOrder() async {
+    useInfoController.updateOrderId.value = widget.orderMetaData.orderId!;
+
+    var result = await useInfoController.getFixInfo();
+    if (await cartController.getVariation(widget.orderMetaData.productId!)) {
+      if (cartController.variation.isNotEmpty) {
+        printInfo(
+            info:
+                'cart controller variation this ${cartController.variation} ${widget.orderMetaData.variationId}');
+        fixselectController.radioGroup['variation_id'] =
+            widget.orderMetaData.variationId;
+        fixselectController.radioId.value = widget.orderMetaData.variationId!;
+        fixselectController.radioGroup['추가 옵션'] = Functions().cvtOptionName(
+            cartController.variation[cartController.variation.indexWhere(
+                (element) => element.id == widget.orderMetaData.variationId)]);
+
+        fixselectController.wholePrice.value = int.parse(cartController
+                .variation[cartController.variation.indexWhere((element) =>
+                    element.id == widget.orderMetaData.variationId)]
+                .price!) +
+            6000;
+      }
+    }
+
+    if (result) {
+      fixselectController.isSelected.value = widget.orderMetaData.cartWay!;
+      fixselectController.setImages.value = widget.orderMetaData.cartImages!;
+      editingControllers[editingControllers
+              .indexWhere((element) => element.containsKey('치수 입력'))]['치수 입력']
+          .text = widget.orderMetaData.cartSize;
+      editingControllers[editingControllers
+              .indexWhere((element) => element.containsKey('물품 가액'))]['물품 가액']
+          .text = widget.orderMetaData.guaranteePrice;
+      editingControllers[editingControllers
+              .indexWhere((element) => element.containsKey('추가 설명'))]['추가 설명']
+          .text = widget.orderMetaData.cartContent;
+      editingControllers[editingControllers
+              .indexWhere((element) => element.containsKey('수거 주소'))]['수거 주소']
+          .text = useInfoController.order.shipping?.address1;
+      editingControllers[editingControllers
+              .indexWhere((element) => element.containsKey('수거 희망일'))]['수거 희망일']
+          .text = useInfoController.orderMetaData['수거 희망일'] ?? '';
+    }
+  }
 
   @override
   void initState() {
+    delImg.clear();
+
     print("widget cart prpoductId this" +
         widget.orderMetaData.productId.toString());
-    variationFuture =
-        cartController.getVariation(widget.orderMetaData.productId);
+
+    getOrder();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    fixselectController.isSelected.value = widget.orderMetaData.cartWay;
-
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppbar(
-          leadingWidget: BackBtn(),
-          appbarcolor: 'white',
-          appbar: AppBar(),
-          actionItems: [
-            AppbarItem(
-              icon: 'homeIcon.svg',
-              iconColor: Colors.black,
-              iconFilename: 'main',
-              widget: MainPage(pageNum: 0),
-            ),
-            AppbarItem(
-              icon: 'cartIcon.svg',
-              iconColor: Colors.black,
-              iconFilename: 'main',
-              widget: CartInfo(),
-            ),
-            AppbarItem(
-              icon: 'alramIcon.svg',
-              iconColor: Colors.black,
-              iconFilename: 'main',
-              widget: AlramInfo(),
-            ),
-          ],
-        ),
-        body: Container(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FontStyle(
-                  text: "의뢰 수정",
-                  fontsize: "lg",
-                  fontbold: "bold",
-                  fontcolor: Colors.black,
-                  textdirectionright: false),
-              Expanded(
-                child: ListView(
-                  children: [
-                    // 사진 업로드
-                    Container(
-                      padding: EdgeInsets.only(top: 14),
-                      child: ImageUpload(
-                          icon: "cameraIcon.svg", isShopping: false),
-                    ),
-                    // 의뢰 방법
-                    Container(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FontStyle(
-                              text: "치수 표기 방법",
-                              fontsize: "md",
-                              fontbold: "bold",
-                              fontcolor: Colors.black,
-                              textdirectionright: false),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          RadioBtn(
-                              list: "원하는 총 기장 길이 입력",
-                              bottomPadding: 15,
-                              textBold: ""),
-                          RadioBtn(
-                              list: "줄이고 싶은 만큼 치수 입력",
-                              bottomPadding: 15,
-                              textBold: ""),
-                          RadioBtn(
-                              list: "잘 맞는 옷을 함께 보낼게요.",
-                              bottomPadding: 15,
-                              textBold: ""),
-                        ],
-                      ),
-                    ),
-
-                    // 치수 입력
-                    textForm("치수 입력", widget.orderMetaData.cartSize,
-                        Colors.black, true),
-
-                    // 물품 가액
-                    textForm("물품 가액", widget.orderMetaData.guaranteePrice,
-                        Colors.black, false),
-
-                    Container(
-                      padding: EdgeInsets.only(top: 5),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "• ",
-                            style: TextStyle(color: HexColor("#aaaaaa")),
-                          ),
-                          Expanded(
-                            child: Text(
-                              "물품가액은 배송 사고시 보상의 기준이 되며, 허위 기재 시 배송과정에서 불이익이 발생할 수 있으니 실제 물품의 가치를 정확히 기재해주시기 바랍니다.",
-                              style: TextStyle(color: HexColor("#aaaaaa")),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-
-                    // 추가 설명
-                    Container(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FontStyle(
-                              text: "추가 설명",
-                              fontsize: "md",
-                              fontbold: "bold",
-                              fontcolor: Colors.black,
-                              textdirectionright: false),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          CircleLineTextField(
-                              controller: controller,
-                              maxLines: 10,
-                              hintText: widget.orderMetaData.cartContent,
-                              hintTextColor: Colors.black,
-                              borderRadius: 10,
-                              borderSideColor: HexColor("#d5d5d5"),
-                              widthOpacity: true),
-                        ],
-                      ),
-                    ),
-
-                    // 수거 주소 - 이용내역 > 접수 완료 후 의뢰 수정 시 표시
-                    textForm("수거 주소", "경기 수원시 팔달구 인계동 156 104동 1702호",
-                        Colors.black, false),
-                    textForm("수거 희망일", "2022년 2월 15일", Colors.black, false),
-
-                    // 추가 옵션
-                    FutureBuilder(
-                        future: variationFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return cartController.variation.length != 0
-                                ? Container(
-                                    margin: EdgeInsets.only(bottom: 40),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding:
-                                                EdgeInsets.only(bottom: 15),
-                                            child: FontStyle(
-                                                text: "추가 옵션",
-                                                fontsize: "md",
-                                                fontbold: "bold",
-                                                fontcolor: Colors.black,
-                                                textdirectionright: false),
-                                          ),
-                                          Column(
-                                            children: List.generate(
-                                                cartController.variation.length,
-                                                (index) => optionItem(
-                                                    cartController
-                                                        .variation[index])),
-                                          ),
-                                        ]),
-                                  )
-                                : Container();
-                          } else if (snapshot.hasData == false) {
-                            return Container();
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        }),
-                  ],
-                ),
+          backgroundColor: Colors.white,
+          appBar: CustomAppbar(
+            leadingWidget: BackBtn(),
+            appbarcolor: 'white',
+            appbar: AppBar(),
+            actionItems: [
+              AppbarItem(
+                icon: 'homeIcon.svg',
+                iconColor: Colors.black,
+                iconFilename: 'main',
+                widget: MainPage(pageNum: 0),
+              ),
+              AppbarItem(
+                icon: 'cartIcon.svg',
+                iconColor: Colors.black,
+                iconFilename: 'main',
+                widget: CartInfo(),
+              ),
+              AppbarItem(
+                icon: 'alramIcon.svg',
+                iconColor: Colors.black,
+                iconFilename: 'main',
+                widget: AlramInfo(),
               ),
             ],
           ),
-        ),
-        bottomNavigationBar: GestureDetector(
-          child: Container(
-            height: 150,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: HexColor("#d5d5d5").withOpacity(0.2),
-                  spreadRadius: 10,
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            padding: EdgeInsets.all(20),
+          body: Container(
+            padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 16.h),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          FontStyle(
-                              text: "총 의뢰 예상 비용 : ",
-                              fontsize: "",
-                              fontbold: "",
-                              fontcolor: Colors.black,
-                              textdirectionright: false),
-                          FontStyle(
-                              text: "11,000",
-                              fontsize: "md",
-                              fontbold: "bold",
-                              fontcolor: HexColor("#fd9a03"),
-                              textdirectionright: false),
-                          FontStyle(
-                              text: "원",
-                              fontsize: "",
-                              fontbold: "",
-                              fontcolor: Colors.black,
-                              textdirectionright: false),
-                        ],
-                      ),
-                      IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            CupertinoIcons.chevron_up,
-                            color: HexColor("#909090"),
-                            size: 20,
-                          )),
-                    ],
-                  ),
-                ),
                 Container(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  margin: EdgeInsets.only(bottom: 20.h),
+                  child: FontStyle(
+                      text: "의뢰 수정",
+                      fontsize: "lg",
+                      fontbold: "bold",
+                      fontcolor: Colors.black,
+                      textdirectionright: false),
+                ),
+                Expanded(
+                  child: ListView(
                     children: [
-                      bottomBtn("취소"),
-                      bottomBtn("수정 완료"),
+                      // 사진 업로드
+                      Container(
+                        padding: EdgeInsets.only(top: 14.h),
+                        child: ImageUpload(
+                            icon: "cameraIcon.svg", isShopping: false),
+                      ),
+
+                      // 의뢰 방법
+                      Container(
+                        margin: EdgeInsets.only(top: 40.h, bottom: 40.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FontStyle(
+                                text: "치수 표기 방법",
+                                fontsize: "md",
+                                fontbold: "bold",
+                                fontcolor: Colors.black,
+                                textdirectionright: false),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            RadioBtn(
+                                list: "원하는 총 기장 길이 입력",
+                                bottomPadding: 15,
+                                textBold: ""),
+                            RadioBtn(
+                                list: "완성 치수를 입력할게요.",
+                                bottomPadding: 15,
+                                textBold: ""),
+                            RadioBtn(
+                                list: "잘 맞는 옷을 함께 보낼게요.",
+                                bottomPadding: 15,
+                                textBold: ""),
+                          ],
+                        ),
+                      ),
+
+                      // 치수 입력
+                      textForm(
+                          titleText: "치수 입력",
+                          hintText: widget.orderMetaData.cartSize!,
+                          hintColor: Colors.black,
+                          isxmark: true,
+                          keyboardType: TextInputType.number),
+
+                      // 물품 가액
+                      textForm(
+                          titleText: "물품 가액",
+                          hintText: widget.orderMetaData.guaranteePrice!,
+                          hintColor: Colors.black,
+                          isxmark: false,
+                          keyboardType: TextInputType.number),
+
+                      Container(
+                        padding: EdgeInsets.only(top: 5.h),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "• ",
+                              style: TextStyle(color: HexColor("#aaaaaa")),
+                            ),
+                            Expanded(
+                              child: Text(
+                                "물품가액은 배송 사고시 보상의 기준이 되며, 허위 기재 시 배송과정에서 불이익이 발생할 수 있으니 실제 물품의 가치를 정확히 기재해주시기 바랍니다.",
+                                style: TextStyle(color: HexColor("#aaaaaa")),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+
+                      // 추가 설명
+                      Container(
+                        margin: EdgeInsets.only(top: 40.h, bottom: 40.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FontStyle(
+                                text: "추가 설명",
+                                fontsize: "md",
+                                fontbold: "bold",
+                                fontcolor: Colors.black,
+                                textdirectionright: false),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            CircleLineTextField(
+                                controller: editingControllers[
+                                    editingControllers.indexWhere((element) =>
+                                        element.containsKey('추가 설명'))]['추가 설명'],
+                                maxLines: 10,
+                                hintText: widget.orderMetaData.cartContent!,
+                                hintTextColor: Colors.black,
+                                borderRadius: 10,
+                                borderSideColor: HexColor("#d5d5d5"),
+                                widthOpacity: true),
+                          ],
+                        ),
+                      ),
+
+                      // 추가 옵션
+                      Obx(
+                        () => cartController.variation.length != 0
+                            ? Container(
+                                margin: EdgeInsets.only(bottom: 40),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.only(bottom: 15),
+                                        child: FontStyle(
+                                            text: "추가 옵션",
+                                            fontsize: "md",
+                                            fontbold: "bold",
+                                            fontcolor: Colors.black,
+                                            textdirectionright: false),
+                                      ),
+                                      Column(
+                                        children: List.generate(
+                                            cartController.variation.length,
+                                            (index) => optionItem(cartController
+                                                .variation[index])),
+                                      ),
+                                    ]),
+                              )
+                            : Container(),
+                      ),
+
+                      // 수거 주소 - 이용내역 > 접수 완료 후 의뢰 수정 시 표시
+                      textForm(
+                          titleText: "수거 주소",
+                          hintColor: Colors.black,
+                          isxmark: false),
+                      textForm(
+                          titleText: "수거 희망일",
+                          hintColor: Colors.black,
+                          isxmark: false),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
+          bottomNavigationBar: CustomBottomBtn(
+            formName: 'order_update',
+            infoWidget: Obx(
+              () => EasyRichText(
+                  '총 의뢰 예상 비용 : ${fixselectController.wholePrice}원',
+                  patternList: [
+                    EasyRichTextPattern(
+                        targetString: '${fixselectController.wholePrice}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: SetColor().mainColor))
+                  ]),
+            ),
+            btnItems: [
+              BtnModel(
+                  text: '취소',
+                  textSize: FontSize().fs6,
+                  textColor: Colors.black,
+                  btnColor: Colors.white,
+                  borderColor: SetColor().colorD5,
+                  callback: () => Get.close(1)),
+              BtnModel(
+                  text: '수정 완료',
+                  textSize: FontSize().fs6,
+                  btnColor: SetColor().mainColor,
+                  borderColor: SetColor().mainColor,
+                  callback: () async {
+                    if (await orderServices
+                        .updateOrder(useInfoController.order.id!, {
+                      'line_items': [
+                        LineItems(
+                            productId: useInfoController
+                                .order.lineItems!.first.productId!,
+                            variationId:
+                                fixselectController.radioGroup['variation_id'],
+                            quantity: 1)
+                      ],
+                      'shipping': {
+                        'address_1': editingControllers[
+                                editingControllers.indexWhere((element) =>
+                                    element.containsKey('수거 주소'))]['수거 주소']
+                            .text
+                      },
+                      'meta_data': [
+                        {
+                          'key': '치수',
+                          'value': editingControllers[
+                                  editingControllers.indexWhere((element) =>
+                                      element.containsKey('치수 입력'))]['치수 입력']
+                              .text
+                        },
+                        {
+                          'key': '수거 희망일',
+                          'value': editingControllers[
+                                  editingControllers.indexWhere((element) =>
+                                      element.containsKey('수거 희망일'))]['수거 희망일']
+                              .text
+                        },
+                        // {
+                        //   'key': '추가 설명',
+                        //   'value': editingControllers[
+                        //           editingControllers.indexWhere((element) =>
+                        //               element.containsKey('추가 설명'))]['추가 설명']
+                        //       .text
+                        // },
+                        {
+                          'key': '의뢰 방법',
+                          'value': fixselectController.isSelected.value
+                        }
+                      ],
+                      '추가 설명': editingControllers[editingControllers.indexWhere(
+                                  (element) => element.containsKey('추가 설명'))]
+                              ['추가 설명']
+                          .text
+                    })) {
+                      if (await fixselectController.uploadImage()) {
+                        if (await fixselectController
+                            .delImage(useInfoController.delImgs)) {
+                          // await useInfoController.getCompleteOrder();
+                          Get.close(1);
+                        }
+                      }
+                    }
+                  })
+            ],
+          )),
     );
   }
 
   // bottomNavigationbar button
   Widget bottomBtn(String btnText) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 10.h),
       width: MediaQuery.of(context).size.width * 0.4,
       height: 54,
       decoration: BoxDecoration(
@@ -340,28 +430,15 @@ class _FixUpdateState extends State<FixUpdate> {
     );
   }
 
-  // slider Image Item
-  Widget ImageItem(String image) {
-    return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: 150,
-        height: 150,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              "assets/images/" + image,
-              fit: BoxFit.cover,
-            )),
-      ),
-    );
-  }
-
   // textForm
   Widget textForm(
-      String titleText, String hintText, Color hintColor, bool isxmark) {
+      {String titleText = '',
+      String hintText = '',
+      Color hintColor = Colors.black,
+      bool isxmark = false,
+      dynamic keyboardType}) {
     return Container(
-      padding: EdgeInsets.only(top: 40),
+      margin: EdgeInsets.only(bottom: titleText == '수거 희망일' ? 100.h : 40.h),
       child: Column(
         children: [
           Row(
@@ -379,8 +456,11 @@ class _FixUpdateState extends State<FixUpdate> {
             height: 10,
           ),
           Container(
-            height: titleText == "수거 주소" ? null : 54,
-            child: TextField(
+            height: 54.h,
+            child: TextFormField(
+              keyboardType: keyboardType,
+              controller: editingControllers[editingControllers.indexWhere(
+                  (element) => element.containsKey(titleText))][titleText],
               decoration: InputDecoration(
                 hintText: hintText,
                 hintMaxLines: 2,
@@ -425,17 +505,10 @@ class _FixUpdateState extends State<FixUpdate> {
     print("variation " + variation.attributes[0].option.toString());
 
     // 디코딩된 옵션이름 변환
-    String optionName = "";
-
-    if (variation.attributes[0].option.toString().indexOf('%') != -1) {
-      optionName =
-          Uri.decodeComponent(variation.attributes[0].option.toString());
-    } else {
-      optionName = variation.attributes[0].option.toString();
-    }
+    var optionName = Functions().cvtOptionName(variation);
 
     // 원 가격
-    int currentPrice = int.parse(widget.orderMetaData.productPrice);
+    int currentPrice = int.parse(widget.orderMetaData.productPrice!);
     print("currentPrice" + currentPrice.toString());
 
     // optin 추가 된 가격
@@ -452,18 +525,13 @@ class _FixUpdateState extends State<FixUpdate> {
           children: [
             CustomRadioWidget(
               optionname: cartController.name(optionName),
-              groupValue: fixselectController.radioGroup["추가 옵션"] !=
-                      {"추가 옵션": cartController.name(optionName)}
-                  ? fixselectController.radioGroup["추가 옵션"]
-                  : fixselectController.radioGroup["가격"],
-              value: fixselectController.radioGroup["추가 옵션"] !=
-                      {"추가 옵션": cartController.name(optionName)}
-                  ? cartController.name(optionName)
-                  : finalPrice.toString(),
+              groupValue: variation.id!,
+              value: fixselectController.radioId.value,
               onChanged: (value) {
                 fixselectController.isRadioGroup({
-                  "추가 옵션": cartController.name(optionName),
-                  "가격": finalPrice.toString()
+                  'variation_id': variation.id!,
+                  '추가 옵션': cartController.name(optionName),
+                  '가격': finalPrice.toString()
                 });
                 fixselectController.radioId.value = variation.id!;
                 fixselectController.iswholePrice(addPrice);
@@ -513,7 +581,7 @@ class CustomRadioWidget<T> extends StatelessWidget {
         onChanged(this.value);
       },
       child: Container(
-        padding: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.only(bottom: 10.h),
         child: Row(
           children: [
             Container(

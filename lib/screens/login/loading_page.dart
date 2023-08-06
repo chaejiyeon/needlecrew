@@ -1,5 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/models/loading_item.dart';
 import 'package:needlecrew/widgets/circle_black_btn.dart';
 import 'package:needlecrew/widgets/loadingPage/loading_item.dart';
@@ -17,7 +18,7 @@ class LoadingPage extends StatefulWidget {
 }
 
 class _LoadingPageState extends State<LoadingPage> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
   CarouselController _carouselController = CarouselController();
   late int currentPage = 0;
 
@@ -69,7 +70,7 @@ class _LoadingPageState extends State<LoadingPage> {
         child: Column(
           children: [
             Container(
-                padding: EdgeInsets.only(left: 24, right: 24),
+                padding: EdgeInsets.only(left: 24.w, right: 24.w),
                 child: CircleBlackBtn(
                     function: () => Get.toNamed('/login'), btnText: "시작하기")),
           ],
@@ -103,7 +104,7 @@ class _LoadingPageState extends State<LoadingPage> {
         Align(
           heightFactor: 2,
           child: Container(
-            padding: EdgeInsets.only(top: 102),
+            padding: EdgeInsets.only(top: 102.h),
             width: double.infinity,
             child: CarouselSlider(
               items: pages.map((pages) {

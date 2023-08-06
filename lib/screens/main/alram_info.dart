@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:needlecrew/models/alram_item.dart';
 import 'package:needlecrew/widgets/alramInfo/alram_btn_text.dart';
 import 'package:needlecrew/widgets/alramInfo/alram_list_item.dart';
@@ -84,7 +85,11 @@ class AlramAppbar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       backgroundColor: Colors.transparent,
-      brightness: Brightness.light,
+      systemOverlayStyle: SystemUiOverlayStyle(
+
+          statusBarBrightness: Brightness.light
+      ),
+      // brightness: Brightness.light,
       elevation: 0,
       actions: [
         alramBtnText(text: "전체선택",textColor: Colors.black),

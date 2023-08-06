@@ -1,12 +1,8 @@
-import 'dart:ffi';
-
 import 'package:hexcolor/hexcolor.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:needlecrew/controller/fixClothes/fixselectController.dart';
-
+import 'package:needlecrew/controller/fix_clothes/fixselect_controller.dart';
 
 class CircleLineBtn extends StatefulWidget {
   final String btnText;
@@ -16,9 +12,12 @@ class CircleLineBtn extends StatefulWidget {
   final Color bordercolor;
   final String btnIcon;
   final Color btnColor;
-  final Widget widgetName;
+  final Widget? widgetName;
   final bool iswidget;
   final String fontboxheight;
+
+  //
+  final dynamic btnFt;
 
   const CircleLineBtn(
       {Key? key,
@@ -30,8 +29,9 @@ class CircleLineBtn extends StatefulWidget {
       required this.fontsize,
       required this.btnIcon,
       required this.btnColor,
-      required this.widgetName,
-      required this.iswidget})
+      this.widgetName,
+      required this.iswidget,
+      this.btnFt})
       : super(key: key);
 
   @override
@@ -57,24 +57,30 @@ class _CircleLineBtnState extends State<CircleLineBtn> {
       ),
       child: TextButton(
         onPressed: () {
+          if (widget.btnFt != null) {
+            widget.btnFt();
+          }
 
-          if(widget.btnColor == HexColor("#d5d5d5")) null;
-          else {
-            widget.iswidget == true && widget.btnText == "수선하기"
-                ? Get.to(widget.widgetName)
-                : widget.iswidget == true
-                    ? {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => widget.widgetName)),
-                        controller.backClick.value = false
-                      }
-                    : widget.iswidget == false
-                        ? Get.dialog(widget.widgetName)
-                        : controller.isshopping == false
-                            ? null
-                            : Get.dialog(widget.widgetName);
+          if (widget.btnColor == HexColor("#d5d5d5")) {
+            null;
+          } else {
+            if (widget.widgetName != null) {
+              widget.iswidget == true && widget.btnText == "수선하기"
+                  ? Get.to(widget.widgetName)
+                  : widget.iswidget == true
+                      ? {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => widget.widgetName!)),
+                          controller.backClick.value = false
+                        }
+                      : widget.iswidget == false
+                          ? Get.dialog(widget.widgetName!)
+                          : controller.isshopping == false
+                              ? null
+                              : Get.dialog(widget.widgetName!);
+            }
           }
           // 쇼핑몰에서 보낼 경우 수선 선택의 잘 맞는 옷을 함께 보낼께요 /  표시 안함
           if (widget.btnText == "쇼핑몰에서 보낼래요")
@@ -87,11 +93,14 @@ class _CircleLineBtnState extends State<CircleLineBtn> {
             Text(
               widget.btnText,
               style: TextStyle(
-                fontSize: widget.fontsize == "md" ? 16 : widget.fontsize == "sm" ? 11 : null,
+                fontSize: widget.fontsize == "md"
+                    ? 16
+                    : widget.fontsize == "sm"
+                        ? 11
+                        : null,
                 color: widget.fontcolor,
               ),
               textAlign: TextAlign.center,
-
             ),
             if (widget.btnIcon != "")
               SizedBox(

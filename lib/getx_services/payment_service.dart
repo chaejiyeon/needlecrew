@@ -1,17 +1,28 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:flutter_woocommerce_api/models/customer.dart';
 import 'package:get/get.dart';
+import 'package:iamport_flutter/iamport_payment.dart';
+import 'package:iamport_flutter/model/payment_data.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:http/http.dart' as http;
 import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/models/billing_info.dart';
 import 'package:needlecrew/models/get_token.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
+import 'package:needlecrew/screens/main/my_page.dart';
+import 'package:needlecrew/screens/main_page.dart';
 
 import '../db/wp-api.dart';
 
 class PaymentService extends GetxService {
+  var storeMID = 'imp52439091';
+
   // 주문서 정보
   Map orderMap = {
     'order_no': '',
@@ -22,7 +33,7 @@ class PaymentService extends GetxService {
   };
 
   // 카드 정보 등록
-  Map cardInfo = {
+  Map setCardInfo = {
     'name': '',
     'email': '',
     'card_name': '',
@@ -35,19 +46,139 @@ class PaymentService extends GetxService {
 
   // billing key 발급 된 사용가능 카드 목록
   RxList cardsBillkey = [].obs;
-  List<CardInfo> cardsInfo = [];
+  RxList cardsInfo = <CardInfo>[].obs;
   var selectCard;
 
   @override
   void onInit() async {
+    await getCardAll();
     super.onInit();
+  }
+
+  // 결제창 호출
+  payOrder(
+      {String payType = '',
+      Map payInfo = const {'order_name': '', 'merchant_uid': '', 'amount': 0},
+      // {'order_name' : '','merchant_uid' : '', 'amount' : 0}
+      Map paidShipping = const {
+        'paid_shipping': false,
+        'order_id': 0
+      } //{'paid_shipping' : false, 'order_id' : int}
+      }) {
+    try {
+      var returnResult;
+
+      log('store mid this $storeMID');
+      if (homeInitService.userInfo['phone_number'].length > 0) {
+        Get.to(IamportPayment(
+            userCode: paymentService.storeMID,
+            data: PaymentData(
+              pg: 'nice',
+              payMethod: payType,
+              merchantUid: payInfo['merchant_uid'],
+              amount: payInfo['amount'],
+              name: payInfo['order_name'],
+              buyerName: homeInitService.userInfo['user_name'],
+              buyerTel: homeInitService.userInfo['phone_number'],
+              appScheme: 'needlecrew',
+            ),
+            callback: (Map result) {
+              log('pay order result this $result');
+
+              CartController cartController = Get.find();
+              cartController.isClicked.value = false;
+
+              if (result.containsKey('success')) {
+                Get.dialog(
+                    barrierDismissible: false,
+                    CustomDialog(
+                        header: DialogHeader(
+                            title: '결제 실패', content: result['error_msg']),
+                        bottom: DialogBottom(
+                            mainAlignment: MainAxisAlignment.center,
+                            btn: [
+                              BtnModel(
+                                  text: '확인',
+                                  callback: () {
+                                    Get.close(2);
+                                  }),
+                            ])));
+              } else {
+
+                if (result.containsKey('imp_success')) {
+                  if (paidShipping['paid_shipping']) {
+                    Get.dialog(
+                        barrierDismissible: false,
+                        CustomDialog(
+                            header: DialogHeader(
+                                title: '결제 성공', content: '배송비 결제가 완료되었습니다.'),
+                            bottom: DialogBottom(
+                                mainAlignment: MainAxisAlignment.center,
+                                btn: [
+                                  BtnModel(
+                                      text: '확인',
+                                      callback: () async {
+                                        if (!cartController.isClicked.value) {
+                                          cartController.isClicked.value = true;
+                                          await cartController
+                                              .registerOrder();
+                                          Get.offAll(MainPage(pageNum: 0));
+                                        }
+                                      }),
+                                ])));
+                  } else {
+                    Get.dialog(
+                        barrierDismissible: false,
+                        CustomDialog(
+                            header: DialogHeader(
+                                title: '결제 성공', content: '수선 결제가 완료되었습니다.'),
+                            bottom: DialogBottom(
+                                mainAlignment: MainAxisAlignment.center,
+                                btn: [
+                                  BtnModel(
+                                      text: '확인',
+                                      callback: () async {
+                                        await updateUserService.updateState(
+                                            paidShipping['order_id'], {
+                                          'status': 'processing',
+                                          'meta_data': [
+                                            {
+                                              'key': '진행 상황',
+                                              'value': 'progress'
+                                            }
+                                          ]
+                                        });
+                                        Get.offAndToNamed("/useInfoProgress");
+                                      }),
+                                ])));
+                  }
+                }
+              }
+            }));
+      } else {
+        Get.dialog(CustomDialog(
+            header: DialogHeader(
+              title: '결제정보 확인',
+              content: '결제정보를 확인해주세요.\n마이페이지로 이동하시겠습니까?',
+            ),
+            bottom: DialogBottom(isExpanded: true, btn: [
+              BtnModel(text: '취소', callback: () => Get.back()),
+              BtnModel(text: '확인', callback: () => Get.to(MyPage())),
+            ])));
+        returnResult = false;
+      }
+      return returnResult;
+    } catch (e) {
+      log('pay order failed ==========$e');
+      return false;
+    }
   }
 
   /// 주문서 가져오기
   Future orderInfo(int orderid) async {
     WooOrder order = await wp_api.wooCommerceApi.getOrderById(orderid);
     try {
-      orderMap['order_no'] = order.number;
+      orderMap['order_no'] = order.id;
       orderMap['order_item'] = order.lineItems!.first.name;
       orderMap['order_price'] = order.lineItems!.first.price;
       orderMap['total_price'] =
@@ -55,8 +186,10 @@ class PaymentService extends GetxService {
               int.parse(orderMap['shipp_cost']);
 
       print('order map this $orderMap');
+      return true;
     } catch (e) {
       print("HomeController - orderInfo Error" + e.toString());
+      return false;
     }
   }
 
@@ -144,7 +277,12 @@ class PaymentService extends GetxService {
           'meta_data': [WooCustomerMetaData(null, 'pay_cards', addCards)]
         });
       }
-      print("Homecontroller - billingKey 발급 성공!!!");
+
+      var getCard = CardInfo.fromJson(getBilling.response);
+
+      print("Homecontroller - billingKey 발급 성공!!! $getCard");
+      setCardInfo = cardInfo;
+      cardsInfo.add(getCard);
       return true;
     } else {
       Get.dialog(
@@ -282,6 +420,13 @@ class PaymentService extends GetxService {
     } catch (e) {
       print("HomeController - payMent Error " + e.toString());
       return false;
+    }
+  }
+
+  /// 결제 내역
+  Future getPayMentInfo() async {
+    try {} catch (e) {
+      printInfo(info: 'get pay ment info failed ================= \n $e');
     }
   }
 }

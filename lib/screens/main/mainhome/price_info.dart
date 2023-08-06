@@ -1,9 +1,18 @@
+import 'dart:developer';
+import 'dart:ui';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/controller/widget_controller/custom_drop_down_controller.dart';
+import 'package:needlecrew/custom_drop_down.dart';
+import 'package:needlecrew/custom_text.dart';
+import 'package:needlecrew/db/wp-api.dart';
+import 'package:needlecrew/models/util/font_size.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/widgets/appbar_item.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
-import 'package:needlecrew/widgets/mainhome/priceInfo/price_drop_down.dart';
 import 'package:needlecrew/widgets/mainhome/priceInfo/price_info_header.dart';
 import 'package:needlecrew/widgets/mainhome/priceInfo/table_header.dart';
 import 'package:needlecrew/widgets/mainhome/priceInfo/table_list_item.dart';
@@ -13,19 +22,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class PriceInfo extends StatefulWidget {
-  const PriceInfo({Key? key}) : super(key: key);
+  const PriceInfo({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<PriceInfo> createState() => _PriceInfoState();
 }
 
 class _PriceInfoState extends State<PriceInfo> {
+  final CustomDropDownController dropDownController = Get.find();
   final scrollCotroller = ScrollController();
 
   late Color color = Colors.transparent;
 
+  setInit() async {
+    dropDownController.filteredPriceInfo.value =
+        await productServices.searchProductsById([
+      int.parse(dropDownController.selectParent.value),
+      int.parse(dropDownController.selectSecond.value),
+      int.parse(dropDownController.selectLast.value)
+    ]);
+  }
+
   @override
   void initState() {
+    Future.delayed(Duration(seconds: 5), () {
+      setInit();
+    });
     super.initState();
     scrollCotroller.addListener(listenScrolling);
   }
@@ -96,22 +120,82 @@ class _PriceInfoState extends State<PriceInfo> {
           ),
 
           Container(
+            padding: EdgeInsets.only(left: 24.w, right: 24.w),
             child: Column(
               children: [
-                PriceDropDown(
-                  hint: "",
-                  hintCheck: false,
-                  selectNum: 1,
+                Obx(
+                  () => CustomDropDown(
+                    dropDownHeight: 41.h,
+                    dropDownMargin: EdgeInsets.only(bottom: 10),
+                    dropDownBtnPadding:
+                        EdgeInsets.only(left: 24.w, right: 24.w),
+                    value: dropDownController.selectParent.value,
+                    dropDownItems: dropDownController.parentCategories,
+                    onChange: (change) async {
+                      dropDownController.selectParent.value = change.toString();
+                      dropDownController.secondCategories.value =
+                          await productServices
+                              .searchCategoryById(int.parse(change.toString()));
+
+                      dropDownController.secondCategories.refresh();
+                      dropDownController.lastCategories.value =
+                          await productServices.searchCategoryById(int.parse(
+                              dropDownController.secondCategories.first['id']));
+                      dropDownController.lastCategories.refresh();
+                      dropDownController.selectSecond.value =
+                          dropDownController.secondCategories.first['id'];
+                      dropDownController.selectLast.value =
+                          dropDownController.lastCategories.first['id'];
+                    },
+                  ),
                 ),
-                PriceDropDown(
-                  hint: "",
-                  hintCheck: false,
-                  selectNum: 2,
+                Obx(
+                  () => CustomDropDown(
+                    dropDownHeight: 41.h,
+                    dropDownMargin: EdgeInsets.only(bottom: 10),
+                    dropDownBtnPadding:
+                        EdgeInsets.only(left: 24.w, right: 24.w),
+                    value: dropDownController.selectSecond.value,
+                    dropDownItems: dropDownController.secondCategories,
+                    onChange: (change) async {
+                      if (!productServices.isLoading.value) {
+                        if (dropDownController.secondCategories.indexWhere(
+                                (element) =>
+                                    element['id'] == change.toString()) !=
+                            -1) {
+                          dropDownController.selectSecond.value =
+                              change.toString();
+                        }
+                        dropDownController.lastCategories.value =
+                            await productServices.searchCategoryById(
+                                int.parse(change.toString()));
+                        dropDownController.lastCategories.refresh();
+                        dropDownController.selectLast.value =
+                            dropDownController.lastCategories.first['id'];
+                      }
+                    },
+                  ),
                 ),
-                PriceDropDown(
-                  hint: "",
-                  hintCheck: false,
-                  selectNum: 3,
+                Obx(
+                  () => CustomDropDown(
+                    dropDownHeight: 41.h,
+                    dropDownMargin: EdgeInsets.only(bottom: 10),
+                    dropDownBtnPadding:
+                        EdgeInsets.only(left: 24.w, right: 24.w),
+                    value: dropDownController.selectLast.value,
+                    dropDownItems: dropDownController.lastCategories,
+                    onChange: (change) {
+                      if (!productServices.isLoading.value) {
+                        if (dropDownController.lastCategories.indexWhere(
+                                (element) =>
+                                    element['id'] == change.toString()) !=
+                            -1) {
+                          dropDownController.selectLast.value =
+                              change.toString();
+                        }
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
@@ -119,11 +203,11 @@ class _PriceInfoState extends State<PriceInfo> {
 
           // table header
           Container(
-            padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+            padding: EdgeInsets.only(left: 20.w, top: 20.h, right: 20.w),
             child: Row(
               children: [
                 TableHeader(
-                    width: 80,
+                    width: 80.w,
                     borderColor: HexColor("#fd9a03").withOpacity(0.6),
                     text: "종류"),
                 Expanded(
@@ -132,34 +216,28 @@ class _PriceInfoState extends State<PriceInfo> {
                         borderColor: HexColor("#fd9a03").withOpacity(0.2),
                         text: "수선")),
                 TableHeader(
-                    width: 80,
+                    width: 80.w,
                     borderColor: HexColor("#fd9a03").withOpacity(0.2),
                     text: "가격"),
               ],
             ),
           ),
 
-          Container(
-              child: Column(
-            children: [
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-              TableListItem(
-                  type: "일반바지", fixInfo: "기장-총 기장 줄임", price: "5,000"),
-            ],
-          )),
+          Obx(() => dropDownController.filteredPriceInfo.isEmpty
+              ? Container()
+              : Container(
+                  child: Column(
+                      children: List.generate(
+                          dropDownController.filteredPriceInfo.length,
+                          (index) => TableListItem(
+                              type: dropDownController.lastCategories[
+                                  dropDownController.lastCategories.indexWhere(
+                                      (element) =>
+                                          element['id'] ==
+                                          dropDownController
+                                              .selectLast.value)]['name'],
+                              fixInfo: dropDownController.filteredPriceInfo[index].name,
+                              price: dropDownController.filteredPriceInfo[index].price))))),
         ],
       ),
       floatingActionButton: GestureDetector(

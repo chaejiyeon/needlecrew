@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:needlecrew/modal/address_is_home_modal.dart';
 import 'package:needlecrew/screens/main/fixClothes/image_upload.dart';
@@ -74,7 +75,7 @@ class _AddressInfoState extends State<AddressInfo> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 24, right: 24),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +189,7 @@ class _AddressInfoState extends State<AddressInfo> {
   Widget listLine(
       double height, double width, Color lineColor, double opacity) {
     return Container(
-      margin: EdgeInsets.only(left: 5),
+      margin: EdgeInsets.only(left: 5.h),
       height: height,
       width: width,
       decoration: BoxDecoration(color: lineColor.withOpacity(opacity)),

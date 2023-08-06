@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:get/get.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +47,6 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
 
       joinUs('${googleUser.displayName}', '${googleUser.email}',
           '${googleUser.id}', 'google');
-      // Login(googleUser.email, googleUser.id);
     } catch (error) {
       print("isError $error");
     }
@@ -74,21 +76,33 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
           accessToken: credential.authorizationCode,
         );
 
-        print("0. apple login result " + credential.toString());
+        List<String> jwt = credential.identityToken?.split('.') ?? [];
+        String payload = jwt[1];
+        payload = base64.normalize(payload);
+
+        final List<int> jsonData = base64.decode(payload);
+        final userInfo = jsonDecode(utf8.decode(jsonData));
+
+        var userName =
+            credential.familyName.toString() + credential.givenName.toString();
+        print("0. apple login result " +
+            credential.familyName.toString() +
+            credential.givenName.toString());
+        print("0. apple login result " + credential.identityToken.toString());
         print("1. apple login result " + oauthCredential.toString());
 
         firebase.UserCredential userCredential = await firebase
             .FirebaseAuth.instance
             .signInWithCredential(oauthCredential);
 
-        print("iOS 13 이상 this user info " + userCredential.user!.toString());
-        print("this user email " + userCredential.user!.email.toString());
+        print("iOS 13 이상 this user info " +
+            userCredential.user!.displayName.toString());
+        print("this user email " + userInfo['email'].toString());
 
-        final int index = userCredential.user!.email!.indexOf('@');
-        String userName = userCredential.user!.email!.substring(0, index);
+        final int index = userInfo['email'].indexOf('@');
+        String passWord = userInfo['email'].substring(0, index);
 
-        joinUs(userName, '${userCredential.user!.email}', userName, 'apple');
-        // Login(userCredential.user!.email.toString(), userName);
+        joinUs(userName, userInfo['email'], passWord, 'apple');
       } catch (e) {
         print("appleLogin Error this " + e.toString());
       }
@@ -150,6 +164,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
   Future<void> kakaoLogin() async {
     // 카카오톡이 설치되어 있을 경우 (카카오톡 로그인)
     if (await isKakaoTalkInstalled()) {
+      log('카카오톡 설치');
       try {
         OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
         User user = await UserApi.instance.me();
@@ -185,6 +200,7 @@ class _CircleIconBtnState extends State<CircleIconBtn> {
         }
       }
     } else {
+      log('카카오톡 미설치');
       try {
         OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
 

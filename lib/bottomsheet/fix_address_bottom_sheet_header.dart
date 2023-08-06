@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/bottomsheet/address_insert.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/widgets/myPage/update_address_list.dart';
 
 class FixAddressBottomSheetHeader extends StatefulWidget {
   final bool addressExist;
@@ -26,12 +28,7 @@ class _FixAddressBottomSheetHeaderState
         initHeight: 0.9,
         maxHeight: 0.9,
         context: context,
-        bottomSheetColor: HexColor("#909090").withOpacity(0.2),
-        decoration: BoxDecoration(
-          color: HexColor("#f5f5f5"),
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        ),
+        bottomSheetColor: Colors.transparent,
         headerHeight: 100,
         headerBuilder: (context, offset) {
           return widget.addressExist == true
@@ -42,7 +39,7 @@ class _FixAddressBottomSheetHeaderState
           print("init");
           return SliverChildListDelegate([
             widget.addressExist == true
-                ? Container()
+                ? UpdateAddressList()
                 : Container(
                     height: MediaQuery.of(context).size.height - 200,
                     child: AddressInsert())
@@ -122,11 +119,8 @@ class _FixAddressBottomSheetHeaderState
                           ),
                   ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
                 Container(
-                  padding: EdgeInsets.zero,
+                  margin: EdgeInsets.only(top: 10.h),
                   height: 1,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -143,6 +137,9 @@ class _FixAddressBottomSheetHeaderState
   // 주소가 있을 경우 / 없을 경우 header
   Widget addressListHeader(String title) {
     return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24))),
       child: Column(
         children: [
           Container(

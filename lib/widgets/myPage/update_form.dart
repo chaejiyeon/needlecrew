@@ -1,5 +1,8 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/custom_text.dart';
+import 'package:needlecrew/models/util/font_size.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -43,28 +46,18 @@ class _UpdateFormState extends State<UpdateForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.only(top: 40.h, left: 24.w, right: 24.w),
       color: Colors.white,
       child: Column(
         children: [
-          CustomAppbar(
-            appbarcolor: 'white',
-            appbar: AppBar(),
-            title: widget.appbarName,
-            leadingWidget: BackBtn(),
-          ),
           Container(
-            padding: EdgeInsets.all(30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FontStyle(
-                    text: widget.updateType,
-                    fontsize: "",
-                    fontbold: "",
-                    fontcolor: Colors.black,
-                    textdirectionright: false),
-                SizedBox(
-                  height: 10,
+                CustomText(
+                  text: widget.updateType,
+                  fontSize: FontSize().fs4,
+                  formMargin: EdgeInsets.only(bottom: 7),
                 ),
                 TextField(
                   onChanged: (value) {

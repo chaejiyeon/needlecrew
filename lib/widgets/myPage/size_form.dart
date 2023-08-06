@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -5,12 +6,14 @@ import 'package:hexcolor/hexcolor.dart';
 class SizeForm extends StatefulWidget {
   final String title;
   final String hintTxt;
+  final TextEditingController? editingController;
   final bool isTextfield;
 
   const SizeForm(
       {Key? key,
       required this.title,
       required this.hintTxt,
+      this.editingController,
       required this.isTextfield})
       : super(key: key);
 
@@ -22,6 +25,7 @@ class _SizeFormState extends State<SizeForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 32.h),
       child: widget.isTextfield == true
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,11 +40,12 @@ class _SizeFormState extends State<SizeForm> {
                   height: 10,
                 ),
                 TextField(
+                  controller: widget.editingController,
                   style: TextStyle(height: 0.5),
                   decoration: InputDecoration(
                     hintText: widget.hintTxt,
                     suffixIcon: Container(
-                        padding: EdgeInsets.only(top: 10), child: Text("cm")),
+                        padding: EdgeInsets.only(top: 10.h), child: Text("cm")),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

@@ -1,5 +1,5 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
-import 'package:needlecrew/controller/fixClothes/fixselectController.dart';
+import 'package:needlecrew/controller/fix_clothes/fixselect_controller.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fixClothes/direct_insert.dart';
@@ -26,9 +26,11 @@ import 'package:needlecrew/widgets/font_style.dart';
 import 'package:needlecrew/widgets/tootip_custom.dart';
 
 class ChooseClothes extends StatefulWidget {
+  final String selectItem;
   final int parentNum;
 
-  const ChooseClothes({Key? key, this.parentNum = 0}) : super(key: key);
+  const ChooseClothes({Key? key, this.selectItem = '', this.parentNum = 0})
+      : super(key: key);
 
   @override
   State<ChooseClothes> createState() => _ChooseClothesState();
@@ -93,7 +95,14 @@ class _ChooseClothesState extends State<ChooseClothes>
 
   @override
   void initState() {
-    if (widget.parentNum == 0) controller.crumbs.clear();
+    printInfo(
+        info: 'select fix clothes info this ${controller.fixClothesInfo}');
+
+    if (widget.parentNum == 0) {
+      controller.selectSize.value = 0;
+      controller.fixClothesInfo.clear();
+      controller.crumbs.clear();
+    }
 
     // back 버튼 클릭하지 않았을 때에만 crumbs에 add
     if (controller.backClick == false) {
@@ -121,7 +130,10 @@ class _ChooseClothesState extends State<ChooseClothes>
             controller.backClick.value = true;
 
             // back버튼 클릭시 crumbs 마지막 카테고리 Id remove
-            if (controller.crumbs.length > 0) controller.crumbs.removeLast();
+            if (controller.crumbs.length > 0) {
+              controller.crumbs.removeLast();
+              controller.fixClothesInfo.removeLast();
+            }
 
             Navigator.pushReplacement(
                 context,
@@ -191,7 +203,8 @@ class _ChooseClothesState extends State<ChooseClothes>
                                 : "어떤 옷을 수선하고 싶으세요?",
                             question: true,
                             btnIcon: "chatIcon.svg",
-                            btnText: "수선 문의하기",
+                            btnText: '',
+                            // btnText: "수선 문의하기",
                             widget: FixQuestion(),
                             imgPath: "fixClothes",
                             bottomPadding: 50,
@@ -305,6 +318,10 @@ class _ChooseClothesState extends State<ChooseClothes>
                                       iswidget: true,
                                       btnText:
                                           categories[index].name.toString(),
+                                      btnFt: () {
+                                        controller.fixClothesInfo.add(
+                                            categories[index].name.toString());
+                                      },
                                       fontboxwidth: double.infinity,
                                       bordercolor: HexColor("#d5d5d5"),
                                       fontcolor: Colors.black,

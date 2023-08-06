@@ -1,13 +1,12 @@
-import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:needlecrew/controller/homeController.dart';
-import 'package:needlecrew/db/wp-api.dart' as wp_api;
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
-import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/widgets/circle_black_btn.dart';
+import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/myPage/update_form.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../widgets/custom/custom_widgets.dart';
 
 class PhoneNumUpdate extends StatefulWidget {
   const PhoneNumUpdate({Key? key}) : super(key: key);
@@ -17,7 +16,7 @@ class PhoneNumUpdate extends StatefulWidget {
 }
 
 class _PhoneNumUpdateState extends State<PhoneNumUpdate> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
 
   @override
   void initState() {
@@ -39,6 +38,12 @@ class _PhoneNumUpdateState extends State<PhoneNumUpdate> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        appBar: CustomAppbar(
+          appbarcolor: 'white',
+          appbar: AppBar(),
+          title: '전화번호 변경',
+          leadingWidget: BackBtn(),
+        ),
         backgroundColor: Colors.white,
         body: Obx(
           () => UpdateForm(
@@ -52,7 +57,11 @@ class _PhoneNumUpdateState extends State<PhoneNumUpdate> {
         bottomNavigationBar: Container(
           padding: EdgeInsets.all(20),
           child: CircleBlackBtn(
-            function: () => {
+            function: () async {
+              await updateUserService.updateUser(
+                  metaKey: 'phoneNum',
+                  metaValue: controller.textController.text,
+                  headerText: '전화번호 변경');
               // controller.updateUser('전화번호 변경'),
             },
             btnText: "변경 완료",

@@ -1,7 +1,10 @@
-import 'package:needlecrew/controller/fixClothes/fixselectController.dart';
+import 'package:needlecrew/widgets/custom/custom_widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/fix_clothes/fixselect_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/modal/alert_dialog_yes.dart';
-import 'package:needlecrew/modal/fixClothes/fix_select_modal.dart';
 import 'package:needlecrew/models/tooltip_text.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fixClothes/fix_question.dart';
@@ -120,6 +123,8 @@ class _FixSelectState extends State<FixSelect> {
   @override
   void initState() {
     controller.isProductId(widget.productId);
+    controller.setImages.clear();
+    controller.getImages.clear();
 
     print("this categoryIds " +
         widget.crumbs.last.toString() +
@@ -135,7 +140,7 @@ class _FixSelectState extends State<FixSelect> {
     }
 
     controller.uploadImg.value = "";
-
+    // controller.setImages.clear();
     print("isShopping" + controller.isshopping.toString());
     super.initState();
   }
@@ -184,7 +189,7 @@ class _FixSelectState extends State<FixSelect> {
           ],
         ),
         body: Container(
-          padding: EdgeInsets.only(left: 24, right: 24),
+          padding: EdgeInsets.only(left: 24.w, right: 24.w),
           color: Colors.white,
           child: SingleChildScrollView(
             child: Column(
@@ -214,7 +219,7 @@ class _FixSelectState extends State<FixSelect> {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         return Container(
-                          padding: EdgeInsets.only(bottom: 38),
+                          padding: EdgeInsets.only(bottom: 38.h),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -224,6 +229,8 @@ class _FixSelectState extends State<FixSelect> {
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {
+                                      controller.setGetMySize(
+                                          controller.product.name.toString());
                                       return FontStyle(
                                           text: controller.category.name
                                               .toString(),
@@ -282,7 +289,7 @@ class _FixSelectState extends State<FixSelect> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                              padding: EdgeInsets.only(bottom: 10),
+                              padding: EdgeInsets.only(bottom: 10.h),
                               child: FontStyle(
                                   text: "수량 선택",
                                   fontsize: "md",
@@ -290,7 +297,7 @@ class _FixSelectState extends State<FixSelect> {
                                   fontcolor: Colors.black,
                                   textdirectionright: false)),
                           Container(
-                              padding: EdgeInsets.only(bottom: 40),
+                              padding: EdgeInsets.only(bottom: 40.h),
                               child: Row(
                                 children: [
                                   GestureDetector(
@@ -319,8 +326,8 @@ class _FixSelectState extends State<FixSelect> {
                                     ),
                                   ),
                                   Container(
-                                    padding:
-                                        EdgeInsets.only(left: 30, right: 30),
+                                    padding: EdgeInsets.only(
+                                        left: 30.w, right: 30.w),
                                     child: FontStyle(
                                         text: selectCount.toString(),
                                         fontsize: "md",
@@ -437,7 +444,7 @@ class _FixSelectState extends State<FixSelect> {
                     future: variationFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        return controller.variation.length != 0
+                        return Obx(() => controller.variation.length != 0
                             ? Container(
                                 margin: EdgeInsets.only(bottom: 40),
                                 child: Column(
@@ -453,15 +460,17 @@ class _FixSelectState extends State<FixSelect> {
                                             fontcolor: Colors.black,
                                             textdirectionright: false),
                                       ),
-                                      Column(
-                                        children: List.generate(
-                                            controller.variation.length,
-                                            (index) => optionItem(
-                                                controller.variation[index])),
+                                      Obx(
+                                        () => Column(
+                                          children: List.generate(
+                                              controller.variation.length,
+                                              (index) => optionItem(
+                                                  controller.variation[index])),
+                                        ),
                                       ),
                                     ]),
                               )
-                            : Container();
+                            : Container());
                       } else if (snapshot.hasData == false) {
                         return Container();
                       } else {
@@ -497,7 +506,7 @@ class _FixSelectState extends State<FixSelect> {
                                 textBold: ""),
                             controller.isshopping != true
                                 ? RadioBtn(
-                                    list: "줄이거나 늘일 치수를 입력할게요.",
+                                    list: "잘 맞는 옷을 함께 보낼게요.",
                                     bottomPadding: 15,
                                     textBold: "")
                                 : Container(),
@@ -514,7 +523,7 @@ class _FixSelectState extends State<FixSelect> {
                         () => controller.isshopping.value == true ||
                                 controller.isSelected.value !=
                                     "잘 맞는 옷을 함께 보낼게요."
-                            ? textForm("치수 입력", "줄이고 싶은 만큼의 치수를 입력해주세요.", 0)
+                            ? textForm("치수 입력", "의뢰 방법에 해당하는 치수를 입력해주세요.", 0)
                             : Container(
                                 height: 0,
                               ),
@@ -525,7 +534,7 @@ class _FixSelectState extends State<FixSelect> {
 
                 // 사진 업로드
                 Container(
-                  padding: EdgeInsets.only(bottom: 40),
+                  padding: EdgeInsets.only(bottom: 40.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -548,9 +557,9 @@ class _FixSelectState extends State<FixSelect> {
 
                 // 물품가액에 대한 설명
                 Container(
-                  padding:
-                      EdgeInsets.only(top: 11, right: 13, bottom: 17, left: 15),
-                  margin: EdgeInsets.only(bottom: 40),
+                  padding: EdgeInsets.only(
+                      top: 11.h, right: 13.w, bottom: 17.h, left: 15.w),
+                  margin: EdgeInsets.only(bottom: 40.h),
                   decoration: BoxDecoration(
                     color: HexColor("#f7f7f7"),
                     borderRadius: BorderRadius.circular(6),
@@ -574,7 +583,7 @@ class _FixSelectState extends State<FixSelect> {
 
                 // 추가 설명
                 Container(
-                  padding: EdgeInsets.only(bottom: 40),
+                  padding: EdgeInsets.only(bottom: 40.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -667,8 +676,10 @@ class _FixSelectState extends State<FixSelect> {
                           behavior: HitTestBehavior.opaque,
                           onTap: () async {
                             if (controller.getImages.length == 0) {
-                              Get.dialog(AlertDialogYes(
-                                  titleText: "이미지를 1장이상 등록해주세요!"));
+                              Get.dialog(
+                                  barrierDismissible: false,
+                                  AlertDialogYes(
+                                      titleText: "이미지를 1장이상 등록해주세요!"));
                             } else if (controller.getImages.length >= 1) {
                               bool isUploaded = await controller.uploadImage();
 
@@ -678,36 +689,42 @@ class _FixSelectState extends State<FixSelect> {
                                   (widget.lastCategory == "기타" &&
                                       texteditingController[1].text.length >
                                           0)) {
-                                if (isUploaded == true)
-                                  controller.registerCart({
-                                    "customerNote":
-                                        texteditingController[2].text,
-                                    "variationId": variationId,
-                                    "metadata": metadata
-                                  }, [
-                                    WooOrderPayloadMetaData(
-                                        key: '의뢰 방법',
-                                        value: widget.lastCategory == "기타"
-                                            ? "기타"
-                                            : controller.isSelected.value
-                                                .toString()),
-                                    WooOrderPayloadMetaData(
-                                        key: '치수',
-                                        value: texteditingController[0].text),
-                                    WooOrderPayloadMetaData(
-                                        key: '사진',
-                                        value: controller.uploadImg.value != ""
-                                            ? controller.uploadImg.value
-                                            : ""),
-                                    WooOrderPayloadMetaData(
-                                        key: '물품 가액',
-                                        value: texteditingController[1].text),
-                                    WooOrderPayloadMetaData(
-                                        key: '추가 옵션',
-                                        value: controller.radioGroup["추가 옵션"])
-                                  ]);
-
-                                Get.to(() => CartInfo());
+                                if (isUploaded == true) {
+                                  Get.offAndToNamed('/cart');
+                                  // await controller.registerCart({
+                                  //   "customerNote":
+                                  //       texteditingController[2].text,
+                                  //   "variationId": variationId,
+                                  //   "metadata": metadata
+                                  // }, [
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '의뢰 방법',
+                                  //       value: widget.lastCategory == "기타"
+                                  //           ? "기타"
+                                  //           : controller.isSelected.value
+                                  //               .toString()),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '치수',
+                                  //       value: texteditingController[0].text),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '사진',
+                                  //       value: controller.uploadImg.value != ""
+                                  //           ? controller.uploadImg.value
+                                  //           : ""),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '물품 가액',
+                                  //       value: texteditingController[1].text),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '추가 옵션',
+                                  //       value: controller.radioGroup["추가 옵션"]),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '수선 불가 사유', value: ""),
+                                  //   WooOrderPayloadMetaData(
+                                  //       key: '추가 수선',
+                                  //       value:
+                                  //           "{'여부':'false','추가 비용':'', '사유':''}")
+                                  // ]);
+                                }
                               }
                             }
                           },
@@ -740,11 +757,27 @@ class _FixSelectState extends State<FixSelect> {
     );
   }
 
-  // 내 치수 불러오기 버튼
   Widget mysizeInsert() {
     return GestureDetector(
       onTap: () {
-        Get.dialog(FixSelectModal());
+        Get.dialog(
+            barrierDismissible: false,
+            CustomDialog(
+              header: DialogHeader(
+                  title: '내 치수를 불러오시겠습니까?',
+                  content:
+                      '총 길이 : ${controller.selectSize.value.toString()}cm'),
+              bottom: DialogBottom(isExpanded: true, btn: [
+                BtnModel(text: '취소', callback: () => Get.back()),
+                BtnModel(
+                    text: '불러오기',
+                    callback: () {
+                      texteditingController[0].text =
+                          controller.selectSize.value.toString();
+                      Get.close(1);
+                    })
+              ]),
+            ));
       },
       child: Row(
         children: [
@@ -795,19 +828,16 @@ class _FixSelectState extends State<FixSelect> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CustomRadioWidget(
-              optionname: name(optionName),
-              groupValue:
-                  controller.radioGroup["추가 옵션"] != {"추가 옵션": name(optionName)}
-                      ? controller.radioGroup["추가 옵션"]
-                      : controller.radioGroup["가격"],
-              value:
-                  controller.radioGroup["추가 옵션"] != {"추가 옵션": name(optionName)}
-                      ? name(optionName)
-                      : finalPrice.toString(),
+            CustomRadioWidgetOrigin(
+              optionName: name(optionName),
+              value: controller.radioId.value,
+              groupValue: variation.id!,
               onChanged: (value) {
-                controller.isRadioGroup(
-                    {"추가 옵션": name(optionName), "가격": finalPrice.toString()});
+                controller.isRadioGroup({
+                  'variation_id': variation.id!,
+                  '추가 옵션': name(optionName),
+                  '가격': finalPrice.toString()
+                });
                 controller.radioId.value = variation.id!;
                 controller.iswholePrice(addPrice);
               },
@@ -891,47 +921,6 @@ class _FixSelectState extends State<FixSelect> {
           ),
         ),
       ]),
-    );
-  }
-}
-
-// radio cucstom
-class CustomRadioWidget<T> extends StatelessWidget {
-  final String optionname;
-  final T value;
-  final T groupValue;
-  final ValueChanged<T> onChanged;
-
-  CustomRadioWidget({
-    required this.optionname,
-    required this.value,
-    required this.groupValue,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onChanged(this.value);
-      },
-      child: Container(
-        padding: EdgeInsets.only(bottom: 10),
-        child: Row(
-          children: [
-            Container(
-                width: 22,
-                height: 22,
-                child: value == groupValue
-                    ? Image.asset("assets/icons/selectCheckIcon.png")
-                    : Image.asset("assets/icons/checkBtnIcon.png")),
-            SizedBox(
-              width: 10,
-            ),
-            Text(optionname),
-          ],
-        ),
-      ),
     );
   }
 }

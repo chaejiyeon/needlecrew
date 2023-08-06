@@ -23,7 +23,7 @@ class FixClothes extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomAppbar(
-        leadingWidget: BackBtn(backFt: ()=> Get.to(MainPage(pageNum: 0))),
+        leadingWidget: BackBtn(backFt: () => Get.close(1)),
         appbarcolor: 'white',
         appbar: AppBar(),
         actionItems: [
@@ -47,11 +47,7 @@ class FixClothes extends StatelessWidget {
           ),
         ],
       ),
-      body: PageView(
-        children: [
-          StartAddressChoose(),
-        ],
-      ),
+      body: StartAddressChoose(),
       bottomNavigationBar: FooterBtn(),
     );
   }

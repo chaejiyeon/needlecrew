@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/models/size_check_guide_item.dart';
 import 'package:needlecrew/widgets/mainhome/sizeCheckGuide/size_info.dart';
 import 'package:flutter/material.dart';
@@ -86,57 +87,59 @@ class _FixSizeQuideSheetState extends State<FixSizeQuideSheet>
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.only(left: 24, right: 24),
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: EdgeInsets.only(top: 30),
-          margin: EdgeInsets.only(bottom: 20),
-          height: 70,
-          child: TabBar(
-            padding: EdgeInsets.zero,
-            isScrollable: true,
-            labelPadding: EdgeInsets.symmetric(horizontal: 4.0),
-            controller: _tabController,
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide.none,
+    return Container(
+      color: Colors.white,
+      child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.only(left: 24.w, right: 24.w),
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 30.h),
+              margin: EdgeInsets.only(bottom: 20),
+              height: 70,
+              child: TabBar(
+                padding: EdgeInsets.zero,
+                isScrollable: true,
+                labelPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                controller: _tabController,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide.none,
+                ),
+                tabs: List.generate(
+                  tabHeader.length,
+                  (index) => CategoryItem(tabHeader[index], index),
+                ),
+              ),
             ),
-            tabs: List.generate(
-              tabHeader.length,
-              (index) => CategoryItem(tabHeader[index], index),
-            ),
-          ),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          child: TabBarView(
-            controller: _tabController,
-            children: List.generate(
-                tabHeader.length,
-                (index) => tabHeader[index] == "상의"
-                    ? SizeInfo(
-                        tabItems: shirtItems,
-                      )
-                    : tabHeader[index] == "하의"
-                        ? SizeInfo(tabItems: pantsItems)
-                        : tabHeader[index] == "원피스"
-                            ? SizeInfo(tabItems: onepieceItems)
-                            : tabHeader[index] == "스커트"
-                                ? SizeInfo(tabItems: skirtItems)
-                                : tabHeader[index] == "아우터"
-                                    ? SizeInfo(tabItems: outerItems)
-                                    : Container()),
-          ),
-        ),
-      ],
+            Container(
+              height: MediaQuery.of(context).size.height,
+              child: TabBarView(
+                controller: _tabController,
+                children: List.generate(
+                    tabHeader.length,
+                    (index) => tabHeader[index] == "상의"
+                        ? SizeInfo(
+                            tabItems: shirtItems,
+                          )
+                        : tabHeader[index] == "하의"
+                            ? SizeInfo(tabItems: pantsItems)
+                            : tabHeader[index] == "원피스"
+                                ? SizeInfo(tabItems: onepieceItems)
+                                : tabHeader[index] == "스커트"
+                                    ? SizeInfo(tabItems: skirtItems)
+                                    : tabHeader[index] == "아우터"
+                                        ? SizeInfo(tabItems: outerItems)
+                                        : Container()),
+              ),
+            )
+          ]),
     );
   }
 
   // category 목록
   Widget CategoryItem(String category, int index) {
     return Container(
-      padding: EdgeInsets.only(left: 22, right: 22),
+      padding: EdgeInsets.only(left: 22.w, right: 22.w),
       alignment: Alignment.center,
       height: 60,
       decoration: BoxDecoration(

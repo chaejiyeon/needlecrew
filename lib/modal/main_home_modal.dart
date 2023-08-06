@@ -1,5 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/fix_clothes.dart';
 import 'package:needlecrew/widgets/fixClothes/start_address_choose.dart';
@@ -37,13 +38,13 @@ class _MainHomeModalState extends State<MainHomeModal> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+    final HomeController controller = Get.find();
 
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.only(top: 150),
+        padding: EdgeInsets.only(top: 150.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

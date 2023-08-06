@@ -5,6 +5,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as document;
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:flutter/material.dart';
+import 'package:needlecrew/format_method.dart';
 
 class TooltipCustom extends StatefulWidget {
   final String tooltipText;
@@ -31,21 +32,6 @@ class TooltipCustom extends StatefulWidget {
 class _TooltipCustomState extends State<TooltipCustom> {
   final tooltipController = JustTheController();
   final GlobalKey tooltipKey = GlobalKey();
-
-  // html tag remove
-  String parseHtmlTagRemove() {
-    try {
-      var document = parse(widget.tooltipText);
-      // html 태그 제거
-      String parsedText = parse(document.body!.text).documentElement!.text;
-
-      return parsedText;
-    } catch (e) {
-      print("Tooltip Error   " + e.toString());
-
-      return "";
-    }
-  }
 
   @override
   void init() {
@@ -81,7 +67,11 @@ class _TooltipCustomState extends State<TooltipCustom> {
                       color: Colors.black),
                 ),
           widget.tooltipText == ""
-              ? WidgetSpan(child: Container())
+              ? WidgetSpan(
+                  child: Container(
+                  height: 0,
+                  width: 0,
+                ))
               : WidgetSpan(
                   child: JustTheTooltip(
                     controller: tooltipController,
@@ -137,7 +127,8 @@ class _TooltipCustomState extends State<TooltipCustom> {
                               ),
                             )
                           : Text(
-                              parseHtmlTagRemove(),
+                              FormatMethod()
+                                  .convertHtmlToText(widget.tooltipText),
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.black,

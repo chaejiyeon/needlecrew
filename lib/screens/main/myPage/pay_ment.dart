@@ -1,5 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/modal/alert_loading.dart';
 import 'package:needlecrew/models/billing_info.dart';
@@ -26,7 +27,7 @@ class PayMent extends StatefulWidget {
 }
 
 class _PayMentState extends State<PayMent> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
 
   final _carouselcontroller = CarouselController();
   late int currentPage = 0;
@@ -73,158 +74,152 @@ class _PayMentState extends State<PayMent> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: paymentService.getCardAll(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            printInfo(
-                info: 'get card success ${paymentService.cardsInfo.length}');
-            return Container(
-              color: Colors.white,
-              child: Column(
+      body:
+          // FutureBuilder(
+          //   future: paymentService.getCardAll(),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.done) {
+          //       printInfo(
+          //           info: 'get card success ${paymentService.cardsInfo.length}');
+          //       return
+          Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 20.h, left: 24.w),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: FontStyle(
+                      text: "결제하기",
+                      fontsize: "lg",
+                      fontbold: "bold",
+                      fontcolor: Colors.black,
+                      textdirectionright: false)),
+            ),
+            Container(
+              height: 230,
+              child: CarouselSlider(
+                carouselController: _carouselcontroller,
+                items: List.generate(paymentService.cardsInfo.length,
+                    (index) => cardCutom(paymentService.cardsInfo![index])),
+                options: CarouselOptions(
+                    aspectRatio: 2.0,
+                    enableInfiniteScroll: false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    }),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.zero,
+              width: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Icon(CupertinoIcons.back, size: 20),
                   Container(
-                    padding: EdgeInsets.only(top: 20, left: 24),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: FontStyle(
-                            text: "결제하기",
-                            fontsize: "lg",
-                            fontbold: "bold",
-                            fontcolor: Colors.black,
-                            textdirectionright: false)),
-                  ),
-                  Container(
-                    height: 230,
-                    child: CarouselSlider(
-                      carouselController: _carouselcontroller,
-                      items: List.generate(
-                          paymentService.cardsInfo.length,
-                          (index) =>
-                              cardCutom(paymentService.cardsInfo![index])),
-                      options: CarouselOptions(
-                          aspectRatio: 2.0,
-                          enableInfiniteScroll: false,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              currentPage = index;
-                            });
-                          }),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.zero,
-                    width: 100,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(CupertinoIcons.back, size: 20),
-                        Container(
-                          child: Row(
-                            children: [
-                              FontStyle(
-                                  text: (currentPage + 1).toString(),
-                                  fontsize: "",
-                                  fontbold: "",
-                                  fontcolor: Colors.black,
-                                  textdirectionright: false),
-                              FontStyle(
-                                  text: "/",
-                                  fontsize: "",
-                                  fontbold: "",
-                                  fontcolor: Colors.black,
-                                  textdirectionright: false),
-                              FontStyle(
-                                  text: paymentService.cardsInfo.length
-                                      .toString(),
-                                  fontsize: "",
-                                  fontbold: "",
-                                  fontcolor: Colors.black,
-                                  textdirectionright: false),
-                            ],
-                          ),
-                        ),
-                        Icon(CupertinoIcons.forward, size: 20),
+                        FontStyle(
+                            text: (currentPage + 1).toString(),
+                            fontsize: "",
+                            fontbold: "",
+                            fontcolor: Colors.black,
+                            textdirectionright: false),
+                        FontStyle(
+                            text: "/",
+                            fontsize: "",
+                            fontbold: "",
+                            fontcolor: Colors.black,
+                            textdirectionright: false),
+                        FontStyle(
+                            text: paymentService.cardsInfo.length.toString(),
+                            fontsize: "",
+                            fontbold: "",
+                            fontcolor: Colors.black,
+                            textdirectionright: false),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.only(
-                        top: 39,
-                      ),
-                      child: FutureBuilder(
-                        future: paymentService.orderInfo(widget.orderid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            // controller.payment['customer_uid'] =
-                            //     controller.cardsInfo[currentPage].customer_uid;
-                            // controller.payment['merchant_uid'] =
-                            //     "order_no" + controller.orderMap['order_no'];
-                            // controller.payment['amount'] =
-                            //     controller.orderMap['total_price'];
-                            // controller.payment['name'] =
-                            //     controller.orderMap['order_item'];
-
-                            return Column(
-                              children: [
-                                infoList(
-                                    "결제 수단",
-                                    paymentService
-                                        .cardsInfo[currentPage].card_name,
-                                    false),
-                                infoList(
-                                    "의뢰 내역",
-                                    paymentService.orderMap['order_item'],
-                                    false),
-                                infoList(
-                                    "의뢰 비용",
-                                    controller.setPrice(int.parse(paymentService
-                                        .orderMap['order_price'])),
-                                    true),
-                                infoList(
-                                    "택배 비용",
-                                    controller.setPrice(int.parse(
-                                        paymentService.orderMap['shipp_cost'])),
-                                    true),
-                                Container(
-                                    padding:
-                                        EdgeInsets.only(left: 24, right: 24),
-                                    child: ListLine(
-                                        height: 1,
-                                        width: double.infinity,
-                                        lineColor: HexColor("#ededed"),
-                                        opacity: 1)),
-                                SizedBox(
-                                  height: 14,
-                                ),
-                                infoList(
-                                    "최종 결제 금액",
-                                    controller.setPrice(
-                                        paymentService.orderMap['total_price']),
-                                    true),
-                              ],
-                            );
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ),
+                  Icon(CupertinoIcons.forward, size: 20),
                 ],
               ),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  top: 39.h,
+                ),
+                child: FutureBuilder(
+                  future: paymentService.orderInfo(widget.orderid),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      // controller.payment['customer_uid'] =
+                      //     controller.cardsInfo[currentPage].customer_uid;
+                      // controller.payment['merchant_uid'] =
+                      //     "order_no" + controller.orderMap['order_no'];
+                      // controller.payment['amount'] =
+                      //     controller.orderMap['total_price'];
+                      // controller.payment['name'] =
+                      //     controller.orderMap['order_item'];
+                      return Column(
+                        children: [
+                          infoList(
+                              "결제 수단",
+                              paymentService.cardsInfo[currentPage].card_name,
+                              false),
+                          infoList("의뢰 내역",
+                              paymentService.orderMap['order_item'], false),
+                          infoList(
+                              "의뢰 비용",
+                              controller.setPrice(int.parse(
+                                  paymentService.orderMap['order_price'])),
+                              true),
+                          infoList(
+                              "택배 비용",
+                              controller.setPrice(int.parse(
+                                  paymentService.orderMap['shipp_cost'])),
+                              true),
+                          Container(
+                              padding: EdgeInsets.only(left: 24.w, right: 24.w),
+                              child: ListLine(
+                                  height: 1,
+                                  width: double.infinity,
+                                  lineColor: HexColor("#ededed"),
+                                  opacity: 1)),
+                          SizedBox(
+                            height: 14,
+                          ),
+                          infoList(
+                              "최종 결제 금액",
+                              controller.setPrice(
+                                  paymentService.orderMap['total_price']),
+                              true),
+                        ],
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+      //       ;
+      //     } else {
+      //       return Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     }
+      //   },
+      // ),
       bottomNavigationBar: Container(
         color: Colors.white,
         padding: EdgeInsets.all(20),
@@ -243,7 +238,7 @@ class _PayMentState extends State<PayMent> {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.only(right: 10),
+          padding: EdgeInsets.only(right: 10.w),
           width: 300,
           child: Image.asset(
             "assets/images/card.png",
@@ -254,7 +249,7 @@ class _PayMentState extends State<PayMent> {
           alignment: Alignment.centerLeft,
           heightFactor: 2,
           child: Container(
-            padding: EdgeInsets.only(left: 20),
+            padding: EdgeInsets.only(left: 20.w),
             child: FontStyle(
                 text: cardInfo.card_name,
                 fontcolor: Colors.white,
@@ -283,7 +278,7 @@ class _PayMentState extends State<PayMent> {
   // pay info item
   Widget infoList(String title, String info, bool isCost) {
     return Container(
-      padding: EdgeInsets.only(left: 42, right: 42, bottom: 15),
+      padding: EdgeInsets.only(left: 42.w, right: 42.w, bottom: 15.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

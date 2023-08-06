@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
 
 class MyUseInfo extends StatefulWidget {
   final Future myFuture;
@@ -19,15 +20,21 @@ class MyUseInfo extends StatefulWidget {
 class _MyUseInfoState extends State<MyUseInfo> {
   final UseInfoController controller = Get.put(UseInfoController());
 
+  getUseInfo() async {
+    // await controller.getCompleteOrder();
+  }
+
   @override
   void initState() {
+    getUseInfo();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 24, right: 24, top: 25, bottom: 53),
+      padding:
+          EdgeInsets.only(left: 24.w, right: 24.w, top: 25.h, bottom: 53.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

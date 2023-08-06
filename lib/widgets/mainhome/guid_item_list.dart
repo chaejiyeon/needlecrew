@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/models/guide_item.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,8 @@ class GuideItemList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 24, right: 24),
-      margin: EdgeInsets.only(bottom: 25),
+      padding: EdgeInsets.only(left: 24.w, right: 24.w),
+      margin: EdgeInsets.only(bottom: 25.h),
       height: 220,
       child: Stack(
         children: [
@@ -35,7 +36,7 @@ class GuideItemList extends StatelessWidget {
                 Get.to(items.widget);
               },
               child: Container(
-                padding: EdgeInsets.only(bottom: 20),
+                padding: EdgeInsets.only(bottom: 20.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

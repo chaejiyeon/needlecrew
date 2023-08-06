@@ -1,7 +1,6 @@
 import 'package:needlecrew/bottomsheet/fix_address_bottom_sheet_header.dart';
 import 'package:needlecrew/bottomsheet/fix_my_address_list.dart';
-import 'package:needlecrew/controller/fixClothes/cartController.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
@@ -21,36 +20,8 @@ import 'package:kpostal/kpostal.dart';
 
 import '../../../widgets/fixClothes/progress_bar.dart';
 
-class AddressInsert extends StatefulWidget {
+class AddressInsert extends GetView<CartController> {
   const AddressInsert({Key? key}) : super(key: key);
-
-  @override
-  State<AddressInsert> createState() => _AddressInsertState();
-}
-
-class _AddressInsertState extends State<AddressInsert> {
-  final CartController controller = Get.put(CartController());
-  final HomeController homeController = Get.put(HomeController());
-
-  String postCode = '-';
-  String address = '-';
-  String latitude = '-';
-  String longitude = '-';
-  String kakaoLatitude = '-';
-  String kakaoLongitude = '-';
-
-  TextEditingController textEditingController = TextEditingController();
-
-  // List<AddressItem> addressitems = [
-  //   AddressItem("assets/icons/myPage/mypageHome_1.svg", "우리집",
-  //       "부산 강서구 명지국제3로 97 105동 221호")
-  // ];
-
-  @override
-  void initState() {
-    super.initState();
-    // controller.isSaved(false);
-  }
 
   // 주소 관리 bottomsheet
   void bottomsheetOpen(BuildContext context) {
@@ -163,35 +134,42 @@ class _AddressInsertState extends State<AddressInsert> {
             ],
           ),
         ),
-        bottomNavigationBar: myaddressBtn(),
+        bottomNavigationBar: myaddressBtn(context),
       ),
     );
   }
 
   // address 입력 필드
   Widget insertTextfield(String hintTxt) {
-    return Container(
-      child: TextField(
-        controller: textEditingController,
-        textAlign: textEditingController.text.isNotEmpty
-            ? TextAlign.left
-            : TextAlign.center,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(
-              left: textEditingController.text.isNotEmpty ? 30 : 0,
-              top: 20,
-              bottom: 20),
-          hintText: hintTxt,
-          hintStyle: TextStyle(color: HexColor("#909090")),
-          border: OutlineInputBorder(
+    printInfo(
+        info:
+            'address editing content this ${controller.addressEditingController.value.text}');
+    return Obx(
+      () => Container(
+        child: TextField(
+          controller: controller.addressEditingController.value,
+          textAlign: controller.addressEditingController.value.text.isNotEmpty
+              ? TextAlign.left
+              : TextAlign.center,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(
+                left: controller.addressEditingController.value.text.isNotEmpty
+                    ? 30
+                    : 0,
+                top: 20,
+                bottom: 20),
+            hintText: hintTxt,
+            hintStyle: TextStyle(color: HexColor("#909090")),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40),
+                borderSide: BorderSide(
+                  color: HexColor("#909090"),
+                )),
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(40),
               borderSide: BorderSide(
-                color: HexColor("#909090"),
-              )),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(40),
-            borderSide: BorderSide(
-              color: HexColor("#909090").withOpacity(0.5),
+                color: HexColor("#909090").withOpacity(0.5),
+              ),
             ),
           ),
         ),
@@ -208,44 +186,41 @@ class _AddressInsertState extends State<AddressInsert> {
           localPort: 1024,
           // kakaoKey: '{Add your KAKAO DEVELOPERS JS KEY}',
           callback: (Kpostal result) {
-            setState(() {
-              this.postCode = result.postCode;
-              this.address = result.address;
-              this.latitude = result.latitude.toString();
-              this.longitude = result.longitude.toString();
-              this.kakaoLatitude = result.kakaoLatitude.toString();
-              this.kakaoLongitude = result.kakaoLongitude.toString();
-            });
+            controller.detailAddress.value = result.address;
           },
         ));
       },
-      child: Container(
-        margin: EdgeInsets.only(bottom: 10),
-        alignment: postCode != "-" && address != "-"
-            ? Alignment.centerLeft
-            : Alignment.center,
-        padding: postCode != "-" && address != "-"
-            ? EdgeInsets.only(left: 30)
-            : EdgeInsets.zero,
-        height: 64,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: HexColor("#909090").withOpacity(0.5))),
-        child: Text(
-          postCode != "-" && address != "-" ? address : "지번, 도로명, 건물명 검색",
-          style: TextStyle(
-              color: postCode != "-" && address != "-"
-                  ? Colors.black
-                  : HexColor("#909090"),
-              fontSize: 15),
+      child: Obx(
+        () => Container(
+          margin: EdgeInsets.only(bottom: 10),
+          alignment: controller.detailAddress.value != '지번, 도로명, 건물명 검색'
+              ? Alignment.centerLeft
+              : Alignment.center,
+          padding: controller.detailAddress.value != '지번, 도로명, 건물명 검색'
+              ? EdgeInsets.only(left: 30)
+              : EdgeInsets.zero,
+          height: 64,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(color: HexColor("#909090").withOpacity(0.5))),
+          child: Obx(
+            () => Text(
+              controller.detailAddress.value,
+              style: TextStyle(
+                  color: controller.detailAddress.value != '지번, 도로명, 건물명 검색'
+                      ? Colors.black
+                      : HexColor("#909090"),
+                  fontSize: 15),
+            ),
+          ),
         ),
       ),
     );
   }
 
   // bottomnavigation 버튼
-  Widget myaddressBtn() {
+  Widget myaddressBtn(BuildContext context) {
     return Container(
       color: Colors.white,
       padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
@@ -287,26 +262,27 @@ class _AddressInsertState extends State<AddressInsert> {
           // 수거 희망일 페이지로이동
           GestureDetector(
             onTap: () {
-              if (textEditingController.text.length > 0) {
-                controller
-                    .isAddress(address + " " + textEditingController.text);
-                // controller.registerAddress();
-                Get.to(TakeFixDate());
+              if (controller.addressEditingController.value.text.length > 0) {
+                controller.setAddress.value =
+                    '${controller.detailAddress.value} ${controller.addressEditingController.value.text}';
               }
+              Get.to(TakeFixDate());
             },
-            child: Container(
-              height: 63,
-              alignment: Alignment.bottomCenter,
-              child: textEditingController.text.length > 0
-                  ? Image.asset(
-                      "assets/icons/selectFloatingIcon.png",
-                      width: 54,
-                      height: 54,
-                    )
-                  : SvgPicture.asset(
-                      "assets/icons/floatingNext.svg",
-                      color: HexColor("#d5d5d5"),
-                    ),
+            child: Obx(
+              () => Container(
+                height: 63,
+                alignment: Alignment.bottomCenter,
+                child: controller.addressEditingController.value.text.length > 0
+                    ? Image.asset(
+                        "assets/icons/selectFloatingIcon.png",
+                        width: 54,
+                        height: 54,
+                      )
+                    : SvgPicture.asset(
+                        "assets/icons/floatingNext.svg",
+                        color: HexColor("#d5d5d5"),
+                      ),
+              ),
             ),
           ),
         ],

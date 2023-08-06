@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/main.dart';
 import 'package:needlecrew/screens/login/loading_page.dart';
@@ -14,24 +15,21 @@ class MypageMenu extends StatelessWidget {
 
   const MypageMenu({Key? key, required this.listTitle, required this.widget})
       : super(key: key);
-  
-  
-
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        if(listTitle == "로그아웃"){
+        if (listTitle == "로그아웃") {
           Get.dialog(widget);
-        }else{
+        } else {
           Get.to(widget);
         }
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(top: 15),
+        padding: EdgeInsets.only(top: 15.h),
         child: Column(
           children: [
             Row(

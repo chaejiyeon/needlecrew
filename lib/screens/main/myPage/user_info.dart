@@ -1,4 +1,5 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/myPage/user_update.dart';
 import 'package:needlecrew/widgets/appbar_item.dart';
@@ -47,7 +48,8 @@ class _UserInfoState extends State<UserInfo> {
                     info:
                         'address length this ${homeInitService.items.length}');
                 return Container(
-                  padding: EdgeInsets.all(30),
+                  margin: EdgeInsets.only(top: 40.h),
+                  padding: EdgeInsets.only(left: 24.w, right: 24.w),
                   color: Colors.white,
                   child: Column(
                     children: [
@@ -75,18 +77,18 @@ class _UserInfoState extends State<UserInfo> {
                             info: homeInitService.userInfo['address'] != ''
                                 ? homeInitService.userInfo['address']
                                 : '',
-                            line: true),
-                      ),
-                      Obx(
-                        () => UserInfoMenu(
-                            appTitle: "회원 정보",
-                            title: "결제 수단",
-                            info:
-                                homeInitService.userInfo['default_card'] != null
-                                    ? homeInitService.userInfo['default_card']
-                                    : '',
                             line: false),
                       ),
+                      // Obx(
+                      //   () => UserInfoMenu(
+                      //       appTitle: "회원 정보",
+                      //       title: "결제 수단",
+                      //       info:
+                      //           homeInitService.userInfo['default_card'] != null
+                      //               ? homeInitService.userInfo['default_card']
+                      //               : '',
+                      //       line: false),
+                      // ),
                     ],
                   ),
                 );

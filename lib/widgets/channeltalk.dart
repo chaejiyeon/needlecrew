@@ -1,4 +1,4 @@
-import  'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -10,17 +10,29 @@ class Channeltalk extends StatefulWidget {
 }
 
 class _ChanneltalkState extends State<Channeltalk> {
+  WebViewController webViewController = WebViewController()
+    ..loadRequest(Uri.parse('https://needlecrew.channel.io'))
+    ..setJavaScriptMode(JavaScriptMode.unrestricted);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.amber,
       body: SafeArea(
-        child: WebView(
-          initialUrl: 'https://needlecrew.channel.io',
-          javascriptMode: JavascriptMode.unrestricted,
+        child: WebViewWidget(
+          controller: webViewController,
         ),
       ),
     );
   }
 }
-

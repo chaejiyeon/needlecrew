@@ -1,4 +1,5 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/screens/join/user_phone_insert.dart';
 import 'package:needlecrew/widgets/base_appbar.dart';
 import 'package:needlecrew/widgets/floating_next_btn.dart';
@@ -16,7 +17,7 @@ class UserInfoInsert extends StatefulWidget {
 }
 
 class _UserInfoInsertState extends State<UserInfoInsert> {
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find();
   ScrollController _scrollController = ScrollController();
   List<TextEditingController> editingcontroller = [];
 
@@ -56,11 +57,11 @@ class _UserInfoInsertState extends State<UserInfoInsert> {
           prevFunction: () => Get.back(),
         ),
         body: Container(
-          padding: EdgeInsets.only(left: 25, right: 25),
+          padding: EdgeInsets.only(left: 25.w, right: 25.w),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.only(top: 30),
+                padding: EdgeInsets.only(top: 30.h),
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +106,7 @@ class _UserInfoInsertState extends State<UserInfoInsert> {
               Container(
                 height: 111,
                 child: FloatingNextBtn(
-                    margin: EdgeInsets.only(bottom: 20),
+                    margin: EdgeInsets.only(bottom: 20.h),
                     function: () async {
                       if (this._formKey.currentState!.validate()) {
                         List keyList = [
@@ -150,7 +151,7 @@ class _UserInfoInsertState extends State<UserInfoInsert> {
   Widget loginTextField(
       String titleText, String hintText, TextEditingController controller) {
     return Container(
-      margin: EdgeInsets.only(bottom: 24),
+      margin: EdgeInsets.only(bottom: 24.h),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -73,7 +73,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     isInitialized.value = false;
-    homeInitService.mainModalcheck.value = false;
+    // homeInitService.mainModalcheck.value = false;
     super.onClose();
   }
 
@@ -121,6 +121,7 @@ class HomeController extends GetxController {
     return setPrice;
   }
 
+  /// 사용자 로그인
   Future<bool> LoginUs() async {
     final customer;
 
@@ -128,6 +129,7 @@ class HomeController extends GetxController {
         'userinputinfo emaili this      ' + userInputInfo['email'].toString());
     print('userinputinfo emaili this      ' +
         userInputInfo['password'].toString());
+    homeInitService.loginLoading.value = true;
     try {
       customer = await wp_api.wooCommerceApi.loginCustomer(
           username: userInputInfo['email'].toString(),
@@ -135,118 +137,127 @@ class HomeController extends GetxController {
 
       print("hhhhhhhhhhh  hhhh   hhh      " + customer.toString());
 
-      if (customer.toString().indexOf('invalid_email') != -1 ||
-          customer.toString().indexOf('invalid_username') != -1) {
-        loginCheck.value = '이메일 주소를 확인해주세요.';
-        print("로그인 실패! - 이메일 오류");
-        Get.snackbar('로그인', '이메일 주소와 비밀번호를 입력해주세요');
-        // update();
-        return false;
-      } else if (customer.toString().indexOf('incorrect_password') != -1) {
-        loginCheck.value = '비밀번호가 일치하지 않습니다.';
-        print("로그인 실패! - 비밀번호 오류 ${loginCheck.value}");
-        Get.snackbar('로그인', '이메일 주소와 비밀번호를 입력해주세요');
-        return false;
-      } else {
-        String authToken = await wp_api.wooCommerceApi.authenticateViaJWT(
-            username: userInputInfo['email'].toString(),
-            password: userInputInfo['password'].toString());
+      if (customer != null || customer != '') {
+        homeInitService.loginLoading.value = false;
+        if (customer.toString().indexOf('invalid_email') != -1 ||
+            customer.toString().indexOf('invalid_username') != -1) {
+          loginCheck.value = '이메일 주소를 확인해주세요.';
+          print("로그인 실패! - 이메일 오류");
+          Get.close(1);
+          Get.snackbar('로그인', '이메일 주소 또는 비밀번호를 확인해주세요');
+          // update();
+          return false;
+        } else if (customer.toString().indexOf('incorrect_password') != -1) {
+          loginCheck.value = '비밀번호가 일치하지 않습니다.';
+          print("로그인 실패! - 비밀번호 오류 ${loginCheck.value}");
+          Get.close(1);
+          Get.snackbar('로그인', '이메일 주소 또는 비밀번호를 확인해주세요');
+          return false;
+        } else {
+          String authToken = await wp_api.wooCommerceApi.authenticateViaJWT(
+              username: userInputInfo['email'].toString(),
+              password: userInputInfo['password'].toString());
 
-        int? userId = await wp_api.wooCommerceApi.fetchLoggedInUserId();
-        homeInitService.user.value.value =
-            await wp_api.wooCommerceApi.getCustomerById(id: userId);
+          int? userId = await wp_api.wooCommerceApi.fetchLoggedInUserId();
+          homeInitService.user.value.value =
+              await wp_api.wooCommerceApi.getCustomerById(id: userId);
 
-        for (int i = 0;
-            i < homeInitService.user.value.value!.metaData!.length;
-            i++) {
-          printInfo(
-              info:
-                  'metadata key this ${homeInitService.user.value.value!.metaData![i].key}');
-          if (homeInitService.user.value.value!.metaData![i].key ==
-              "phoneNum") {
-            homeInitService.userInfo['phone_number'] =
-                homeInitService.user.value.value!.metaData![i].value;
-          } else if (homeInitService.user.value.value!.metaData![i].key ==
-              "default_address") {
-            if (homeInitService.user.value.value!.metaData![i].value != "") {
-              printInfo(
-                  info:
-                      'address info ${homeInitService.user.value.value!.metaData![i].value}');
-              var addressInfo = jsonDecode(
-                  homeInitService.user.value.value!.metaData![i].value);
-              addressInfo.forEach((key, value) => {
-                    printInfo(info: 'key this $key value this $value'),
-                    homeInitService.items.add(AddressItem(
-                        key == 'home'
-                            ? 0
-                            : key == 'company'
-                                ? 1
-                                : 2,
-                        key,
-                        value)),
-                  });
-              printInfo(
-                  info:
-                      'address list length this ${homeInitService.items.length}');
-              homeInitService.userInfo['address'] = addressInfo['home'];
-            }
-          } else if (homeInitService.user.value.value!.metaData![i].key ==
-              "default_card") {
+          for (int i = 0;
+              i < homeInitService.user.value.value!.metaData!.length;
+              i++) {
             printInfo(
                 info:
-                    'get card info this ${homeInitService.user.value.value!.metaData![i].value}');
-            if (homeInitService.user.value.value!.metaData![i].value != null ||
-                homeInitService.user.value.value!.metaData![i].value != "") {
-              CardInfo cardInfo = await paymentService.getCardInfo(
-                      homeInitService.user.value.value!.metaData![i].value) ??
-                  CardInfo();
-              if (cardInfo.card_name != null) {
-                homeInitService.userInfo['default_card'] = cardInfo.card_name +
-                    "(" +
-                    cardInfo.card_number.substring(12, 16) +
-                    ")";
+                    'metadata key this ${homeInitService.user.value.value!.metaData![i].key}');
+            if (homeInitService.user.value.value!.metaData![i].key ==
+                "phoneNum") {
+              homeInitService.userInfo['phone_number'] =
+                  homeInitService.user.value.value!.metaData![i].value;
+            } else if (homeInitService.user.value.value!.metaData![i].key ==
+                "default_address") {
+              if (homeInitService.user.value.value!.metaData![i].value != "") {
+                printInfo(
+                    info:
+                        'address info ${homeInitService.user.value.value!.metaData![i].value}');
+                var addressInfo = jsonDecode(
+                    homeInitService.user.value.value!.metaData![i].value);
+                addressInfo.forEach((key, value) => {
+                      printInfo(info: 'key this $key value this $value'),
+                      homeInitService.items.add(AddressItem(
+                          key == 'home'
+                              ? 0
+                              : key == 'company'
+                                  ? 1
+                                  : 2,
+                          key,
+                          value)),
+                    });
+                printInfo(
+                    info:
+                        'address list length this ${homeInitService.items.length}');
+                homeInitService.userInfo['address'] = addressInfo['home'];
               }
-            }
-          } else if (homeInitService.user.value.value!.metaData![i].key ==
-              "pay_cards") {
-            if (homeInitService.user.value.value!.metaData![i].value != null ||
-                homeInitService.user.value.value!.metaData![i].value != "") {
-              if (homeInitService.user.value.value!.metaData![i].value
-                  .contains(',')) {
-                var getCardItems = homeInitService
-                    .user.value.value!.metaData![i].value
-                    .split(',');
-                for (String item in getCardItems) {
-                  CardInfo cardInfo =
-                      await paymentService.getCardInfo(item) ?? CardInfo();
-                  if (cardInfo.card_name != null) {
-                    homeInitService.cardItems.add(cardInfo);
-                  }
-                }
-              } else {
+            } else if (homeInitService.user.value.value!.metaData![i].key ==
+                "default_card") {
+              printInfo(
+                  info:
+                      'get card info this ${homeInitService.user.value.value!.metaData![i].value}');
+              if (homeInitService.user.value.value!.metaData![i].value !=
+                      null ||
+                  homeInitService.user.value.value!.metaData![i].value != "") {
                 CardInfo cardInfo = await paymentService.getCardInfo(
                         homeInitService.user.value.value!.metaData![i].value) ??
                     CardInfo();
                 if (cardInfo.card_name != null) {
-                  homeInitService.cardItems.add(cardInfo);
+                  homeInitService.userInfo['default_card'] =
+                      cardInfo.card_name +
+                          "(" +
+                          cardInfo.card_number.substring(12, 16) +
+                          ")";
+                }
+              }
+            } else if (homeInitService.user.value.value!.metaData![i].key ==
+                "pay_cards") {
+              if (homeInitService.user.value.value!.metaData![i].value !=
+                      null ||
+                  homeInitService.user.value.value!.metaData![i].value != "") {
+                if (homeInitService.user.value.value!.metaData![i].value
+                    .contains(',')) {
+                  var getCardItems = homeInitService
+                      .user.value.value!.metaData![i].value
+                      .split(',');
+                  for (String item in getCardItems) {
+                    CardInfo cardInfo =
+                        await paymentService.getCardInfo(item) ?? CardInfo();
+                    if (cardInfo.card_name != null) {
+                      homeInitService.cardItems.add(cardInfo);
+                    }
+                  }
+                } else {
+                  CardInfo cardInfo = await paymentService.getCardInfo(
+                          homeInitService
+                              .user.value.value!.metaData![i].value) ??
+                      CardInfo();
+                  if (cardInfo.card_name != null) {
+                    homeInitService.cardItems.add(cardInfo);
+                  }
                 }
               }
             }
           }
+
+          print("login storage username this  " +
+              user.lastName.toString() +
+              user.firstName.toString());
+          print("login storage loginToken this  " + authToken);
+
+          wp_api.storage.write(
+              key: 'user_name',
+              value: user.firstName.toString() + user.lastName.toString());
+          wp_api.storage.write(key: 'login_token', value: authToken);
+          loginCheck.value = "";
+
+          Get.offAllNamed("/mainHome");
         }
-
-        print("login storage username this  " +
-            user.lastName.toString() +
-            user.firstName.toString());
-        print("login storage loginToken this  " + authToken);
-
-        wp_api.storage.write(
-            key: 'user_name',
-            value: user.firstName.toString() + user.lastName.toString());
-        wp_api.storage.write(key: 'login_token', value: authToken);
-        loginCheck.value = "";
-
-        Get.offAllNamed("/mainHome");
       }
     } catch (e) {
       print("login Error!!!!!!!!!! $e");
@@ -570,7 +581,10 @@ class HomeController extends GetxController {
       switch (type) {
         case 'select_default':
           updateUserService.updateUser(
-              'default_card', paymentService.selectCard, '기본 카드 정보가 변경되었습니다!');
+              metaKey: 'default_card',
+              metaValue: paymentService.selectCard,
+              headerText: '카드정보',
+              headerContext: '기본 카드 정보가 변경되었습니다!');
           break;
       }
     } catch (e) {

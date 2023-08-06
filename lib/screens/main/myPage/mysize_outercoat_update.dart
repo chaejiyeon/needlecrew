@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:needlecrew/widgets/myPage/mysize_bottom.dart';
@@ -19,9 +20,10 @@ class MysizeOutercoatUpdate extends StatefulWidget {
 
 class _MysizeOutercoatUpdateState extends State<MysizeOutercoatUpdate>
     with SingleTickerProviderStateMixin {
+  final HomeController homeController = Get.find();
   late TabController tabController;
   List tabs = ["점퍼", "재킷", "코트"];
-  List sizeInfo = ["품", "목둘레", "소매길이", "민소매 암홀 길이", "어깨 길이"];
+  List sizeInfo = ["총 길이", "품", "소매 길이", "소매 통", "어깨 길이", "민소매 암홀 길이"];
 
   int currentPage = 0;
 
@@ -97,7 +99,7 @@ class _MysizeOutercoatUpdateState extends State<MysizeOutercoatUpdate>
                 stream: Stream.periodic(
                   Duration(seconds: 1),
                 ).asyncMap(
-                    (event) => homecontroller.getSize(tabs[currentPage])),
+                    (event) => homeController.getSize(tabs[currentPage])),
                 builder: (context, snapshot) {
                   return Container(
                     padding: EdgeInsets.only(left: 24, right: 24),
@@ -191,9 +193,9 @@ class _MysizeOutercoatUpdateState extends State<MysizeOutercoatUpdate>
         sizeInfo.length,
         (index) => SizeForm(
             title: sizeInfo[index],
-            hintTxt: homecontroller.getsizeInfo.length == 0
+            hintTxt: homeController.getsizeInfo.length == 0
                 ? "0"
-                : homecontroller.getsizeInfo[index],
+                : homeController.getsizeInfo[index],
             isTextfield: false),
       ),
     ));

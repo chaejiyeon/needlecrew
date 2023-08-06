@@ -1,7 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/myPage/pay_type_add_confirm.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -21,7 +21,7 @@ class PayTypeAdd extends StatefulWidget {
 }
 
 class _PayTypeAddState extends State<PayTypeAdd> with TickerProviderStateMixin {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
   late ScrollController scrollController = ScrollController();
 
   List<TextEditingController> editingcontroller =

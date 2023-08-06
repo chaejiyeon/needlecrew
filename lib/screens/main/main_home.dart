@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:needlecrew/widgets/mainhome/banner_slides.dart';
 import 'package:needlecrew/widgets/mainhome/footer.dart';
@@ -7,7 +7,6 @@ import 'package:needlecrew/widgets/mainhome/guide.dart';
 import 'package:needlecrew/widgets/mainhome/main_home_appbar.dart';
 import 'package:needlecrew/widgets/mainhome/myuse_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class MainHome extends StatefulWidget {
   const MainHome({Key? key}) : super(key: key);
@@ -22,7 +21,7 @@ class _MainHomeState extends State<MainHome>
 
 
   // late Stream myStream;
-  late Future myFuture;
+  // late Future myFuture;
   // bool _showAppbar = true;
   ScrollController _scrollController = new ScrollController();
   bool isScrollingDown = false;
@@ -47,7 +46,7 @@ class _MainHomeState extends State<MainHome>
     });
 
     // myStream = useInfoController.getCompleteOrder();
-    myFuture = useInfoController.getCompleteOrder();
+    // myFuture = useInfoController.getCompleteOrder();
   }
 
   @override
@@ -70,9 +69,9 @@ class _MainHomeState extends State<MainHome>
         padding: EdgeInsets.zero,
         children: [
           BannerSlides(),
-          MyUseInfo(
-            myFuture: myFuture,
-          ),
+          // MyUseInfo(
+          //   myFuture: myFuture,
+          // ),
           Container(
             padding: EdgeInsets.only(left: 24, bottom: 10),
             child: FontStyle(

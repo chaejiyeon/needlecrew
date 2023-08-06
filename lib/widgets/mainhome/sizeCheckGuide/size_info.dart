@@ -1,9 +1,11 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/models/size_check_guide_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class SizeInfo extends StatefulWidget {
   final List<SizeCheckGuideItem> tabItems;
+
   const SizeInfo({Key? key, required this.tabItems}) : super(key: key);
 
   @override
@@ -11,7 +13,6 @@ class SizeInfo extends StatefulWidget {
 }
 
 class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
-
   List<SizeCheckGuideItem> items = [];
 
   late TabController _tabController =
@@ -38,8 +39,6 @@ class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
       child: Column(
         children: [
@@ -53,27 +52,28 @@ class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
               ),
               tabs: List.generate(
                 widget.tabItems.length,
-                (index) => CategoryItem(widget.tabItems[index].categoryName, index),
+                (index) =>
+                    CategoryItem(widget.tabItems[index].categoryName, index),
               ),
             ),
           ),
           Expanded(
             child: Container(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: List.generate(
-                    widget.tabItems.length,
-                    (index) => Align(
-                      alignment: Alignment.topCenter,
-                      child: Container(
-                        child:
-                        CategoryImage(widget.tabItems[index].categoryImg)
-                            ,
-                      ),
+              color: Colors.white,
+              child: TabBarView(
+                controller: _tabController,
+                children: List.generate(
+                  widget.tabItems.length,
+                  (index) => Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      height: 450.h,
+                      child: CategoryImage(widget.tabItems[index].categoryImg),
                     ),
                   ),
                 ),
               ),
+            ),
           )
         ],
       ),
@@ -82,8 +82,6 @@ class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
 
   // category 목록
   Widget CategoryItem(String category, int index) {
-    print("$index");
-    // print(tabHeader.length);
     return Row(
       children: [
         Container(
@@ -93,7 +91,9 @@ class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
           child: Text(
             category,
             style: TextStyle(
-              color: _tabController.index == index ? HexColor("fd9a03") : Colors.black,
+              color: _tabController.index == index
+                  ? HexColor("fd9a03")
+                  : Colors.black,
             ),
           ),
         ),
@@ -114,8 +114,12 @@ class _SizeInfoState extends State<SizeInfo> with TickerProviderStateMixin {
   }
 
   Widget CategoryImage(String img) {
-    return Container(
-      child: Image.asset("assets/images/useguide/guideImage/" + img),
+    return SingleChildScrollView(
+      child: Image.asset(
+        width: 327.w,
+        "assets/images/useguide/guideImage/" + img,
+        fit: BoxFit.fill,
+      ),
     );
   }
 }

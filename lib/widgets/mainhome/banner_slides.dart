@@ -40,6 +40,7 @@ class _BannerSlidesState extends State<BannerSlides> {
               //       btnText: banners.btnText);
               // }).toList(),
               options: CarouselOptions(
+                  enableInfiniteScroll: false,
                   height: 409,
                   viewportFraction: 1,
                   onPageChanged: (index, reason) {

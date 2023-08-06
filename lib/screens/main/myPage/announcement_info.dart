@@ -1,4 +1,11 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:needlecrew/custom_text.dart';
+import 'package:needlecrew/db/wp-api.dart';
+import 'package:needlecrew/format_method.dart';
+import 'package:needlecrew/models/util/font_size.dart';
+import 'package:needlecrew/models/util/set_color.dart';
+import 'package:needlecrew/models/wp_models/annoucement_item.dart';
 import 'package:needlecrew/screens/main/myPage/announce_content.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
@@ -19,6 +26,7 @@ class _AnnouncementInfoState extends State<AnnouncementInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppbar(
         appbarcolor: 'white',
         appbar: AppBar(),
@@ -27,54 +35,81 @@ class _AnnouncementInfoState extends State<AnnouncementInfo> {
       ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            announcementList(),
-          ],
+        padding: EdgeInsets.only(top: 62, left: 24, right: 24),
+        child: Obx(
+          () => homeInitService.announcements.isNotEmpty
+              ? ListView(
+                  children: List.generate(
+                      homeInitService.announcements.length,
+                      (index) => announcementList(
+                          homeInitService.announcements[index])))
+              : Center(
+                  child: CustomText(
+                      text: '등록된 공지사항이 없습니다.', fontSize: FontSize().fs4),
+                ),
         ),
       ),
     );
   }
 
-  Widget announcementList() {
+  // 공지사항 list item UI
+  Widget announcementList(AnnouncementItem announcementItem) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         // announceId 값 전달해서 해당하는 공지사항 뿌려주기
-        Get.to(AnnounceContent());
+        Get.to(AnnounceContent(
+          announcementItem: announcementItem,
+        ));
       },
       child: Container(
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(CupertinoIcons.speaker_1, size: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FontStyle(
-                        text: "12월 15일, 니들크루 수선 요금이 변경됩니다!",
-                        fontsize: "",
-                        fontbold: "bold",
-                        fontcolor: Colors.black,
-                        textdirectionright: false),
-                    FontStyle(
-                        text: "2021-12-01",
-                        fontsize: "",
-                        fontbold: "",
-                        fontcolor: HexColor("#909090"),
-                        textdirectionright: false),
-                  ],
-                ),
                 Container(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Icon(
-                      CupertinoIcons.forward,
-                      size: 20,
-                      color: HexColor("#909090"),
-                    ))
+                  margin: EdgeInsets.only(right: 14),
+                  child: SvgPicture.asset(
+                    'assets/icons/speakerIcon.svg',
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              textMaxLines: 1,
+                              text: announcementItem.title,
+                              fontSize: FontSize().fs4,
+                              fontWeight: FontWeight.bold,
+                              formMargin: EdgeInsets.only(bottom: 5),
+                            ),
+                            CustomText(
+                              text: FormatMethod().convertDate(
+                                  announcementItem
+                                      .createdAt.millisecondsSinceEpoch,
+                                  'yyyy-MM-dd'),
+                              fontSize: FontSize().fs4,
+                              fontColor: SetColor().color70,
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Icon(
+                            CupertinoIcons.forward,
+                            size: 20,
+                            color: HexColor("#909090"),
+                          ))
+                    ],
+                  ),
+                )
               ],
             ),
             SizedBox(
@@ -83,7 +118,7 @@ class _AnnouncementInfoState extends State<AnnouncementInfo> {
             ListLine(
                 height: 1,
                 width: double.infinity,
-                lineColor: HexColor("#d5d5d5"),
+                lineColor: SetColor().colorEd,
                 opacity: 0.5)
           ],
         ),

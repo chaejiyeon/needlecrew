@@ -1,14 +1,17 @@
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
+import 'package:needlecrew/models/util/set_color.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/widgets/appbar_item.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
-import 'package:needlecrew/widgets/mainhome/useinfo/use_info_list.dart';
+import 'package:needlecrew/widgets/update_widgets/use_info/use_info_empty.dart';
+import 'package:needlecrew/widgets/update_widgets/use_info/use_info_list_item.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UseInfo extends StatefulWidget {
@@ -21,26 +24,20 @@ class UseInfo extends StatefulWidget {
 }
 
 class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
-  final UseInfoController controller = Get.put(UseInfoController());
+  int tabIndex = 0;
+  int initTab = 0;
 
   List<String> img = [
     "assets/images/guideImage_3.png",
     "assets/images/useInfoImage_2.png",
     "assets/images/useInfoImage_3.png"
-  ];
-  late TabController _tabController = TabController(length: 3, vsync: this);
+  ].obs;
 
-  // late Stream myStream;
-
-  int tabIndex = 0;
-  int initTab = 0;
-
-  late Future myFuture;
+  late TabController tabController = TabController(length: 3, vsync: this);
+  final UseInfoController controller = Get.find();
 
   @override
   void initState() {
-    myFuture = controller.getCompleteOrder();
-
     super.initState();
     print("pageNum " + widget.pageNum.toString());
 
@@ -49,11 +46,9 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
         tabIndex = widget.pageNum;
       });
     }
-    _tabController =
-        TabController(length: 3, vsync: this, initialIndex: tabIndex);
-    _tabController.addListener(() {
+    tabController.addListener(() {
       setState(() {
-        tabIndex = _tabController.index;
+        tabIndex = tabController.index;
       });
     });
   }
@@ -61,7 +56,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
+    tabController.dispose();
   }
 
   @override
@@ -71,14 +66,17 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
       appBar: CustomAppbar(
         appbarcolor: "black",
         appbar: AppBar(),
-        title: '이용 가이드',
-        leadingWidget: BackBtn(iconColor: Colors.white),
+        showLeadingBtn: false,
+        title: '나의 이용내역',
         actionItems: [
           AppbarItem(
             icon: 'cartIcon.svg',
             iconColor: Colors.white,
             iconFilename: 'main',
-            widget: CartInfo(),
+            function: () {
+              Get.close(1);
+              Get.to(CartInfo());
+            },
           ),
           AppbarItem(
             icon: 'alramIcon.svg',
@@ -153,7 +151,7 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
 
               // tab명
               Align(
-                heightFactor: 5,
+                heightFactor: 6,
                 alignment: Alignment.bottomCenter,
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(
@@ -161,28 +159,29 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
                     topRight: Radius.circular(30),
                   ),
                   child: Container(
-                    padding: EdgeInsets.only(left: 24, right: 24, top: 10),
-                    height: 70,
+                    padding:
+                        EdgeInsets.only(left: 24.w, right: 24.w, top: 30.h),
+                    height: 60,
                     color: Colors.white,
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border(
                           bottom: BorderSide(
-                              color: HexColor("#fd9a03").withOpacity(0.2),
+                              color: SetColor().mainColor.withOpacity(0.1),
                               width: 2),
                         ),
                       ),
                       child: TabBar(
                         labelPadding: EdgeInsets.symmetric(horizontal: 2.0),
                         labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                        unselectedLabelColor: HexColor("#909090"),
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        labelColor: Colors.black,
+                        unselectedLabelColor: SetColor().color90,
                         unselectedLabelStyle: TextStyle(fontSize: 16),
-                        indicatorColor: HexColor("#fd9a03"),
-                        controller: _tabController,
+                        indicatorColor: SetColor().mainColor,
+                        indicatorPadding: EdgeInsets.only(bottom: -1.5),
+                        controller: tabController,
                         tabs: [
                           Tab(text: "수선 대기"),
                           Container(
@@ -220,22 +219,59 @@ class _UseInfoState extends State<UseInfo> with TickerProviderStateMixin {
           Expanded(
             child: Container(
               color: Colors.white,
+              padding: EdgeInsets.only(left: 24.w, right: 24.w),
+              margin: EdgeInsets.only(bottom: 25.h),
               child: TabBarView(
-                controller: _tabController,
-                children: [
-                  UseInfoList(
-                      fixState: "ready",
-                      fixItems: controller.readyLists,
-                      myFuture: myFuture),
-                  UseInfoList(
-                      fixState: "progress",
-                      fixItems: controller.progressLists,
-                      myFuture: myFuture),
-                  UseInfoList(
-                      fixState: "complete",
-                      fixItems: controller.completeLists,
-                      myFuture: myFuture),
-                ],
+                controller: tabController,
+                children: List.generate(
+                    tabController.length,
+                    (index) => tabIndex == 0
+                        ? Obx(
+                            () => controller.readyLists.length > 0
+                                ? ListView(
+                                    padding: EdgeInsets.zero,
+                                    children: List.generate(
+                                      controller.readyLists.length,
+                                      (index) => Obx(
+                                        () => UseInfoListItem(
+                                            order:
+                                                controller.readyLists[index]),
+                                      ),
+                                    ),
+                                  )
+                                : UseInfoEmpty(orderState: 'ready'),
+                          )
+                        : tabIndex == 1
+                            ? Obx(
+                                () => controller.progressLists.length > 0
+                                    ? ListView(
+                                        padding: EdgeInsets.zero,
+                                        children: List.generate(
+                                          controller.progressLists.length,
+                                          (index) => Obx(
+                                            () => UseInfoListItem(
+                                                order: controller
+                                                    .progressLists[index]),
+                                          ),
+                                        ),
+                                      )
+                                    : UseInfoEmpty(orderState: 'ready'),
+                              )
+                            : Obx(
+                                () => controller.completeLists.length > 0
+                                    ? ListView(
+                                        padding: EdgeInsets.zero,
+                                        children: List.generate(
+                                          controller.completeLists.length,
+                                          (index) => Obx(
+                                            () => UseInfoListItem(
+                                                order: controller
+                                                    .completeLists[index]),
+                                          ),
+                                        ),
+                                      )
+                                    : UseInfoEmpty(orderState: 'ready'),
+                              )),
               ),
             ),
           ),

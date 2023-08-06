@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/screens/main/myPage/address_list.dart';
 import 'package:needlecrew/screens/main/myPage/pay_type.dart';
 import 'package:needlecrew/screens/main/myPage/phone_num_update.dart';
@@ -26,12 +27,12 @@ class UserUpdate extends StatelessWidget {
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        padding: EdgeInsets.only(top: 40, left: 24, right: 24),
+        padding: EdgeInsets.only(top: 40.h, left: 24.w, right: 24.w),
         child: Column(
           children: [
             MypageMenu(listTitle: "주소 관리", widget: AddressList()),
             MypageMenu(listTitle: "전화번호 변경", widget: PhoneNumUpdate()),
-            MypageMenu(listTitle: "결제 수단", widget: PayType()),
+            // MypageMenu(listTitle: "결제 수단", widget: PayType()),
             MypageMenu(listTitle: "회원 탈퇴", widget: UserJoinOut()),
           ],
         ),

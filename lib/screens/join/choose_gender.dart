@@ -1,4 +1,4 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/screens/join/user_info_insert.dart';
 import 'package:needlecrew/widgets/base_appbar.dart';
 import 'package:needlecrew/widgets/floating_next_btn.dart';
@@ -15,7 +15,7 @@ class ChooseGender extends StatefulWidget {
 }
 
 class _ChooseGenderState extends State<ChooseGender> {
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find();
   int value = 0;
 
   @override

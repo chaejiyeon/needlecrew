@@ -1,16 +1,10 @@
-import 'package:needlecrew/models/cart_item.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
 import 'package:needlecrew/screens/main/fixClothes/choose_clothes.dart';
 import 'package:needlecrew/widgets/cartInfo/fix_type_list_item.dart';
-import 'package:needlecrew/widgets/fixClothes/radio_btn.dart';
-import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:flutter_woocommerce_api/models/order.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
-
-import '../../controller/fixClothes/cartController.dart';
 
 class CartListItem extends GetView<CartController> {
   final int index;

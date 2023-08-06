@@ -50,6 +50,7 @@ class _SizeCheckGuideState extends State<SizeCheckGuide>
     SizeCheckGuideItem(4, "소매 기장", "guideImageItem_outer_3.png"),
     SizeCheckGuideItem(4, "소매 통", "guideImageItem_outer_4.png"),
     SizeCheckGuideItem(4, "어깨 줄임", "guideImageItem_outer_5.png"),
+    SizeCheckGuideItem(4, "암홀", "guideImageItem_outer_6.png"),
   ];
 
   List<SizeCheckGuideItem> skirtItems = [

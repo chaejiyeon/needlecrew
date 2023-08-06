@@ -1,3 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:needlecrew/controller/mypay_info/mypay_info_controller.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
@@ -17,6 +20,7 @@ class MypayInfo extends StatefulWidget {
 }
 
 class _MypayInfoState extends State<MypayInfo> {
+  final MypayInfoController controller = Get.put(MypayInfoController());
   int currentPage = 0;
 
   // 현재 년도 가져오기
@@ -56,7 +60,7 @@ class _MypayInfoState extends State<MypayInfo> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.only(left: 15, right: 15, top: 40),
+              padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 40.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -120,10 +124,10 @@ class _MypayInfoState extends State<MypayInfo> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.only(left: 15, right: 15),
+                padding: EdgeInsets.only(left: 15.w, right: 15.w),
                 child: ListView(
-                  children:
-                      List.generate(month.length, (index) => ListItem(index)),
+                  children: List.generate(controller.payInfoList.length,
+                      (index) => ListItem(index)),
                 ),
               ),
             ),
@@ -135,7 +139,7 @@ class _MypayInfoState extends State<MypayInfo> {
 
   Widget ListItem(int price) {
     return Container(
-      padding: EdgeInsets.only(bottom: 29),
+      padding: EdgeInsets.only(bottom: 29.h),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
             padding: EdgeInsets.all(10),
@@ -200,7 +204,7 @@ class _MypayInfoState extends State<MypayInfo> {
               ),
               children: [
                 Container(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.only(top: 20.h),
                   child: Row(
                     children: [
                       Container(
@@ -230,7 +234,7 @@ class _MypayInfoState extends State<MypayInfo> {
                                   fontcolor: HexColor("#909090"),
                                   textdirectionright: false),
                               Container(
-                                padding: EdgeInsets.only(right: 20),
+                                padding: EdgeInsets.only(right: 20.w),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

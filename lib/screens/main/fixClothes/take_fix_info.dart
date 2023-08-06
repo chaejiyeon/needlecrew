@@ -1,5 +1,5 @@
 import 'package:needlecrew/bottomsheet/take_fix_info_bottom_sheet.dart';
-import 'package:needlecrew/controller/fixClothes/cartController.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main_page.dart';
@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-
 class TakeFixInfo extends StatefulWidget {
   const TakeFixInfo({Key? key}) : super(key: key);
 
@@ -22,8 +21,6 @@ class TakeFixInfo extends StatefulWidget {
 }
 
 class _TakeFixInfoState extends State<TakeFixInfo> {
-  final CartController controller = Get.put(CartController());
-
   @override
   void initState() {
     super.initState();

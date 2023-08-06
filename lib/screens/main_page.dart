@@ -1,4 +1,5 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/modal/main_home_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'main/main_home.dart';
 import 'main/my_page.dart';
 import 'main/use_info.dart';
 
-
 class MainPage extends StatefulWidget {
   final int pageNum;
   final int selectTab;
@@ -27,23 +27,21 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
   int _currentIndex = 0;
   final List<Widget> pages = [MainHome(), UseInfo(pageNum: 0), MyPage()];
 
   @override
   void initState() {
-
     // controller.getUser();
     super.initState();
 
-
-
-    if(homeInitService.mainModalcheck.value == false) {
+    if (homeInitService.mainModalcheck.value == false) {
       // controller.getUser();
       // 메인 홈 진입 시 dialog
       Future.delayed(Duration.zero, () {
         showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (BuildContext context) {
               return MainHomeModal();
@@ -53,9 +51,9 @@ class _MainPageState extends State<MainPage> {
 
     _currentIndex = widget.pageNum;
 
-    print("tabNum " + widget.selectTab.toString());
+    print(
+        "tabNum ${widget.selectTab.toString()} page Num ${widget.pageNum.toString()}");
     pages[1] = UseInfo(pageNum: widget.selectTab);
-
   }
 
   @override
@@ -65,9 +63,9 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //     statusBarColor: Colors.transparent,
+    //     statusBarIconBrightness: Brightness.light));
 
     return Scaffold(
       body: pages[_currentIndex],
@@ -83,16 +81,16 @@ class _MainPageState extends State<MainPage> {
             },
             backgroundColor: HexColor("#fd9a03"),
             child: Container(
-              padding: EdgeInsets.only(top: 8),
+              padding: EdgeInsets.only(top: 8.h),
               child: Column(
                 children: [
                   Padding(
-                      padding: EdgeInsets.all(0),
-                      child:SvgPicture.asset(
-                          "assets/icons/main/fixclothesIcon.svg",
-                          width: 20,
-                          height: 20,
-                      ),
+                    padding: EdgeInsets.all(0),
+                    child: SvgPicture.asset(
+                      "assets/icons/main/fixclothesIcon.svg",
+                      width: 20,
+                      height: 20,
+                    ),
                   ),
                   Text(
                     "수선하기",
@@ -117,7 +115,7 @@ class _MainPageState extends State<MainPage> {
               bottomIcon(1, "이용내역", "useinfoIcon.svg"),
               Padding(
                   padding: EdgeInsets.only(
-                    right: 100,
+                    right: 100.w,
                   ),
                   child: bottomIcon(2, "MY", "userIcon.svg")),
             ],
@@ -147,8 +145,8 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              width: title == "홈"? 23 : null,
-              height: title == "홈"? 23 : null,
+              width: title == "홈" ? 23 : null,
+              height: title == "홈" ? 23 : null,
               child: SvgPicture.asset(
                 'assets/icons/main/' + icon,
                 color: _currentIndex == page ? HexColor("#fd9a03") : iconColor,
@@ -156,7 +154,9 @@ class _MainPageState extends State<MainPage> {
             ),
             Text(
               title,
-              style: TextStyle(color: _currentIndex == page ? HexColor("#fd9a03") : titleColor),
+              style: TextStyle(
+                  color:
+                      _currentIndex == page ? HexColor("#fd9a03") : titleColor),
             ),
           ],
         ),

@@ -1,8 +1,8 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
-import 'package:needlecrew/modal/address_del_modal.dart';
 import 'package:needlecrew/models/address_item.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/screens/main/myPage/address_add.dart';
 import 'package:needlecrew/screens/main/myPage/address_update.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -23,7 +23,7 @@ class AddressList extends StatefulWidget {
 }
 
 class _AddressListState extends State<AddressList> {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
 
   @override
   void initState() {
@@ -142,17 +142,28 @@ class _AddressListState extends State<AddressList> {
                           width: 10,
                         ),
                         addressBtn(
-                            index,
-                            "삭제",
-                            address.addressType == 'home'
-                                ? '우리집'
-                                : address.addressType == 'company'
-                                    ? '회사'
-                                    : '기타',
-                            HexColor("#fd9a03"),
-                            HexColor("#fd9a03"),
-                            false,
-                            AddressDelModal()),
+                          index,
+                          "삭제",
+                          address.addressType == 'home'
+                              ? '우리집'
+                              : address.addressType == 'company'
+                                  ? '회사'
+                                  : '기타',
+                          HexColor("#fd9a03"),
+                          HexColor("#fd9a03"),
+                          false,
+                          CustomDialog(
+                            header: DialogHeader(title: '해당 주소를 삭제하시겠습니까?'),
+                            bottom: DialogBottom(isExpanded: true, btn: [
+                              BtnModel(callback: () => Get.back(), text: '취소'),
+                              BtnModel(
+                                  callback: () {
+                                    controller.deleteAddress(index);
+                                  },
+                                  text: '삭제')
+                            ]),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -193,7 +204,7 @@ class _AddressListState extends State<AddressList> {
               controller.updateUserInfo("address_2");
             }
           }
-          Get.dialog(widgetName);
+          Get.dialog(barrierDismissible: false, widgetName);
         }
       },
       child: Container(

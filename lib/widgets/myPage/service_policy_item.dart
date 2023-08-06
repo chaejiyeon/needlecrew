@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
@@ -22,7 +23,7 @@ class ServicePolicyItem extends StatelessWidget {
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        padding: EdgeInsets.only(top: 40, left: 24, right: 24),
+        padding: EdgeInsets.only(top: 40.h, left: 24.w, right: 24.w),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

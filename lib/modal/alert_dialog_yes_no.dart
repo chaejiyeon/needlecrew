@@ -1,3 +1,4 @@
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/widgets/font_style.dart';
@@ -28,6 +29,7 @@ class AlertDialogYesNo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.find();
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -105,7 +107,7 @@ class AlertDialogYesNo extends StatelessWidget {
                           onPressed: () {
                             if (btntext2 == "삭제") {
                               if (formname == "카드 삭제") {
-                                homecontroller.updateText.value = "";
+                                homeController.updateText.value = "";
                                 // homecontroller.updateUser("카드 삭제");
                               }
                             }

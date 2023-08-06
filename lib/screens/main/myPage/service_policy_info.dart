@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
@@ -30,7 +31,7 @@ class _ServicePolicyInfoState extends State<ServicePolicyInfo> {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.only(left: 24, right: 24, top: 53),
+              padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 27.h),
               child: Column(
                 children: [
                   listMenu("서비스 이용 약관", true,

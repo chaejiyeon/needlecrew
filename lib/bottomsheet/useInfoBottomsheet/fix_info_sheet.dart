@@ -1,12 +1,14 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/custom_text.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/modal/alert_dialog_yes_no.dart';
-import 'package:needlecrew/modal/tear_icon_modal.dart';
+import 'package:needlecrew/models/cart_item.dart';
 import 'package:needlecrew/models/util/font_size.dart';
 import 'package:needlecrew/models/util/set_color.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
+import 'package:needlecrew/screens/main/fixClothes/fix_update.dart';
+import 'package:needlecrew/widgets/custom/custom_widgets.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +17,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
+import 'package:needlecrew/widgets/tootip_custom.dart';
+import 'package:needlecrew/models/tooltip_text.dart';
 
 class FixInfoSheet extends StatelessWidget {
   final String fixInfoTitle;
@@ -44,45 +48,18 @@ class FixInfoSheet extends StatelessWidget {
 
     ScrollController _scrollcontroller = ScrollController();
 
-    List<String> images = [
-      "guideImage_1.png",
-      "sample_2.jpeg",
-      "sample_3.jpeg",
-    ];
-
-    List deliverinfo = [
-      ["수령인", "신응수"],
-      ["연락처", "010-9282-2434"],
-      ["배송지", "부산광역시 강서구 명지국제3로 97\n(명지동, 삼정그린코아 더베스트)\n105동 2215호"],
-      ["수거 희망일", "2022년 2월 15일"],
-    ];
-
-    List priceinfo = [
-      ["의뢰 예상 비용", 5000],
-      ["배송 비용", 6000],
-    ];
-
     List payinfo = [
       ["신용카드", ""],
       ["롯데(4892)", "자세히보기"],
     ];
 
-    var getProduct;
-
-    void getInfo() async {
-      getProduct = await orderServices
-          .searchOrderById(controller.order.lineItems!.first.productId);
-    }
-
-    getInfo();
-
     return FutureBuilder(
         future: controller.getFixInfo(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            int cost =
+            int costPrice =
                 int.parse(controller.order.lineItems!.first.price.toString());
-            int wholePrice = cost + 6000;
+            int wholePrice = costPrice;
 
             return Container(
               child: ListView(
@@ -109,10 +86,12 @@ class FixInfoSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            getProduct['product_name'],
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
+                          Obx(
+                            () => Text(
+                              orderServices.getOrder['product_name'] ?? '',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
                           ),
                           SizedBox(
                             height: 10,
@@ -127,10 +106,18 @@ class FixInfoSheet extends StatelessWidget {
                           ),
                           Container(
                               height: 120,
-                              child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: List.generate(images.length,
-                                      (index) => ImageItem(images[index])))),
+                              child: NotificationListener(
+                                onNotification: (notification) {
+                                  return true;
+                                },
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: List.generate(
+                                        controller.orderMetaData['사진'].length,
+                                        (index) => ImageItem(
+                                            image: controller
+                                                .orderMetaData['사진'][index]))),
+                              )),
                           SizedBox(
                             height: 10,
                           ),
@@ -144,7 +131,11 @@ class FixInfoSheet extends StatelessWidget {
                           ),
                           fixInfo("의뢰 방법", controller.orderMetaData['의뢰 방법']),
                           fixInfo("치수", controller.orderMetaData['치수']),
-                          fixInfo("추가 설명", controller.orderMetaData['추가 설명']),
+                          fixInfo(
+                              "추가 설명",
+                              controller.orderMetaData['추가 설명'] == ''
+                                  ? '없음'
+                                  : controller.orderMetaData['추가 설명']),
                           fixInfo("물품 가액", controller.orderMetaData['물품 가액']),
                           SizedBox(
                             height: 20,
@@ -158,13 +149,19 @@ class FixInfoSheet extends StatelessWidget {
                             height: 20,
                           ),
                           priceInfo(
-                              "의뢰 예상 비용",
+                              TooltipCustom(
+                                tooltipText: cost.tooltipText,
+                                titleText: cost.tooltipName,
+                                boldText: cost.boldText,
+                                tailPosition: "up",
+                                fontsize: 14,
+                              ),
+                              "",
                               int.parse(controller.order.lineItems!.first.price
                                   .toString())),
-                          priceInfo("배송 비용", 6000),
                           fixInfoTitle == "detailInfo" || readyInfo != 6
-                              ? priceInfo("총 의뢰 예상 비용", wholePrice)
-                              : priceInfo("최종 결제 비용", wholePrice),
+                              ? priceInfo(null, "총 의뢰 예상 비용", wholePrice)
+                              : priceInfo(null, "최종 결제 비용", wholePrice),
                           fixInfoTitle == "detailInfo"
                               ? Row(
                                   mainAxisAlignment:
@@ -172,19 +169,49 @@ class FixInfoSheet extends StatelessWidget {
                                   children: [
                                       GestureDetector(
                                         onTap: () {
-                                          readyInfo >= 3
-                                              ? Get.dialog(AlertDialogYesNo(
-                                                  titleText: "수선을 취소하시겠습니까?",
-                                                  contentText:
-                                                      "수선 취소시 등록된 카드 정보로 왕복 배송비 6,000원이 결제됩니다.",
-                                                  icon: "",
-                                                  iconPath: "",
-                                                  btntext1: "이전",
-                                                  btntext2: "확인"))
-                                              : Get.dialog(TearIconModal(
-                                                  title: "접수한 의뢰를 취소할까요?",
-                                                  btnText1: "아니요",
-                                                  btnText2: "예, 취소할게요."));
+                                          Get.dialog(
+                                              barrierDismissible: false,
+                                              CustomDialog(
+                                                header: DialogHeader(
+                                                    headerWidget: Container(
+                                                      margin: EdgeInsets.only(
+                                                          bottom: 14.h),
+                                                      child: SvgPicture.asset(
+                                                          "assets/icons/tearIcon.svg"),
+                                                    ),
+                                                    title: '접수한 의뢰를 취소할까요?'),
+                                                bottom: DialogBottom(
+                                                    isExpanded: true,
+                                                    btn: [
+                                                      BtnModel(
+                                                          text: '아니요',
+                                                          callback: () =>
+                                                              Get.back()),
+                                                      BtnModel(
+                                                          text: '예, 취소할게요.',
+                                                          callback: () async {
+                                                            if (await controller
+                                                                .updateOrder(
+                                                                    orderId, {
+                                                              'status':
+                                                                  'fix-canclen',
+                                                              'meta_data': [
+                                                                {
+                                                                  'key':
+                                                                      '수선 불가 사유',
+                                                                  'value':
+                                                                      '사용자 취소'
+                                                                }
+                                                              ]
+                                                            })) {
+                                                              // if (await controller
+                                                              //     .getCompleteOrder()) {
+                                                              //   Get.close(2);
+                                                              // }
+                                                            }
+                                                          })
+                                                    ]),
+                                              ));
                                         },
                                         child: Container(
                                           padding: EdgeInsets.all(10),
@@ -204,7 +231,38 @@ class FixInfoSheet extends StatelessWidget {
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: () {},
+                                        onTap: () {
+                                          Get.to(FixUpdate(
+                                              orderMetaData: OrderMetaData(
+                                                  orderId: orderId,
+                                                  productId: controller
+                                                      .order
+                                                      .lineItems!
+                                                      .first
+                                                      .productId!,
+                                                  variationId: controller
+                                                      .order
+                                                      .lineItems!
+                                                      .first
+                                                      .variationId!,
+                                                  cartProductName:
+                                                      orderServices.getOrder['product_name'] ??
+                                                          '',
+                                                  cartCount: controller
+                                                      .order
+                                                      .lineItems!
+                                                      .first
+                                                      .quantity!,
+                                                  cartImages: controller
+                                                      .orderMetaData['사진'],
+                                                  cartWay: controller
+                                                      .orderMetaData['의뢰 방법'],
+                                                  cartSize:
+                                                      controller.orderMetaData['치수'],
+                                                  cartContent: controller.orderMetaData['추가 설명'],
+                                                  guaranteePrice: controller.orderMetaData['물품 가액'],
+                                                  productPrice: controller.orderMetaData['상품 가격'])));
+                                        },
                                         child: Container(
                                           padding: EdgeInsets.all(10),
                                           alignment: Alignment.center,
@@ -234,33 +292,37 @@ class FixInfoSheet extends StatelessWidget {
                     formMargin: EdgeInsets.only(bottom: 20),
                     title: "배송지 정보",
                     info: [
-                      {'title': '수령인', 'content': '신응수'},
-                      {'title': '연락처', 'content': '010-9282-2434'},
+                      {
+                        'title': '수령인',
+                        'content':
+                            '${controller.order.shipping!.lastName}${controller.order.shipping!.firstName}'
+                      },
+                      {
+                        'title': '연락처',
+                        'content': homeInitService.userInfo['phone_number']
+                      },
                       {
                         'title': '배송지',
-                        'content':
-                            '부산광역시 강서구 명지국제3로 97 (명지동, 삼정그린코아 더베스트) 105동 2215호'
+                        'content': '${controller.order.shipping!.address1}'
                       },
-                      {'title': '수거 희망일', 'content': '2022년 2월 15일'}
+                      {
+                        'title': '수거 희망일',
+                        'content': '${controller.orderMetaData['수거 희망일']}'
+                      }
                     ],
                   ),
                   formCustom(
                     isCost: true,
                     formMargin: EdgeInsets.only(bottom: 20),
                     title: "총 의뢰 예상 비용",
-                    cost: int.parse(controller.order.lineItems!.first.price
-                            .toString()) +
-                        6000,
+                    cost: int.parse(
+                        controller.order.lineItems!.first.price.toString()),
                     info: [
                       {
                         'title': '의뢰 예상 비용',
                         'content': NumberFormat('###,###,###,###원').format(
                             int.parse(controller.order.lineItems!.first.price
                                 .toString()))
-                      },
-                      {
-                        'title': '배송 비용',
-                        'content': NumberFormat('###,###,###,###원').format(6000)
                       },
                     ],
                   ),
@@ -280,21 +342,35 @@ class FixInfoSheet extends StatelessWidget {
         });
   }
 
-  // slider Image Item
-  Widget ImageItem(String image) {
-    return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: 120,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              "assets/images/" + image,
-              fit: BoxFit.cover,
-            )),
-      ),
-    );
-  }
+// slider Image Item
+//   Widget ImageItem(String image) {
+//     printInfo(info: 'image set this $image ${image.length}');
+//     List imageInfo = [];
+//     if (image.contains('|')) {
+//       imageInfo = image != "" ? image.trim().split('|') : [""];
+//     } else {
+//       if (image.length != 0) {
+//         imageInfo.add('image');
+//         imageInfo.add(image);
+//       }
+//     }
+//
+//     printInfo(info: 'image this $image');
+//     printInfo(info: 'image info list this ${imageInfo.length}');
+//
+//     return GestureDetector(
+//       child: Container(
+//         padding: EdgeInsets.all(10),
+//         width: 120.w,
+//         child: ClipRRect(
+//           borderRadius: BorderRadius.circular(10),
+//           child: imageInfo.isNotEmpty && imageInfo[0] != ""
+//               ? Image.network(imageInfo[1], fit: BoxFit.cover)
+//               : null,
+//         ),
+//       ),
+//     );
+//   }
 
   // 수선 정보
   Widget fixInfo(String title, String recomend) {
@@ -328,7 +404,7 @@ class FixInfoSheet extends StatelessWidget {
   }
 
   // 수선 비용
-  Widget priceInfo(String costtitle, int price) {
+  Widget priceInfo(Widget? toolTip, String costtitle, int price) {
     final priceformat = NumberFormat('###,###,###,###').format(price);
 
     return Container(
@@ -354,11 +430,7 @@ class FixInfoSheet extends StatelessWidget {
                         ? Container(
                             width: 0,
                           )
-                        : Icon(
-                            CupertinoIcons.question_circle,
-                            color: HexColor("#909090"),
-                            size: 20,
-                          ),
+                        : toolTip!,
                   ],
                 ),
               ),
@@ -459,28 +531,37 @@ class FixInfoSheet extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CustomText(
+                            textAlign: TextAlign.left,
                             formWidth: 97.w,
                             text: item['title'],
                             fontSize: FontSize().fs4),
-                        Expanded(
-                          child: GestureDetector(
-                            child: Row(
-                              children: [
-                                CustomText(
-                                  text: item['content'],
-                                  fontSize: FontSize().fs4,
-                                ),
-                                title == "결제 정보" && item['title'] == 'card_info'
-                                    ? Icon(
+                        title == "결제 정보" && item['title'] == 'card_info'
+                            ? Expanded(
+                                child: GestureDetector(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      CustomText(
+                                        text: item['content'],
+                                        fontSize: FontSize().fs4,
+                                      ),
+                                      Icon(
                                         CupertinoIcons.forward,
                                         size: 20,
                                         color: HexColor("#909090"),
                                       )
-                                    : Container()
-                              ],
-                            ),
-                          ),
-                        )
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: CustomText(
+                                  textAlign: TextAlign.right,
+                                  textMaxLines: 100,
+                                  text: item['content'],
+                                  fontSize: FontSize().fs4,
+                                ),
+                              )
                       ],
                     ),
                   ),

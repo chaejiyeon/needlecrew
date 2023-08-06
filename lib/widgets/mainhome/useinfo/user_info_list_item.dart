@@ -1,12 +1,15 @@
 import 'package:needlecrew/bottomsheet/useInfoBottomsheet/fix_cancle_info_sheet.dart';
 import 'package:needlecrew/bottomsheet/useInfoBottomsheet/fix_info_sheet.dart';
 import 'package:needlecrew/bottomsheet/useInfoBottomsheet/use_info_process_sheet.dart';
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
-import 'package:needlecrew/modal/fixClothes/fix_complete_modal.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
+import 'package:needlecrew/custom_text.dart';
+import 'package:needlecrew/modal/fix_clothes/fix_complete_modal.dart';
 import 'package:needlecrew/modal/image_info_modal.dart';
 import 'package:needlecrew/models/fix_ready.dart';
-import 'package:needlecrew/screens/main/main_home.dart';
-import 'package:needlecrew/widgets/circle_line_btn.dart';
+import 'package:needlecrew/models/util/font_size.dart';
+import 'package:needlecrew/models/util/set_color.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
@@ -14,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:shimmer/shimmer.dart';
 
 class UserInfoListItem extends StatefulWidget {
   final FixReady fixReady;
@@ -133,8 +135,8 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
         },
         bodyBuilder: (context, offset) {
           return SliverChildListDelegate([
-            UseInfoProcessSheet(
-                progressNum: progressNum, date: widget.fixReady.readyDate),
+            // UseInfoProcessSheet(
+            //     progressNum: progressNum, date: widget.fixReady.readyDate),
           ]);
         },
       );
@@ -157,10 +159,11 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
         bodyBuilder: (context, offset) {
           return SliverChildListDelegate([
             FixCancleInfoSheet(
+                productName: widget.fixReady.fixType,
                 fixInfoTitle: bottomsheet,
                 orderId: widget.fixReady.fixId,
                 fixPossible: widget.fixReady.updatePossible,
-                controller: controller)
+                controller: controller),
           ]);
         },
       );
@@ -215,7 +218,11 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
         Row(
           children: [
             useinfoBtn("진행 상황", "readyInfo"),
-            useinfoBtn("수선 내역", "detailInfo"),
+            useinfoBtn(
+                "수선 내역",
+                widget.fixReady.readyInfo != 7
+                    ? 'detailInfo'
+                    : 'fixCompleteInfo'),
             widget.fixReady.readyInfo == 6
                 ? useinfoBtn("수선 확정", "fixComplete")
                 : widget.fixReady.readyInfo == 7
@@ -320,12 +327,15 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
               fontsize: "",
               fontcolor: HexColor("#909090"),
               textdirectionright: false),
-          FontStyle(
+          Expanded(
+            child: CustomText(
               text: widget.fixReady.fixType,
-              fontbold: "",
-              fontsize: "",
-              fontcolor: HexColor("#909090"),
-              textdirectionright: false),
+              fontSize: FontSize().fs4,
+              fontColor: SetColor().color90,
+              textMaxLines: 1,
+              textAlign: TextAlign.left,
+            ),
+          )
         ],
       ),
     );
@@ -364,8 +374,9 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
               : HexColor("#d5d5d5"),
         ),
       ),
-      child: TextButton(
-        onPressed: () {
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
           if (text == "수선 확정") {
             Get.dialog(FixCompleteModal(
               orderid: widget.fixReady.fixId,
@@ -373,7 +384,25 @@ class _UserInfoListItemState extends State<UserInfoListItem> {
             ));
           }
           if (text == "사진 보기") {
-            Get.dialog(ImageInfoModal());
+            controller.updateOrderId.value = widget.fixReady.fixId;
+            if (await controller.getFixInfo()) {
+              printInfo(
+                  info:
+                      'order meta data this ${controller.orderMetaData['사진'].length}');
+              if (controller.orderMetaData['사진'] != null &&
+                  controller.orderMetaData['사진'].isNotEmpty) {
+                Get.dialog(barrierDismissible: false, ImageInfoModal());
+              } else {
+                Get.dialog(
+                    barrierDismissible: false,
+                    CustomDialog(
+                      header: DialogHeader(title: '상품에 대한 사진이 없습니다.'),
+                      bottom: DialogBottom(isExpanded: true, btn: [
+                        BtnModel(text: '확인', callback: () => Get.back())
+                      ]),
+                    ));
+              }
+            }
           }
           bottomsheetOpen(context, bottomsheet, widget.fixReady.readyInfo);
         },

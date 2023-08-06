@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:easy_rich_text/easy_rich_text.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/controller/my_page/mysize_info_controller.dart';
+import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:needlecrew/screens/main/myPage/mysize_shirt.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -22,7 +25,10 @@ class MysizeInfo extends StatefulWidget {
 
 class _MysizeInfoState extends State<MysizeInfo>
     with SingleTickerProviderStateMixin {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
+  final MysizeInfoController mysizeInfoController =
+      Get.put(MysizeInfoController());
+
   late double animateOpacity = 0;
 
   @override
@@ -51,8 +57,8 @@ class _MysizeInfoState extends State<MysizeInfo>
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        color: Colors.white,
-        padding: EdgeInsets.only(left: 24, right: 24),
+        margin: EdgeInsets.only(top: 40.h),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -62,22 +68,22 @@ class _MysizeInfoState extends State<MysizeInfo>
                   MypageMenu(
                       listTitle: "상의",
                       widget: MysizeShirt(
-                        sizeType: "상의",
+                        sizeType: "shirt",
                       )),
                   MypageMenu(
                       listTitle: "바지",
                       widget: MysizeShirt(
-                        sizeType: "바지",
+                        sizeType: "pants",
                       )),
                   MypageMenu(
                       listTitle: "스커트",
                       widget: MysizeShirt(
-                        sizeType: "스커트",
+                        sizeType: "skirt",
                       )),
                   MypageMenu(
                       listTitle: "원피스",
                       widget: MysizeShirt(
-                        sizeType: "원피스",
+                        sizeType: "one_piece",
                       )),
                   MypageMenu(listTitle: "아우터", widget: MysizeOutercoatUpdate()),
                 ],

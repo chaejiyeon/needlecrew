@@ -1,5 +1,6 @@
-import 'package:needlecrew/controller/homeController.dart';
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
@@ -23,7 +24,6 @@ class AlertDialogYes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController homecontroller = Get.put(HomeController());
     final UseInfoController useInfoController = Get.put(UseInfoController());
 
     return Dialog(
@@ -63,7 +63,7 @@ class AlertDialogYes extends StatelessWidget {
                     "확인",
                     style: TextStyle(color: Colors.black),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (function != null) {
                       function();
                     } else {
@@ -74,18 +74,17 @@ class AlertDialogYes extends StatelessWidget {
                             (route) => false);
                         // Get.close(2);
                       } else if (widgetname == "cart") {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => CartInfo()),
-                            (route) => false);
+                        CartController controller = Get.find();
+                        await controller.getCart();
+                        Get.close(2);
                       } else if (widgetname == "alert") {
                         Get.close(2);
                       } else if (widgetname == "resultY") {
-                        useInfoController.updateState();
-                        Get.offAndToNamed("/useInfoProgress");
+                        // useInfoController.updateState();
+                        // Get.offAndToNamed("/useInfoProgress");
                       } else {
                         if (widgetname == "biilling") {
-                          paymentService.cardInfo.clear();
+                          paymentService.setCardInfo.clear();
                         }
                         Get.back();
                       }

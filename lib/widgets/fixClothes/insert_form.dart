@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/screens/main/fixClothes/image_upload.dart';
 import 'package:needlecrew/widgets/fixClothes/circle_line_text_field.dart';
 import 'package:needlecrew/widgets/font_style.dart';
@@ -82,7 +83,7 @@ class _InsertFormState extends State<InsertForm> {
               // 물품가액 > 직접 입력하기
               widget.titleText == "직접 입력하기"
                   ? Container(
-                      padding: EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.only(bottom: 10.h),
                       child: Column(
                         children: [
                           Row(
@@ -125,7 +126,7 @@ class _InsertFormState extends State<InsertForm> {
                                   ),
                                   suffixIconConstraints: BoxConstraints(),
                                   suffixIcon: Container(
-                                    padding: EdgeInsets.only(right: 17),
+                                    padding: EdgeInsets.only(right: 17.w),
                                     child: Text("원"),
                                   )),
                             ),
@@ -134,8 +135,8 @@ class _InsertFormState extends State<InsertForm> {
                           // 물품가액에 대한 설명
                           Container(
                             padding: EdgeInsets.only(
-                                top: 11, right: 13, bottom: 17, left: 15),
-                            margin: EdgeInsets.only(top:10, bottom: 40),
+                                top: 11.h, right: 13.w, bottom: 17.h, left: 15.w),
+                            margin: EdgeInsets.only(top:10.h, bottom: 40.h),
                             decoration: BoxDecoration(
                               color: HexColor("#f7f7f7"),
                               borderRadius: BorderRadius.circular(6),

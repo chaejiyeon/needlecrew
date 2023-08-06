@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fix_clothes.dart';
@@ -52,7 +53,7 @@ class _NothingInfoState extends State<NothingInfo> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.only(top: 17, left: 24, right: 24),
+        padding: EdgeInsets.only(top: 17.h, left: 24.w, right: 24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

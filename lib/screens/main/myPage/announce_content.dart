@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/custom_text.dart';
+import 'package:needlecrew/format_method.dart';
+import 'package:needlecrew/models/util/font_size.dart';
+import 'package:needlecrew/models/util/set_color.dart';
+import 'package:needlecrew/models/wp_models/annoucement_item.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
 import 'package:needlecrew/widgets/custom/custom_widgets.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 
 class AnnounceContent extends StatelessWidget {
-  const AnnounceContent({Key? key}) : super(key: key);
+  final AnnouncementItem announcementItem;
+
+  const AnnounceContent({Key? key, required this.announcementItem})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,31 +28,38 @@ class AnnounceContent extends StatelessWidget {
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 24, right: 24, top: 30),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 30.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "12월 15일, 니들크루 수선 요금이 변경됩니다!",
-              style: TextStyle(fontWeight: FontWeight.bold),
+            // 공지사항 제목
+            CustomText(
+              text: announcementItem.title,
+              fontSize: FontSize().fs4,
+              fontWeight: FontWeight.bold,
             ),
-            Text(
-              "2021-12-01",
-              style: TextStyle(color: HexColor("#707070")),
-            ),
-            SizedBox(
-              height: 11,
-            ),
+            // 공지사항 생성일자
+            CustomText(
+                text: FormatMethod().convertDate(
+                    announcementItem.createdAt.millisecondsSinceEpoch,
+                    'yyyy-MM-dd'),
+                fontSize: FontSize().fs4,
+                fontColor: SetColor().color70,
+                formMargin: EdgeInsets.only(bottom: 12)),
             ListLine(
                 height: 1,
                 width: double.infinity,
-                lineColor: HexColor("#ededed"),
-                opacity: 1),
-            SizedBox(
-              height: 23,
-            ),
-            Text(
-                "안녕하세요, 니들크루 입니다. \n니들크루 수선 요금이 12월 15일 부로 인상됩니다.\n인상되는 수선품목은 아래와 같으며 확인해주시고 주문에 차질이 없도록 부탁드리겠습니다.\n\n-짜집기 3,000원 > 4,000원\n기장수선 3,000원 > 4,000원\n\n감사합니다. 니들크루 드림")
+                lineColor: SetColor().colorEd,
+                opacity: 1,
+                margin: EdgeInsets.only(bottom: 24)),
+            // 공지사항 내용
+            Expanded(
+              child: SingleChildScrollView(
+                child: HtmlWidget(
+                  announcementItem.content,
+                ),
+              ),
+            )
           ],
         ),
       ),

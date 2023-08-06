@@ -1,5 +1,6 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/widgets/tootip_custom.dart';
 
 class VisibleInfo extends StatelessWidget {
@@ -13,7 +14,6 @@ class VisibleInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Visibility(
       child: Container(
-        height: 115,
         child: Column(
             children: List.generate(
                 formInfo.length, (index) => listItem(index, formInfo[index]))),
@@ -25,7 +25,7 @@ class VisibleInfo extends StatelessWidget {
   Widget listItem(int index, Map item) {
     return Container(
       padding: EdgeInsets.zero,
-      margin: EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 10.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

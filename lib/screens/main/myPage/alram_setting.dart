@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -27,7 +28,7 @@ class _AlramSettingState extends State<AlramSetting> {
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 24, right: 24),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w),
         child: Column(
           children: [
             Container(

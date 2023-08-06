@@ -1,4 +1,4 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,6 @@ class UserLogoutYesNo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -74,7 +73,7 @@ class UserLogoutYesNo extends StatelessWidget {
                           child: Text("로그아웃",
                               style: TextStyle(color: Colors.black)),
                           onPressed: () async {
-                            wp_api.storage.deleteAll();
+                            await wp_api.storage.deleteAll();
                             var userName =
                                 await wp_api.storage.read(key: 'user_name');
                             printInfo(info: '로그아웃 $userName');

@@ -6,10 +6,10 @@ import 'package:image/image.dart' as img;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_woocommerce_api/flutter_woocommerce_api.dart';
 import 'package:get/get.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
 import 'package:needlecrew/db/wp-api.dart' as wp_api;
 import 'package:http/http.dart' as http;
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
 import 'package:needlecrew/models/media_uplaod_info.dart';
 
 class FixSelectController extends GetxController {
@@ -32,12 +32,15 @@ class FixSelectController extends GetxController {
   // 총 비용
   RxInt wholePrice = 0.obs;
 
-  RxMap radioGroup = {"추가 옵션": "", "가격": ""}.obs;
+  RxMap radioGroup = {'variation_id': 0, "추가 옵션": "", "가격": ""}.obs;
 
   RxInt radioId = 0.obs;
 
   // 수선선택 상품 image url
   RxList getImages = [].obs;
+
+  // 등록된 수선 상품 이미지 리스트
+  RxList setImages = [].obs;
 
   // 수선선택 상품 compress image url
   RxList compressImages = [].obs;
@@ -47,6 +50,9 @@ class FixSelectController extends GetxController {
 
   // 선택한 카테고리 Id list
   RxList crumbs = [].obs;
+
+  // 선택한 수선 항목 ( ex| '하의', '바지', '청바지', '밑통줄임')
+  RxList fixClothesInfo = [].obs;
 
   // back버튼 클릭 여부
   RxBool backClick = false.obs;
@@ -61,7 +67,7 @@ class FixSelectController extends GetxController {
   late WooProductCategory category;
 
   // option list
-  late List<WooProductVariation> variation = [];
+  late RxList variation = <WooProductVariation>[].obs;
 
   RxMap orderInfo = {
     '의뢰 방법': '',
@@ -70,6 +76,9 @@ class FixSelectController extends GetxController {
     '물품 가액': '',
     '추가 옵션': '',
   }.obs;
+
+  // 수선 선택한 사이즈 : 내 치수 불러오기
+  RxInt selectSize = 0.obs;
 
   @override
   void onInit() {
@@ -119,7 +128,9 @@ class FixSelectController extends GetxController {
     if (radioGroup["추가 옵션"] == groupValue["추가 옵션"]) {
       radioGroup["가격"] = groupValue["가격"];
     } else {
+      radioGroup["variation_id"] = groupValue["variation_id"];
       radioGroup["추가 옵션"] = groupValue["추가 옵션"];
+      radioGroup["가격"] = groupValue["가격"];
     }
     print("추가 옵션: " + radioGroup.toString());
 
@@ -127,8 +138,9 @@ class FixSelectController extends GetxController {
   }
 
   // 총 비용 설정
-  void iswholePrice(int price) {
-    wholePrice.value = price;
+  void iswholePrice(int productPrice) {
+    wholePrice.value = 0;
+    wholePrice.value = productPrice + 6000;
 
     print("wholePrice " + wholePrice.value.toString());
     update();
@@ -141,10 +153,172 @@ class FixSelectController extends GetxController {
     update();
   }
 
+  /// 치수 설정
+  void setGetMySize(String type) {
+    String firstChoose = fixClothesInfo.first;
+    String searchType = '';
+    String searchItem = '';
+
+    printInfo(info: '0. set get my size type this $type $firstChoose');
+    switch (firstChoose) {
+      case '하의':
+        String secondChoose = fixClothesInfo[1];
+        printInfo(info: '1. set get my size type this $type $secondChoose');
+        switch (secondChoose) {
+          case '스커트':
+            searchType = 'skirt';
+            break;
+          case '바지':
+            searchType = 'pants';
+            break;
+        }
+
+        break;
+      case '정장/교복':
+        String secondChoose = fixClothesInfo[2];
+        if (secondChoose.contains('원피스')) {
+          searchType = 'one_piece';
+        } else if (secondChoose.contains('재킷')) {
+          searchType = 'jacket';
+        } else if (secondChoose.contains('스커트')) {
+          searchType = 'skirt';
+        } else if (secondChoose.contains('셔츠')) {
+          searchType = 'shirt';
+        } else if (secondChoose.contains('바지')) {
+          searchType = 'pants';
+        }
+        break;
+      case '원피스':
+        searchType = 'one_piece';
+        break;
+      case '아우터':
+        String secondChoose = fixClothesInfo[1];
+        switch (secondChoose) {
+          case '코트':
+            searchType = 'coat';
+            break;
+          case '점퍼':
+            searchType = 'jumper';
+            break;
+          case '재킷':
+            searchType = 'jacket';
+            break;
+        }
+        break;
+      case '상의':
+        searchType = 'shirt';
+        break;
+    }
+    printInfo(
+        info:
+            'get size search ${homeInitService.getSizeList.indexWhere((element) => element.containsKey(searchType))}');
+    selectSize.value = int.parse(returnItem(type, searchType));
+  }
+
+  /// 사이즈 세부 정보 설정
+  String returnItem(String type, String searchType) {
+    try {
+      String searchItem = '';
+      switch (type) {
+        /// 하의
+        case '전체 통 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .wholeWidth;
+          break;
+        case '힙 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .heap;
+          break;
+        case '총 기장 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .length;
+          break;
+        case '밑위 기장 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .riseLength;
+          break;
+        case '허리 줄임':
+        case '허리 늘임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .riseLength;
+          break;
+
+        /// 상의
+        case '전체 품 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .width;
+          break;
+        case '소매 기장 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .sleeveLength;
+          break;
+        case '소매 통 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .sleeveWidth;
+          break;
+        case '민소매 암홀 줄임':
+        case '민소매 암홀 늘임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .sleeveLessLength;
+          break;
+        case '어깨+품 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .shoulderLength;
+          break;
+        case '목둘레 줄임':
+          searchItem = homeInitService
+              .getSizeList[homeInitService.getSizeList
+                      .indexWhere((element) => element.containsKey(searchType))]
+                  [searchType]
+              .neckWidth;
+          break;
+        default:
+          searchItem = '0';
+          break;
+      }
+      printInfo(info: 'return item successed ============ $searchItem');
+      return searchItem;
+    } catch (e) {
+      printInfo(info: 'return item failed ============ $e');
+      return '0';
+    }
+  }
+
   // 해당 제품 정보 가져오기
   Future<bool> getProduct(int id) async {
     try {
       product = await wp_api.wooCommerceApi.getProductById(id: id);
+      wholePrice.value = int.parse(product.price!) + 6000;
     } catch (e) {
       print("isError" + e.toString());
       return false;
@@ -173,63 +347,19 @@ class FixSelectController extends GetxController {
   // option 항목 가져오기
   Future<bool> getVariation(int id) async {
     try {
-      variation =
+      variation.clear();
+      variation.value =
           await wp_api.wooCommerceApi.getProductVariations(productId: id);
 
       print(variation);
+      return true;
     } catch (e) {
       print("isError" + e.toString());
       return false;
     }
-
-    return true;
-  }
-
-  // 장바구니 담기
-  Future<bool> registerCart(
-      Map registerInfo, List<WooOrderPayloadMetaData> metadata) async {
-    setOrderInfo('사진', uploadImg.value);
-
-    try {
-      List<LineItems> lineItems = [
-        LineItems(
-          quantity: selectCount,
-          productId: productid.value,
-          variationId: radioId.value,
-        ),
-      ];
-
-      WooOrderPayload wooOrderPayload = WooOrderPayload(
-        customerId: homeInitService.user.value.value!.id,
-        status: 'pending',
-        customerNote: registerInfo["customerNote"],
-        lineItems: lineItems,
-        metaData: metadata,
-      );
-
-      await wp_api.wooCommerceApi.createOrder(wooOrderPayload);
-
-      print('장바구니 담기 성공');
-    } catch (e) {
-      print('장바구니 담기 실패' + e.toString());
-      return false;
-    }
-    return true;
   }
 
   //--------------- image upload -------------------//
-  // 수선접수 상품 이미지 삭제
-  void deleteImage(File file) {
-    for (int i = 0; i < getImages.length; i++) {
-      if (getImages[i] == file) {
-        getImages.remove(file);
-      }
-    }
-
-    print("delImg this  " + getImages.length.toString());
-    print("delImg this  " + getImages.toString());
-    update();
-  }
 
   // convert Image png
   Map convertImage(File file) {
@@ -350,11 +480,46 @@ class FixSelectController extends GetxController {
       for (int i = 0; i < getImages.length; i++) {
         await compressFile(getImages[i]);
       }
-
       getImages.clear();
       return true;
     } catch (e) {
       print("isError $e");
+      return false;
+    }
+  }
+
+  /// 등록된 이미지 삭제
+  Future delImage(List images) async {
+    String query = Uri(queryParameters: {
+      'consumer_key': '${wp_api.wooCommerceApi.consumerKey}',
+      'consumer_secret': '${wp_api.wooCommerceApi.consumerSecret}',
+    }).query;
+
+    print("cartController - deleteImage init!!!!");
+
+    try {
+      for (int i = 0; i < images.length; i++) {
+        List imageInfo = images[i].split('|');
+
+        http.Response response = await http.post(
+          Uri.parse("https://needlecrew.com/wp-json/wp/v2/media/" +
+              imageInfo[0] +
+              "?${query}"),
+          headers: {
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            // ''
+            // 'Content-Type': 'multipart/form-data'
+          },
+        );
+
+        print("CartController - deleteImage response " +
+            response.body.toString());
+      }
+      print("CartController - deleteImage 성공!!!!");
+      return true;
+    } catch (e) {
+      print("cartController - deleteImage error $e");
       return false;
     }
   }

@@ -1,6 +1,7 @@
 // 상의 사이즈
 class ShirtModel {
-  final String bodyWidth; // 상의-품
+  final String length; // 상의-총 길이
+  final String width; // 상의-품
   final String neckWidth; // 상의-목둘레
   final String sleeveLength; // 상의-소매길이
   final String sleeveWidth; // 상의-소매통
@@ -8,7 +9,8 @@ class ShirtModel {
   final String shoulderLength; // 상의-어깨 길이
 
   ShirtModel({
-    this.bodyWidth = '0',
+    this.length = '0',
+    this.width = '0',
     this.neckWidth = '0',
     this.sleeveLength = '0',
     this.sleeveWidth = '0',
@@ -18,7 +20,8 @@ class ShirtModel {
 
   factory ShirtModel.fromJson(Map json) {
     return ShirtModel(
-        bodyWidth: json['body_width'],
+        length: json['length'],
+        width: json['width'],
         neckWidth: json['neck_width'],
         sleeveLength: json['sleeve_length'],
         sleeveWidth: json['sleeve_width'],
@@ -28,7 +31,8 @@ class ShirtModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'body_width': bodyWidth,
+      'length': length,
+      'width': width,
       'neck_width': neckWidth,
       'sleeve_length': sleeveLength,
       'sleeve_width': sleeveWidth,
@@ -40,36 +44,36 @@ class ShirtModel {
 
 // 바지 사이즈
 class PantsModel {
-  final String pantsLength; // 바지-기장
+  final String length; // 바지-총 길이
   final String riseLength; // 바지-밑위 길이
-  final String wholeWidth; // 바지-전체 통(밑단)
   final String waist; // 바지-허리
+  final String wholeWidth; // 바지-전체 통(밑단)
   final String heap; // 바지-힙
 
   PantsModel({
-    required this.pantsLength,
-    required this.riseLength,
-    required this.wholeWidth,
-    required this.waist,
-    required this.heap,
+    this.length = '0',
+    this.riseLength = '0',
+    this.waist = '0',
+    this.wholeWidth = '0',
+    this.heap = '0',
   });
 
   factory PantsModel.fromJson(Map json) {
     return PantsModel(
-      pantsLength: json['pants_length'],
+      length: json['length'],
       riseLength: json['rise_length'],
-      wholeWidth: json['whole_width'],
       waist: json['waist'],
+      wholeWidth: json['whole_width'],
       heap: json['heap'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'pants_length': pantsLength,
+      'length': length,
       'rise_length': riseLength,
-      'whole_width': wholeWidth,
       'waist': waist,
+      'whole_width': wholeWidth,
       'heap': heap,
     };
   }
@@ -77,19 +81,22 @@ class PantsModel {
 
 // 스커트 사이즈
 class SkirtModel {
-  final String skirtLength; // 스커트-기장
+  final String length; // 스커트-총 길이
+  final String waist; // 스커트-허리
   final String wholeWidth; // 스커트-전체 통(밑단)
   final String heap; // 스커트-힙
 
   SkirtModel({
-    required this.skirtLength,
-    required this.wholeWidth,
-    required this.heap,
+    this.length = '0',
+    this.waist = '0',
+    this.wholeWidth = '0',
+    this.heap = '0',
   });
 
   factory SkirtModel.fromJson(Map json) {
     return SkirtModel(
-      skirtLength: json['skirt_length'],
+      length: json['length'],
+      waist: json['waist'],
       wholeWidth: json['whole_width'],
       heap: json['heap'],
     );
@@ -97,7 +104,8 @@ class SkirtModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'skirt_length': skirtLength,
+      'length': length,
+      'waist': waist,
       'whole_width': wholeWidth,
       'heap': heap,
     };
@@ -106,36 +114,81 @@ class SkirtModel {
 
 // 아우터 사이즈
 class OuterModel {
+  final String length; // 아우터-총길이
   final String width; // 아우터-품
-  final String neckWidth; // 아우터-목둘레
   final String sleeveLength; // 아우터-소매길이
-  final String sleeveLessLength; // 아우터-민소매암홀길이
+  final String sleeveWidth; // 아우터-소매 통
   final String shoulderLength; // 아우터-어깨길이
+  final String sleeveLessLength; // 아우터-민소매암홀길이
 
   OuterModel({
-    required this.width,
-    required this.neckWidth,
-    required this.sleeveLength,
-    required this.sleeveLessLength,
-    required this.shoulderLength,
+    this.length = '0',
+    this.width = '0',
+    this.sleeveLength = '0',
+    this.sleeveWidth = '0',
+    this.sleeveLessLength = '0',
+    this.shoulderLength = '0',
   });
 
   factory OuterModel.fromJson(Map json) {
     return OuterModel(
+        length: json['length'],
         width: json['width'],
-        neckWidth: json['neck_width'],
         sleeveLength: json['sleeve_length'],
+        sleeveWidth: json['sleeve_width'],
         sleeveLessLength: json['sleeve_less_length'],
         shoulderLength: json['shoulder_length']);
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'length': length,
       'width': width,
-      'neck_width': neckWidth,
       'sleeve_length': sleeveLength,
+      'sleeve_width': sleeveWidth,
       'sleeve_less_length': sleeveLessLength,
       'shoulder_length': shoulderLength
+    };
+  }
+}
+
+// 원피스 사이즈
+class OnepieceModel {
+  final String length; // 원피스-총길이
+  final String width; // 원피스-품
+  final String sleeveLength; // 원피스-소매길이
+  final String sleeveWidth; // 원피스-소매 통
+  final String sleeveLessLength; // 원피스-민소매암홀길이
+  final String shoulderLength; // 원피스-어깨길이
+
+  OnepieceModel({
+    this.length = '0',
+    this.width = '0',
+    this.sleeveLength = '0',
+    this.sleeveWidth = '0',
+    this.shoulderLength = '0',
+    this.sleeveLessLength = '0',
+  });
+
+  factory OnepieceModel.fromJson(Map json) {
+    return OnepieceModel(
+      length: json['length'],
+      width: json['width'],
+      sleeveLength: json['sleeve_length'],
+      sleeveWidth: json['sleeve_width'],
+      shoulderLength: json['shoulder_length'],
+      sleeveLessLength: json['sleeve_less_length'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'length': length,
+      'width': width,
+      'sleeve_length': sleeveLength,
+      'sleeve_width': sleeveWidth,
+      'shoulder_length': shoulderLength,
+      'sleeve_less_length': sleeveLessLength,
     };
   }
 }

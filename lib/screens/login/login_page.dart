@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/widgets/base_appbar.dart';
 import 'package:needlecrew/widgets/circle_icon_btn.dart';
 import 'package:needlecrew/widgets/font_style.dart';
@@ -19,7 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find();
 
   ScrollController _scrollController = ScrollController();
 
@@ -64,11 +65,11 @@ class _LoginPageState extends State<LoginPage> {
         resizeToAvoidBottomInset: false,
         appBar: BaseAppbar(appbar: AppBar(), prevFunction: () => Get.back()),
         body: Container(
-          padding: EdgeInsets.only(left: 24, right: 24),
+          padding: EdgeInsets.only(left: 24.w, right: 24.w),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.only(top: 30),
+                padding: EdgeInsets.only(top: 30.h),
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -71,6 +71,7 @@
 		<string>$(CURRENT_PROJECT_VERSION)</string>
 		<key>LSApplicationQueriesSchemes</key>
 		<array>
+			<string>tel</string>
 			<string>kftc-bankpay</string>
 			<string>ispmobile</string>
 			<string>itms-apps</string>
@@ -156,7 +157,7 @@
 		<string>니들크루</string>
 		<key>naverServiceAppUrlScheme</key>
 		<string>needlecrewnaverlogin</string>
-		<key>UIStatusBarHidden</key>
-		<true/>
-	</dict>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+</dict>
 </plist>

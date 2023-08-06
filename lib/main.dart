@@ -3,9 +3,10 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/controller/widget_controller/initial_bindings.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
+import 'package:needlecrew/getx_services/home_init_service.dart';
 import 'package:needlecrew/screens/login/loading_page.dart';
 import 'package:needlecrew/screens/login/login_page.dart';
+import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fix_clothes.dart';
 import 'package:needlecrew/screens/main/fixClothes/fix_register_info.dart';
 import 'package:needlecrew/screens/main/myPage/pay_type_add.dart';
@@ -38,6 +39,8 @@ void main() async {
     consumerSecret: 'cs_36e34b80b2ccc76c587069cb7b121f6df6758deb',
   );
 
+  InitialBindings().dependencies();
+
   runApp(const MyApp());
 }
 
@@ -61,9 +64,11 @@ class MyApp extends StatelessWidget {
           initialBinding: InitialBindings(),
           theme: ThemeData(
             fontFamily: 'NotoSansCJKkrRegular',
-            primaryColor: Colors.white,
+            scaffoldBackgroundColor: Colors.white,
             appBarTheme: AppBarTheme(
-              brightness: Brightness.light,
+              systemOverlayStyle:
+                  SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+              // brightness: ,
             ),
           ),
           home: Obx(() => homeInitService.mainHome.value.value ?? Container()),
@@ -72,6 +77,7 @@ class MyApp extends StatelessWidget {
             GetPage(name: '/join', page: () => AgreeTerms()),
             GetPage(name: '/startPage', page: () => LoadingPage()),
             GetPage(name: '/mainHome', page: () => MainPage(pageNum: 0)),
+            GetPage(name: '/cart', page: () => CartInfo()),
             GetPage(
                 name: '/useInfoReady',
                 page: () => MainPage(pageNum: 1, selectTab: 0)),

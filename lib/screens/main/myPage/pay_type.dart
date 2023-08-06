@@ -1,9 +1,12 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/custom_dialog.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/modal/alert_dialog_yes.dart';
 import 'package:needlecrew/modal/alert_dialog_yes_no.dart';
 import 'package:needlecrew/models/billing_info.dart';
+import 'package:needlecrew/models/widgets/btn_model.dart';
 import 'package:needlecrew/screens/main/myPage/pay_type_add.dart';
 import 'package:needlecrew/widgets/appbar_item.dart';
 import 'package:needlecrew/widgets/circle_black_btn.dart';
@@ -28,7 +31,7 @@ class _PayTypeState extends State<PayType> {
   final _carouselcontroller = CarouselController();
   late int currentPage = 0;
 
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find();
 
   // 카드 번호 설정
   String setCardNum(String cardnum) {
@@ -47,7 +50,9 @@ class _PayTypeState extends State<PayType> {
 
   @override
   Widget build(BuildContext context) {
-    paymentService.selectCard = paymentService.cardsBillkey[currentPage];
+    if (paymentService.cardsBillkey.isNotEmpty) {
+      paymentService.selectCard = paymentService.cardsBillkey[currentPage];
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -77,26 +82,38 @@ class _PayTypeState extends State<PayType> {
               iconColor: Colors.black,
               iconFilename: '',
               function: () {
-                Get.dialog(AlertDialogYesNo(
-                  titleText: "등록된 정보를 삭제하시겠습니까?",
-                  contentText: "결제 정보가 등록되어 있지 않으면\n수선의뢰 시 다시 작성해야합니다.",
-                  icon: "",
-                  iconPath: "",
-                  btntext1: "취소",
-                  btntext2: "삭제",
-                  formname: "카드 삭제",
-                ));
+                Get.dialog(
+                    barrierDismissible: false,
+                    CustomDialog(
+                        header: DialogHeader(
+                          title: '등록된 정보를 삭제하시겠습니까?',
+                          content: '결제 정보가 등록되어 있지 않으면\n수선의뢰 시 다시 작성해야합니다.',
+                        ),
+                        bottom: DialogBottom(isExpanded: true, btn: [
+                          BtnModel(text: '취소', callback: () {}),
+                          BtnModel(text: '삭제', callback: () {})
+                        ]))
+                    // AlertDialogYesNo(
+                    // titleText: "등록된 정보를 삭제하시겠습니까?",
+                    // contentText: "결제 정보가 등록되어 있지 않으면\n수선의뢰 시 다시 작성해야합니다.",
+                    // icon: "",
+                    // iconPath: "",
+                    // btntext1: "취소",
+                    // btntext2: "삭제",
+                    // formname: "카드 삭제",
+                    // )
+                    );
               },
             ),
           ]),
       body: Container(
+        margin: EdgeInsets.only(top: 40.h),
         child: Column(
           children: [
             Expanded(
               child: StreamBuilder(
-                  stream: Future.delayed(
-                          Duration(seconds: 1), () => paymentService.getCardAll())
-                      .asStream(),
+                  stream: Future.delayed(Duration(seconds: 1),
+                      () => paymentService.getCardAll()).asStream(),
                   builder: (context, snapshot) {
                     // if(snapshot.hasData){
                     //
@@ -110,7 +127,7 @@ class _PayTypeState extends State<PayType> {
                             child: Column(
                               children: [
                                 Container(
-                                  height: 230,
+                                  height: 230.h,
                                   child: CarouselSlider(
                                     carouselController: _carouselcontroller,
                                     items: List.generate(
@@ -129,7 +146,7 @@ class _PayTypeState extends State<PayType> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.zero,
-                                  width: 100,
+                                  width: 100.w,
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -168,7 +185,8 @@ class _PayTypeState extends State<PayType> {
                                 ),
                                 Expanded(
                                   child: SingleChildScrollView(
-                                    padding: EdgeInsets.all(40),
+                                    padding: EdgeInsets.only(
+                                        left: 42.w, right: 42.w),
                                     child: Column(
                                       children: [
                                         UserInfoMenu(
@@ -225,43 +243,45 @@ class _PayTypeState extends State<PayType> {
       controller.updateUserInfo("pay_cards");
     }
 
-    return Stack(
-      children: [
-        Container(
-          padding: EdgeInsets.only(right: 10),
-          width: 300,
-          child: Image.asset(
-            "assets/images/card.png",
-            fit: BoxFit.cover,
+    return Container(
+      width: 291.w,
+      height: 183.h,
+      child: Stack(
+        children: [
+          Container(
+            width: 291.w,
+            height: 183.h,
+            child: Image.asset(
+              "assets/images/card.png",
+              fit: BoxFit.contain,
+            ),
           ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          heightFactor: 2,
-          child: Container(
-            padding: EdgeInsets.only(left: 20),
-            child: FontStyle(
-                text: cardInfo.card_name,
-                fontcolor: Colors.white,
-                fontsize: "md",
-                fontbold: "",
-                textdirectionright: false),
+          Positioned(
+            left: 26.55.w,
+            top: 16.53.h,
+            child: Container(
+              child: FontStyle(
+                  text: cardInfo.card_name,
+                  fontcolor: Colors.white,
+                  fontsize: "md",
+                  fontbold: "",
+                  textdirectionright: false),
+            ),
           ),
-        ),
-        Align(
-          widthFactor: 7.0,
-          heightFactor: 6,
-          alignment: Alignment.bottomRight,
-          child: Container(
-            child: FontStyle(
-                text: cardInfo.card_number.substring(12, 16),
-                fontcolor: Colors.white,
-                fontbold: "",
-                fontsize: "md",
-                textdirectionright: false),
+          Positioned(
+            right: 27.w,
+            bottom: 44.h,
+            child: Container(
+              child: FontStyle(
+                  text: cardInfo.card_number.substring(12, 16),
+                  fontcolor: Colors.white,
+                  fontbold: "",
+                  fontsize: "md",
+                  textdirectionright: false),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

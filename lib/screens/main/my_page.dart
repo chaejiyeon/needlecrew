@@ -1,6 +1,5 @@
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
-import 'package:needlecrew/getxServices/home_init_service.dart';
 import 'package:needlecrew/modal/mypage/user_logout_yes_no.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/myPage/alram_setting.dart';
@@ -19,7 +18,6 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 import 'myPage/user_info.dart';
-import 'package:needlecrew/db/wp-api.dart' as wp_api;
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);

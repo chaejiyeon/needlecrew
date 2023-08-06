@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:needlecrew/controller/homeController.dart';
-import 'package:needlecrew/controller/loginController.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:needlecrew/controller/home_controller.dart';
+import 'package:needlecrew/controller/login_controller.dart';
 
 // import 'package:flutter_sms/flutter_sms.dart';
 import 'package:needlecrew/widgets/base_appbar.dart';
@@ -100,11 +101,11 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
           prevFunction: () => Get.back(),
         ),
         body: Container(
-          padding: EdgeInsets.only(left: 25, right: 25, bottom: 20),
+          padding: EdgeInsets.only(left: 25.w, right: 25.w, bottom: 20.h),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.only(top: 30),
+                padding: EdgeInsets.only(top: 30.h),
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,7 +165,7 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
   Widget phoneNumInsert(String titleText, String hintText, String btnText,
       TextEditingController controller) {
     return Container(
-      padding: EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: 24.h),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(
           titleText,
@@ -241,7 +242,7 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
         ),
         sendMessage == true && titleText == "인증번호"
             ? Container(
-                padding: EdgeInsets.only(top: 7),
+                padding: EdgeInsets.only(top: 7.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -255,7 +256,7 @@ class _UserPhoneInsertState extends State<UserPhoneInsert> {
                     ),
                     time != ""
                         ? Container(
-                            padding: EdgeInsets.only(right: 105),
+                            padding: EdgeInsets.only(right: 105.w),
                             child: Text(
                               time,
                               style: TextStyle(color: Colors.red, fontSize: 13),

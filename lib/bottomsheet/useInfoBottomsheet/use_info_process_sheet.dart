@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,9 +10,8 @@ import 'package:intl/intl.dart';
 
 class UseInfoProcessSheet extends StatelessWidget {
   final int progressNum;
-  final String date;
 
-  const UseInfoProcessSheet({Key? key, required this.progressNum, required this.date})
+  const UseInfoProcessSheet({Key? key, required this.progressNum})
       : super(key: key);
 
   @override
@@ -36,51 +36,35 @@ class UseInfoProcessSheet extends StatelessWidget {
       "수선 확정",
     ];
 
-    return Container(
-      color: Colors.white,
-      child: ListView(
-        controller: _scrollcontroller,
-        shrinkWrap: true,
-        children: [
-          Container(
-            padding: EdgeInsets.only(left: 24, right: 24),
-            // height: 400,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top: 24),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        children: List.generate(
-                            images.length, (index) => ImageItem(images[index])),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(top: 15, right: 7.8),
-                        child: Column(
-                          children:
-                              List.generate(6, (index) => progress(index)),
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(
-                              process.length,
-                              (index) =>
-                                  processItem(process[index], date)),
-                        ),
-                      )
-                    ],
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.only(top: 24.h, left: 24.w, right: 24.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: List.generate(
+                    images.length, (index) => ImageItem(images[index])),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 15, right: 7.8),
+                child: Column(
+                  children: List.generate(6, (index) => progress(index)),
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(
+                      process.length, (index) => processItem(process[index])),
+                ),
+              )
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -133,13 +117,12 @@ class UseInfoProcessSheet extends StatelessWidget {
   }
 
   // 진행 상황
-  Widget processItem(String title, String date) {
+  Widget processItem(String title) {
     return Container(
       padding: EdgeInsets.only(bottom: 26),
       child: ListTile(
         visualDensity: VisualDensity(horizontal: 0, vertical: -4),
         contentPadding: EdgeInsets.zero,
-        trailing: Text(date, style: TextStyle(color: HexColor("#909090")),),
         leading: Text(
           title,
           style: TextStyle(fontSize: 16),

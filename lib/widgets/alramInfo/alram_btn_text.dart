@@ -1,4 +1,5 @@
 // alram appbar itemBtn
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/modal/alram_delete_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,7 @@ class _alramBtnTextState extends State<alramBtnText> {
       },
 
       child: Container(
-        padding: EdgeInsets.only(top: 20),
+        padding: EdgeInsets.only(top: 20.h),
         child: Text(
           widget.text,
           style: TextStyle(color: widget.textColor, fontSize: 16),

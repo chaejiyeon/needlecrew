@@ -1,6 +1,7 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:kpostal/kpostal.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/main_home.dart';
 import 'package:needlecrew/widgets/custom/custom_appbar.dart';
@@ -91,7 +92,7 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
         leadingWidget: BackBtn(),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 24, right: 24),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w),
         child: Column(
           children: [
             SizedBox(
@@ -100,7 +101,7 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
             searchAddress(widget.hinttext1),
             CircleAddressSearch(widget.hinttext2),
             Container(
-              padding: EdgeInsets.only(top: 31),
+              padding: EdgeInsets.only(top: 31.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -119,7 +120,7 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
   // 주소 입력폼
   Widget CircleAddressSearch(String title) {
     return Container(
-      padding: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(bottom: 10.h),
       child: TextField(
         onChanged: (value) {
           setState(() {});
@@ -130,7 +131,7 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
                 ? TextAlign.left
                 : TextAlign.center,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(left: 30, top: 16, bottom: 17),
+          contentPadding: EdgeInsets.only(left: 30.w, top: 16.h, bottom: 17.h),
           suffixIcon: IconButton(
             icon: controller.textController.text != ""
                 ? SvgPicture.asset(
@@ -184,11 +185,11 @@ class _AddressInsertFormState extends State<AddressInsertForm> {
       child: Container(
         padding: EdgeInsets.only(
             left: widget.hinttext1 != "" || postCode != "-" || address != "-"
-                ? 30
+                ? 30.w
                 : 0,
-            top: 16,
-            bottom: 17),
-        margin: EdgeInsets.only(bottom: 10),
+            top: 16.h,
+            bottom: 17.h),
+        margin: EdgeInsets.only(bottom: 10.h),
         alignment: widget.hinttext1 != "" || postCode != "-" || address != "-"
             ? null
             : Alignment.center,

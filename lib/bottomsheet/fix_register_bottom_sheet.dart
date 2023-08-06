@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:needlecrew/controller/homeController.dart';
+import 'package:needlecrew/controller/home_controller.dart';
 import 'package:needlecrew/functions.dart';
 import 'package:needlecrew/widgets/circle_black_btn.dart'
     as fix_register_bottom_sheet;
@@ -74,7 +74,7 @@ class FixRegisterBottomSheet extends StatelessWidget {
                   height: 14,
                 ),
                 listItem(
-                    "수선 결제를 진행하지 않는 경우 배송비 결제(6,000원)이 결제되며 고객님께서 보내주신 의류는 다시 반송됩니다.",
+                    "택배비용(6,000)은 선결제이며, 수선 결제를 진행하지 않는 경우 고객님께서 보내주신 의류는 다시 반송됩니다.",
                     false,
                     true),
                 SizedBox(

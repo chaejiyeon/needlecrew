@@ -1,5 +1,4 @@
-import 'package:needlecrew/controller/useInfo/useInfoController.dart';
-import 'package:needlecrew/models/fix_ready.dart';
+import 'package:needlecrew/controller/my_use_info/useInfo_controller.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +11,7 @@ class UseInfoList extends StatefulWidget {
   final String fixState;
   final List fixItems;
   final Future myFuture;
+
   // final Stream myStream;
 
   const UseInfoList(
@@ -33,12 +33,13 @@ class _UseInfoListState extends State<UseInfoList> {
   int skeletonCount = 0;
 
   @override
-  void didUpdateWidget(UseInfoList oldWidget){
+  void didUpdateWidget(UseInfoList oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     print("didUpdateWidget Method init!!" + widget.fixState);
 
-    if(widget.fixState == "progress" && oldWidget.myFuture != widget.myFuture){
+    if (widget.fixState == "progress" &&
+        oldWidget.myFuture != widget.myFuture) {
       controller.widgetUpdate.value = true;
 
       print("widget updated! -- ");
@@ -47,7 +48,6 @@ class _UseInfoListState extends State<UseInfoList> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -58,11 +58,8 @@ class _UseInfoListState extends State<UseInfoList> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return GestureDetector(
-      child:
-      FutureBuilder(
+      child: FutureBuilder(
         future: widget.myFuture,
         builder: (context, snapshot) {
           bool isLoading = snapshot.connectionState == ConnectionState.waiting;

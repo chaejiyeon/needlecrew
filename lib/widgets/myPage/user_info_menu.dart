@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:needlecrew/widgets/fixClothes/list_line.dart';
 import 'package:needlecrew/widgets/font_style.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _UserInfoMenuState extends State<UserInfoMenu> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 15),
+      padding: EdgeInsets.only(top: 15.h),
       child: Column(
         children: [
           Row(

@@ -52,7 +52,7 @@ class BannerInfo extends StatelessWidget {
           Positioned(
             top: 125,
             child: Container(
-              padding: EdgeInsets.only(left: 24, right: 12),
+              padding: EdgeInsets.only(left: 24.w, right: 12.w),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: List.generate(
@@ -78,7 +78,7 @@ class BannerInfo extends StatelessWidget {
         Get.to(getTo);
       },
       child: Container(
-        padding: EdgeInsets.only(right: 10, top: 30),
+        padding: EdgeInsets.only(right: 10.w, top: 30.h),
         child: SvgPicture.asset(
           "assets/icons/main/" + icon,
           color: Colors.white,

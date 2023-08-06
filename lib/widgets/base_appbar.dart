@@ -31,9 +31,11 @@ class BaseAppbar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       backgroundColor: Colors.transparent,
-      brightness: Brightness.light,
+      systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarBrightness: Brightness.light, statusBarColor: Colors.black),
+      // brightness: Brightness.light,
       elevation: 0,
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      // systemOverlayStyle: SystemUiOverlayStyle.dark,
     );
   }
 

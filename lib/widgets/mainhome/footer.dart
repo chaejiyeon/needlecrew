@@ -38,17 +38,28 @@ class Footer extends StatelessWidget {
                     text: "통신판매신고 : 제 2021-부산부산진-1467호",
                     fontsize: "sm",
                     fontbold: "",
-                    fontcolor: HexColor("#909090"),textdirectionright: false),
+                    fontcolor: HexColor("#909090"),
+                    textdirectionright: false),
                 SizedBox(
                   height: 5,
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FontStyle(text: "주소 : ", fontsize: "sm", fontbold: "", fontcolor: HexColor("#909090"),textdirectionright: false),
+                    FontStyle(
+                        text: "주소 : ",
+                        fontsize: "sm",
+                        fontbold: "",
+                        fontcolor: HexColor("#909090"),
+                        textdirectionright: false),
                     Column(
                       children: [
-                        FontStyle(text: "부산시 진구 서전로8 WEWORK서면 05-105호", fontsize: "sm", fontbold: "", fontcolor: HexColor("#909090"),textdirectionright: false),
+                        FontStyle(
+                            text: "부산시 진구 서전로8 WEWORK서면 05-105호",
+                            fontsize: "sm",
+                            fontbold: "",
+                            fontcolor: HexColor("#909090"),
+                            textdirectionright: false),
                       ],
                     )
                   ],
@@ -56,7 +67,7 @@ class Footer extends StatelessWidget {
                 SizedBox(
                   height: 5,
                 ),
-                rowText("사업자 등록번호 : 748-61-00480", "고객센터 : 1588-1588"),
+                rowText("사업자 등록번호 : 748-61-00480", "고객센터 : 070-8095-4668"),
                 SizedBox(
                   height: 5,
                 ),
@@ -64,7 +75,8 @@ class Footer extends StatelessWidget {
                     text: "Copyright 2022 needlecrew All rights reserved.",
                     fontsize: "sm",
                     fontbold: "",
-                    fontcolor: HexColor("#909090"),textdirectionright: false),
+                    fontcolor: HexColor("#909090"),
+                    textdirectionright: false),
               ],
             ),
           ),
@@ -80,17 +92,20 @@ class Footer extends StatelessWidget {
             text: text1,
             fontsize: "sm",
             fontbold: "",
-            fontcolor: HexColor("#909090"),textdirectionright: false),
+            fontcolor: HexColor("#909090"),
+            textdirectionright: false),
         FontStyle(
             text: " | ",
             fontsize: "sm",
             fontbold: "",
-            fontcolor: HexColor("#909090"),textdirectionright: false),
+            fontcolor: HexColor("#909090"),
+            textdirectionright: false),
         FontStyle(
             text: text2,
             fontsize: "sm",
             fontbold: "",
-            fontcolor: HexColor("#909090"),textdirectionright: false),
+            fontcolor: HexColor("#909090"),
+            textdirectionright: false),
       ],
     );
   }

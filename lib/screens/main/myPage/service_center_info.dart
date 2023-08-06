@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:needlecrew/widgets/phone_call_btn.dart';
 
 class ServiceCenterInfo extends StatefulWidget {
   const ServiceCenterInfo({Key? key}) : super(key: key);
@@ -21,74 +22,29 @@ class _ServiceCenterInfoState extends State<ServiceCenterInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(
-        appbarcolor: 'white',
-        appbar: AppBar(),
-        title: '고객센터',
-        leadingWidget: BackBtn(),
-      ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  listMenu("1:1 문의하기", true, Channeltalk()),
-                  listMenu("자주하는 질문", false, DirectQuestion()),
-                ],
-              ),
-            ),
-          ],
+        appBar: CustomAppbar(
+          appbarcolor: 'white',
+          appbar: AppBar(),
+          title: '고객센터',
+          leadingWidget: BackBtn(),
         ),
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        height: 150,
-        child: Column(
-          children: [
-            GestureDetector(
-                child: Container(
-              width: 130,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: HexColor("#d5d5d5").withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: Offset(3, 1),
-                    )
-                  ]),
-              child: Row(
-                children: [
-                  Icon(CupertinoIcons.phone_fill),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  FontStyle(
-                      text: "1600-1234",
-                      fontsize: "",
-                      fontbold: "bold",
-                      fontcolor: Colors.black,
-                      textdirectionright: false),
-                ],
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    listMenu("1:1 문의하기", true, Channeltalk()),
+                    // listMenu("자주하는 질문", false, DirectQuestion()),
+                  ],
+                ),
               ),
-            )),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              "평일 오전 9시 ~ 오후 6시까지 상담하며\n주말 및 공휴일은 휴무입니다.",
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+        bottomNavigationBar: PhoneCallBtn());
   }
 
   // list menu

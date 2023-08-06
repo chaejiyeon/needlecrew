@@ -1,6 +1,7 @@
 import 'package:easy_rich_text/easy_rich_text.dart';
 import 'package:intl/intl.dart';
-import 'package:needlecrew/controller/fixClothes/cartController.dart';
+import 'package:needlecrew/controller/fix_clothes/cart_controller.dart';
+import 'package:needlecrew/db/wp-api.dart';
 import 'package:needlecrew/screens/main/alram_info.dart';
 import 'package:needlecrew/screens/main/cart_info.dart';
 import 'package:needlecrew/screens/main/fixClothes/take_fix_info.dart';
@@ -17,7 +18,6 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
 class TakeFixDate extends StatefulWidget {
   const TakeFixDate({Key? key}) : super(key: key);
 
@@ -26,7 +26,7 @@ class TakeFixDate extends StatefulWidget {
 }
 
 class _TakeFixDateState extends State<TakeFixDate> {
-  final CartController controller = Get.put(CartController());
+  final CartController controller = Get.find();
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -51,8 +51,11 @@ class _TakeFixDateState extends State<TakeFixDate> {
 
   @override
   Widget build(BuildContext context) {
+    printInfo(
+        info:
+            'register order length this - 수거 날짜 ${controller.registerOrders.length}');
     return Scaffold(
-      appBar:CustomAppbar(
+      appBar: CustomAppbar(
         leadingWidget: BackBtn(),
         appbarcolor: 'white',
         appbar: AppBar(),
@@ -137,6 +140,29 @@ class _TakeFixDateState extends State<TakeFixDate> {
                           ],
                         );
                       },
+                      defaultBuilder: (context, startDay, endDay) {
+                        String dayOfWeeks =
+                            DateFormat('E', 'ko_KR').format(startDay);
+
+                        if (dayOfWeeks == '일') {
+                          return Container(
+                            child: Center(
+                              child: Text(startDay.day.toString(),
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          );
+                        }
+                      },
+                      holidayBuilder: (context, startDay, endDay) {
+                        String dayOfWeeks = startDay.day.toString();
+
+                        return Container(
+                          child: Center(
+                            child: Text(dayOfWeeks,
+                                style: TextStyle(color: Colors.red)),
+                          ),
+                        );
+                      },
                       dowBuilder: (context, day) {
                         String dayOfWeeks =
                             DateFormat('E', 'ko_KR').format(day);
@@ -157,6 +183,9 @@ class _TakeFixDateState extends State<TakeFixDate> {
                         );
                       },
                     ),
+                    holidayPredicate: (day) {
+                      return utilsService.isHoliday(day);
+                    },
                     // currentDay: _focusedDay,
                     selectedDayPredicate: (day) {
                       return isSameDay(_selectedDay, day);
@@ -164,14 +193,16 @@ class _TakeFixDateState extends State<TakeFixDate> {
                     onDaySelected: ((selectedDay, focusedDay) {
                       String dayOfWeeks =
                           DateFormat('E', 'ko_KR').format(selectedDay);
-                      print("dayofweeks this    " + dayOfWeeks);
 
                       if (!isSameDay(_selectedDay, selectedDay)) {
-                        if (dayOfWeeks == "일") {
+                        if (dayOfWeeks == "일" ||
+                            utilsService.isHoliday(selectedDay)) {
                           Get.snackbar('수거 불가',
                               '일요일 및 공휴일은 수거가 불가하며, 토요일 선택시 월요일로 수거가 넘어갈 수 있습니다.');
                         } else {
                           setState(() {
+                            printInfo(
+                                info: 'select day this ${selectedDay.month}');
                             _selectedDay = selectedDay;
                             _focusedDay = focusedDay;
                           });
@@ -198,8 +229,10 @@ class _TakeFixDateState extends State<TakeFixDate> {
                           ),
                     ),
                     headerStyle: HeaderStyle(
-                      rightChevronIcon: SvgPicture.asset("assets/icons/nextIcon.svg"),
-                      leftChevronIcon: SvgPicture.asset("assets/icons/prevIcon.svg"),
+                      rightChevronIcon:
+                          SvgPicture.asset("assets/icons/nextIcon.svg"),
+                      leftChevronIcon:
+                          SvgPicture.asset("assets/icons/prevIcon.svg"),
                       leftChevronPadding: EdgeInsets.zero,
                       rightChevronPadding: EdgeInsets.zero,
                       headerMargin: EdgeInsets.only(bottom: 20),
@@ -220,17 +253,19 @@ class _TakeFixDateState extends State<TakeFixDate> {
           ],
         ),
       ),
-      bottomNavigationBar: _bottomNabigationbar(),
+      bottomNavigationBar: _bottomNavigationbar(),
     );
   }
 
   // bottm Info
-  Widget _bottomNabigationbar() {
+  Widget _bottomNavigationbar() {
+    String selectYear = _focusedDay.year.toString();
     String selectMonth = _focusedDay.month.toString();
     String selectDay = _focusedDay.day.toString();
     return Container(
       color: Colors.white,
       padding: EdgeInsets.only(left: 24, right: 24),
+      margin: EdgeInsets.only(bottom: 5),
       height: 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,8 +325,8 @@ class _TakeFixDateState extends State<TakeFixDate> {
             padding: EdgeInsets.only(bottom: 16),
             child: GestureDetector(
               onTap: () {
-                Get.to(TakeFixInfo());
-                controller.fixDate(selectMonth, selectDay);
+                controller.fixDate(selectYear, selectMonth, selectDay);
+                Get.to(() => TakeFixInfo());
               },
               child: Image.asset(
                 "assets/icons/selectFloatingIcon.png",
